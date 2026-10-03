@@ -49,8 +49,8 @@ export default function Review({ report, onNext }: { report: Report; onNext: () 
       )}
 
       <div className="tally">
-        <div><b>{tally.consistent}</b><Stamp tone="green" tilt={-3}>{STATUS.consistent.sw}</Stamp></div>
-        <div><b>{tally.contradicted}</b><Stamp tone="red" tilt={2}>{STATUS.contradicted.sw}</Stamp></div>
+        <div className="ok"><b>{tally.consistent}</b><Stamp tone="green" tilt={-3}>{STATUS.consistent.sw}</Stamp></div>
+        <div className="bad"><b>{tally.contradicted}</b><Stamp tone="red" tilt={2}>{STATUS.contradicted.sw}</Stamp></div>
         <div><b>{tally.unverifiable}</b><Stamp tone="grey" tilt={-2}>{STATUS.unverifiable.sw}</Stamp></div>
       </div>
 
@@ -62,7 +62,7 @@ export default function Review({ report, onNext }: { report: Report; onNext: () 
           const claim = claims[s.claim_refs[0]];
           const firstOfClaim = claim && sentences[i - 1]?.claim_refs[0] !== claim.claim_id;
           return (
-            <li key={s.sentence_id} className={i === active ? "now" : ""} onClick={() => playFrom(i)}>
+            <li key={s.sentence_id} className={[claim?.status ?? "", i === active ? "now" : ""].join(" ").trim()} onClick={() => playFrom(i)}>
               {firstOfClaim && (
                 <Stamp tone={TONE[claim.status]} en={TIER[claim.tier].en} tilt={i % 2 ? 3 : -4}>
                   {STATUS[claim.status].sw}

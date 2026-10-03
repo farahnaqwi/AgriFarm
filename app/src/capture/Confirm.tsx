@@ -139,7 +139,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
       <Say ids={["CAPTURE_CONFIRM"]} />
       <div className="entries">
         {claims.map((c) => (
-          <article key={c.key} className="entry">
+          <article key={c.key} className={c.confirmed ? "entry done" : "entry"}>
             <div className="entry-head">
               <span className="entry-label">{FIELD[c.field].sw}<span className="en">{FIELD[c.field].en}</span></span>
               {!c.confirmed && <button className="link danger" onClick={() => remove(c.key)}>Ondoa<span className="en">Remove</span></button>}

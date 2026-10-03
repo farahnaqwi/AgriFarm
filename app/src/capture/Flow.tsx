@@ -70,6 +70,16 @@ export default function Flow() {
     })();
   }, [st?.step, st?.report, st?.capture]);
 
+  // Screens alternate surfaces so the flow has rhythm: ink for permission and camera, green when sealed.
+  const theme = !st ? "paper"
+    : st.step === "home" ? "home"
+    : st.step === "consent" || st.step === "photos" ? "ink"
+    : st.step === "share" && st.sealed ? "green"
+    : "paper";
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
   if (!st) return null;
   const { capture } = st;
   const home = () => setSt({ ...FRESH, farm: st.farm });
