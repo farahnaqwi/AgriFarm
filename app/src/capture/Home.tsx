@@ -1,5 +1,6 @@
 import { Screen } from "./ui.tsx";
 import { DEMO_FARMS } from "../lib/geo.ts";
+import Install from "./Install.tsx";
 import type { DemoFarm } from "../types/index.ts";
 
 interface Props {
@@ -19,6 +20,7 @@ export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }: Pr
         <span className="en">An evidence report about your farm. Works without internet.</span>
       </p>
       <button className="big primary" onClick={onStart}>▶ Anza<span>Start</span></button>
+      <Install />
 
       <details className="panel">
         <summary>Demo settings</summary>

@@ -20,17 +20,22 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],
       manifest: {
+        id: "/",
         name: "AgriFarm",
         short_name: "AgriFarm",
         description: "Farm evidence report, works offline",
         lang: "sw",
         start_url: "/",
+        scope: "/",
         display: "standalone",
+        orientation: "portrait",
+        categories: ["productivity", "utilities"],
         background_color: "#f6f3ea",
         theme_color: "#2f6b3a",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {

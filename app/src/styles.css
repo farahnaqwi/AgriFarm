@@ -15,11 +15,18 @@
   -webkit-text-size-adjust: 100%;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); }
-button { font: inherit; cursor: pointer; }
+/* App-like: no pull-to-refresh bounce, no grey tap flash, no accidental text selection on controls. */
+html, body { overscroll-behavior: none; }
+body { margin: 0; background: var(--bg); -webkit-tap-highlight-color: transparent; }
+button { font: inherit; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.app { max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative; padding: 0 16px 24px; }
+.app {
+  max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative;
+  padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.big.install { background: #e6eee5; border-color: var(--green); color: var(--green); }
+.install-hint { margin: 0; padding: 10px 12px; border-radius: var(--radius); background: #e6eee5; color: var(--green); font-weight: 600; }
 .screen { display: flex; flex-direction: column; min-height: calc(100dvh - 48px); }
 .screen header { padding-top: 8px; }
 .screen .body { flex: 1; display: flex; flex-direction: column; gap: 14px; }
