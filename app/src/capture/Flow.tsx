@@ -6,7 +6,7 @@ import { buildReport } from "../engine.ts";
 import { getEvidenceCard } from "../data/cards.ts";
 import { flushOutbox } from "../data/reports.ts";
 import { newCapture } from "./capture.ts";
-import { Badges, Screen, Say } from "./ui.tsx";
+import { Screen, Say, TopBar } from "./ui.tsx";
 import Home from "./Home.tsx";
 import Consent from "./Consent.tsx";
 import Speak from "./Speak.tsx";
@@ -30,6 +30,8 @@ interface FlowState {
   report: Report | null;
   sealed: Report | null;
 }
+
+const STEP_NUMBER: Record<Step, number | null> = { home: null, consent: 1, speak: 2, confirm: 3, plot: 4, photos: 5, review: 6, share: 6 };
 
 const FRESH: FlowState = { step: "home", farm: "A", capture: null, candidates: [], report: null, sealed: null };
 
@@ -122,10 +124,7 @@ export default function Flow() {
 
   return (
     <div className="app">
-      <Badges demo={demo} />
-      {st.step !== "home" && (
-        <button className="home-btn" onClick={() => go("home")} aria-label="Home">⌂</button>
-      )}
+      <TopBar step={STEP_NUMBER[st.step]} total={6} demo={demo} onHome={st.step !== "home" ? () => go("home") : undefined} />
       {view}
     </div>
   );

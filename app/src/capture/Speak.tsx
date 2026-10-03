@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say } from "./ui.tsx";
+import { Screen, Say, Next } from "./ui.tsx";
+import { Icon } from "./icons.tsx";
 import { stopAudio } from "../lib/audio.ts";
 import { prepareAsr, transcribe } from "../ai/asr.ts";
 import { demoOn } from "../lib/geo.ts";
@@ -67,36 +68,42 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (c
     r?.stop();
   }
 
+  const mmss = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
   return (
     <Screen
-      step={2}
-      title="Eleza kuhusu shamba"
+      title="Eleza shamba lako"
       titleEn="Tell us about your farm"
-      footer={phase === "done" && (
-        <button className="big primary" onClick={() => result && onClaims(result.claims)}>Endelea →<span>Continue</span></button>
-      )}
+      footer={phase === "done" && result && <Next onClick={() => onClaims(result.claims)} />}
     >
       <Say ids={["CAPTURE_SPEAK"]} />
       {phase === "idle" && modelReady < 1 && (
-        <p className="working">Inaandaa… {Math.round(modelReady * 100)}% <span className="en">Preparing speech recognition on this phone</span></p>
+        <p className="working">Inaandaa… {Math.round(modelReady * 100)}%<span className="en">Preparing speech recognition on this phone</span></p>
       )}
       {phase === "idle" && modelReady >= 1 && !micBlocked && (
-        <button className="mic" onClick={start} aria-label="Record">🎙<span>Bonyeza uongee</span></button>
-      )}
-      {micBlocked && <p className="problem">⚠ {PROBLEM.mic_denied.sw}<span className="en">{PROBLEM.mic_denied.en}</span></p>}
-      {(phase === "idle" || micBlocked) && (
-        <button className="link" onClick={() => onClaims([])}>✍ Jaza kwa kugusa <span className="en">Fill in by tapping instead</span></button>
+        <>
+          <button className="mic" onClick={start} aria-label="Record"><Icon name="mic" size={56} /></button>
+          <p className="mic-caption">Gusa uongee<span className="en">Tap and speak for about two minutes</span></p>
+        </>
       )}
       {phase === "recording" && (
-        <button className="mic live" onClick={stop} aria-label="Stop">⏹<span>{seconds}s · Simamisha</span></button>
+        <>
+          <button className="mic live" onClick={stop} aria-label="Stop"><Icon name="stop" size={48} /></button>
+          <p className="timer">{mmss}</p>
+          <p className="mic-caption">Gusa kumaliza<span className="en">Tap when you are done</span></p>
+        </>
       )}
-      {phase === "working" && <p className="working">Inasikiliza… <span className="en">Listening on this phone…</span></p>}
+      {phase === "working" && <p className="working">Inasikiliza…<span className="en">Listening on this phone. Nothing is sent anywhere.</span></p>}
       {phase === "done" && result && (
         <div className="transcript">
-          <h3>Tumesikia: <span className="en">What we heard</span></h3>
+          <h3>Tumesikia<span className="en">What we heard</span></h3>
           <p>{result.transcript.text || "—"}</p>
           {result.claims.length === 0 && <p className="en">Nothing recognised. You can enter everything by tapping on the next screen.</p>}
         </div>
+      )}
+      {micBlocked && <p className="problem"><Icon name="warn" /><span>{PROBLEM.mic_denied.sw}<span className="en">{PROBLEM.mic_denied.en}</span></span></p>}
+      {(phase === "idle" || micBlocked) && (
+        <button className="link" onClick={() => onClaims([])}><Icon name="pen" size={20} />Jaza kwa kugusa<span className="en">Fill in by tapping instead</span></button>
       )}
     </Screen>
   );

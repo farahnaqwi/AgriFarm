@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say } from "./ui.tsx";
+import { Screen, Say, Next, Stamp } from "./ui.tsx";
+import { Icon } from "./icons.tsx";
 import { getPosition, getHeading, startCompass, demoOn, isLocationDenied } from "../lib/geo.ts";
 import { PROBLEM } from "./labels.ts";
 import { insidePlot } from "../lib/geometry.ts";
@@ -156,38 +157,43 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
     setBusy(false);
   }
 
+  const blocked = camera === "denied" || camera === "missing" || camera === "insecure";
+  const blockedText = camera === "insecure" ? PROBLEM.insecure : camera === "missing" ? PROBLEM.camera_missing : PROBLEM.camera_denied;
+
   return (
-    <Screen step={5} title="Picha" titleEn="Photos"
-      footer={<button className="big primary" disabled={photos.length < 2} onClick={onDone}>Endelea →<span>Continue</span></button>}>
+    <Screen title="Picha mbili" titleEn="Two photos, from inside your farm"
+      footer={<Next onClick={onDone} disabled={photos.length < 2} en={photos.length < 2 ? `${2 - photos.length} more photo${photos.length === 1 ? "" : "s"}` : "Continue"} />}>
       <Say key={say.join()} ids={say} />
       <div className="camera">
         <video ref={video} autoPlay playsInline muted hidden={camera !== "live"} />
-        {camera === "demo" && <div className="cam-demo">DEMO CAMERA<span className="en">Demo mode without a camera, so frames are generated.</span></div>}
-        {(camera === "denied" || camera === "missing" || camera === "insecure") && (
+        {camera === "demo" && <div className="cam-demo">DEMO CAMERA<span className="en">Demo mode without a camera: frames are generated.</span></div>}
+        {blocked && (
           <div className="cam-problem">
-            <b>📷 ⚠ {PROBLEM[`camera_${camera === "insecure" ? "denied" : camera}`].sw}</b>
-            <span className="en">{camera === "insecure" ? PROBLEM.insecure.en : PROBLEM[`camera_${camera}`].en}</span>
-            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>↻ Jaribu tena <span className="en">Try again</span></button>
+            <Icon name="warn" size={32} />
+            <span>{blockedText.sw}<span className="en">{blockedText.en}</span></span>
+            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>Jaribu tena · Try again</button>
           </div>
         )}
         {(canShoot || camera === "starting") && (
           <button className="shutter" disabled={busy || !canShoot} onClick={() => shoot()} aria-label="Take photo" />
         )}
       </div>
-      {problem && <p className="problem">⚠ {problem.sw}<span className="en">{problem.en}</span></p>}
-      <div className="thumbs">
-        {photos.map((p) => (
-          <figure key={p.photo_id}>
-            {thumbs[p.photo_id] ? <img src={thumbs[p.photo_id]} alt="" /> : <div className="ph" />}
-            <figcaption>
-              📍 ✓{p.freshness && (p.freshness.passed ? " ↻ ✓" : " ↻ ✗")}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      {problem && <p className="problem"><Icon name="warn" /><span>{problem.sw}<span className="en">{problem.en}</span></span></p>}
+      {photos.length > 0 && (
+        <div className="thumbs">
+          {photos.map((p) => (
+            <figure key={p.photo_id}>
+              {thumbs[p.photo_id] ? <img src={thumbs[p.photo_id]} alt="" /> : <div className="ph" />}
+              {p.freshness
+                ? <Stamp tone={p.freshness.passed ? "green" : "red"} tilt={-8}>{p.freshness.passed ? "Imegeuka ✓" : "Haijageuka"}</Stamp>
+                : <Stamp tone="green" tilt={-8}>Ndani ✓</Stamp>}
+            </figure>
+          ))}
+        </div>
+      )}
       {demoOn() && (
         <button className="link" onClick={() => shoot({ outside: true })} disabled={busy}>
-          Demo: try a photo 150 m outside the plot
+          <Icon name="pin" size={20} />Demo: photo from 150 m outside the plot
         </button>
       )}
     </Screen>

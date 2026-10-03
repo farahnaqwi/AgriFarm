@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { canPromptInstall, isIOS, isStandalone, onInstallChange, promptInstall } from "../lib/install.ts";
+import { Icon } from "./icons.tsx";
 
-/** Big "install" card on the home screen. Hidden once the app runs from the home-screen icon. */
+/** "Install on this phone": hidden once the app runs from the home-screen icon. */
 export default function Install() {
   const [canPrompt, setCanPrompt] = useState(canPromptInstall());
   const [standalone, setStandalone] = useState(isStandalone());
@@ -15,17 +16,19 @@ export default function Install() {
 
   if (canPrompt) {
     return (
-      <button className="big install" onClick={() => promptInstall()}>
-        📲 Weka kwenye simu<span>Install on this phone. Works without internet afterwards.</span>
+      <button className="link" onClick={() => promptInstall()}>
+        <Icon name="download" size={20} />Weka kwenye simu<span className="en">Install on this phone</span>
       </button>
     );
   }
 
   return (
     <p className="install-hint">
-      📲 {isIOS()
-        ? <>Bonyeza <b>Share</b> kisha <b>Add to Home Screen</b>.<span className="en">Tap Share, then "Add to Home Screen", to install.</span></>
-        : <>Fungua menyu ya kivinjari, chagua <b>Install app</b>.<span className="en">Open the browser menu and choose "Install app" or "Add to Home screen".</span></>}
+      <Icon name="download" size={20} />
+      <span>
+        {isIOS() ? <>Share → Add to Home Screen</> : <>Menyu → Install app</>}
+        <span className="en">{isIOS() ? "Install: tap Share, then \"Add to Home Screen\"." : "Install: open the browser menu, then \"Install app\"."}</span>
+      </span>
     </p>
   );
 }

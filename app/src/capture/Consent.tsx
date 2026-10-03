@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Screen, Say, YesNo } from "./ui.tsx";
+import { Screen, Say, YesNo, Next } from "./ui.tsx";
 import { CONSENT_SCOPE, now } from "./capture.ts";
 import type { Consent as ConsentRecord } from "../types/index.ts";
 
@@ -8,15 +8,14 @@ export default function Consent({ onAgree, onDecline }: { onAgree: (c: ConsentRe
 
   if (declined) {
     return (
-      <Screen step={1} title="Idhini" titleEn="Consent" footer={<button className="big" onClick={onDecline}>← Mwanzo<span>Home</span></button>}>
+      <Screen title="Sawa" titleEn="Okay" footer={<Next onClick={onDecline} sw="Mwanzo" en="Back to start" />}>
         <Say ids={["CONSENT_DECLINED"]} />
       </Screen>
     );
   }
 
   return (
-    <Screen step={1} title="Idhini" titleEn="Consent">
-      <Say ids={["CONSENT_INTRO", "CONSENT_PRIVACY", "CONSENT_DELETE", "CONSENT_ASK"]} />
+    <Screen title="Idhini yako" titleEn="Your permission" footer={
       <YesNo
         onYes={() =>
           onAgree({
@@ -30,6 +29,8 @@ export default function Consent({ onAgree, onDecline }: { onAgree: (c: ConsentRe
         }
         onNo={() => setDeclined(true)}
       />
+    }>
+      <Say ids={["CONSENT_INTRO", "CONSENT_PRIVACY", "CONSENT_DELETE", "CONSENT_ASK"]} />
     </Screen>
   );
 }
