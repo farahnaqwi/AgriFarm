@@ -1,0 +1,134 @@
+{
+  "version": "1.0.0",
+  "status": "DRAFT: every Swahili line must be checked by a native Tanzanian Swahili speaker before any audio is generated. Record the reviewer's name and the date in docs/DATA_SOURCES.md.",
+  "conventions": {
+    "slots": "Slots always come at the END of a Swahili phrase (Swahili puts the number after the noun), so audio = phrase clip + unit clip + number clip. English slot order may differ; English is on-screen text only.",
+    "noun_class": "Swahili numbers agree with the noun class. hekta/ekari/asilimia (N-class) use numbers_n; miaka (MI-class) uses numbers_mi. A naive template engine gets this wrong; that's why the two lists are kept separate.",
+    "rounding": "Area: nearest 0.5 (numbers_n + HALF). Percent: nearest 10 (tens). Years: harvest year of the season (2021/22 -> 2022).",
+    "audio_file": "app/public/audio/{lang}/{id}.mp3"
+  },
+  "phrases": [
+    { "id": "CONSENT_INTRO", "section": "consent", "en": "This app helps you make an evidence report about your farm. It records your voice, photos, and where your farm is.", "sw": "Programu hii inakusaidia kuandaa ripoti ya ushahidi kuhusu shamba lako. Inarekodi sauti yako, picha, na mahali shamba lako lilipo." },
+    { "id": "CONSENT_PRIVACY", "section": "consent", "en": "Nothing leaves this phone unless you agree. Your voice recording stays on this phone.", "sw": "Hakuna kitakachotoka kwenye simu hii bila idhini yako. Rekodi ya sauti yako inabaki kwenye simu hii." },
+    { "id": "CONSENT_ASK", "section": "consent", "en": "Do you agree? Tap the green button for yes, or the red button for no.", "sw": "Je, unakubali? Gusa kitufe cha kijani kusema ndiyo, au kitufe chekundu kusema hapana." },
+    { "id": "CONSENT_DELETE", "section": "consent", "en": "You can delete everything at any time.", "sw": "Unaweza kufuta kila kitu wakati wowote." },
+    { "id": "CONSENT_DECLINED", "section": "consent", "en": "Okay. Nothing was recorded.", "sw": "Sawa. Hakuna kilichorekodiwa." },
+
+    { "id": "CAPTURE_SPEAK", "section": "capture", "en": "Tell us about your farm: what you grow, how big it is, how long you have been in the cooperative, and any bad seasons.", "sw": "Tueleze kuhusu shamba lako: unalima nini, lina ukubwa gani, umekuwa mwanachama wa chama cha ushirika kwa muda gani, na misimu yoyote mibaya." },
+    { "id": "CAPTURE_CONFIRM", "section": "capture", "en": "Is this correct? Tap yes or no.", "sw": "Je, hii ni sahihi? Gusa ndiyo au hapana." },
+    { "id": "CAPTURE_WALK", "section": "capture", "en": "Walk along the edge of your farm. The phone will draw the boundary.", "sw": "Tembea kando ya mpaka wa shamba lako. Simu itachora mpaka huo." },
+    { "id": "CAPTURE_DRAW", "section": "capture", "en": "Or draw the boundary of your farm on the map with your finger.", "sw": "Au chora mpaka wa shamba lako kwenye ramani kwa kidole chako." },
+    { "id": "CAPTURE_PHOTO", "section": "capture", "en": "Stand inside your farm and take a photo of your crops.", "sw": "Simama ndani ya shamba lako na upige picha ya mazao yako." },
+    { "id": "CAPTURE_TURN", "section": "capture", "en": "Now turn around and take one more photo.", "sw": "Sasa geuka nyuma upige picha moja zaidi." },
+    { "id": "CAPTURE_OUTSIDE", "section": "capture", "en": "This photo is outside your farm boundary. Please go inside your farm and try again.", "sw": "Picha hii iko nje ya mpaka wa shamba lako. Tafadhali ingia ndani ya shamba ujaribu tena." },
+    { "id": "CAPTURE_NO_GPS", "section": "capture", "en": "The phone cannot find its location. Move to an open place and wait a moment.", "sw": "Simu haiwezi kupata mahali ilipo. Nenda mahali pa wazi na usubiri kidogo." },
+    { "id": "CAPTURE_DONE", "section": "capture", "en": "Thank you. Your report is being prepared on this phone.", "sw": "Asante. Ripoti yako inaandaliwa kwenye simu hii." },
+
+    { "id": "REVIEW_INTRO", "section": "review", "en": "This is your evidence report. Listen to it, then decide if you want to share it.", "sw": "Hii ni ripoti yako ya ushahidi. Isikilize, kisha uamue kama unataka kuishiriki." },
+
+    { "id": "RESULT_MACHINE", "section": "result", "en": "Satellite or weather records agree with this.", "sw": "Kumbukumbu za satelaiti au hali ya hewa zinakubaliana na hili." },
+    { "id": "RESULT_COOP", "section": "result", "en": "Your cooperative has confirmed this.", "sw": "Chama chako cha ushirika kimethibitisha hili." },
+    { "id": "RESULT_OFFICER", "section": "result", "en": "Your extension officer has confirmed this.", "sw": "Afisa ugani wako amethibitisha hili." },
+    { "id": "RESULT_CONTRADICTED", "section": "result", "en": "The records do not agree with this. The loan officer may ask you about it.", "sw": "Kumbukumbu hazikubaliani na hili. Afisa mikopo anaweza kukuuliza kuhusu hili." },
+    { "id": "RESULT_UNVERIFIABLE", "section": "result", "en": "This could not be checked. It stays as your own statement.", "sw": "Hili halikuweza kukaguliwa. Linabaki kuwa maelezo yako mwenyewe." },
+
+    { "id": "CROP_SAID_COFFEE", "section": "crop", "en": "You said you grow coffee.", "sw": "Ulisema unalima kahawa." },
+    { "id": "CROP_SAID_MAIZE", "section": "crop", "en": "You said you grow maize.", "sw": "Ulisema unalima mahindi." },
+    { "id": "CROP_SAID_COFFEE_BANANA", "section": "crop", "en": "You said you grow coffee with bananas.", "sw": "Ulisema unalima kahawa pamoja na migomba." },
+    { "id": "CROP_SAT_COFFEE", "section": "crop", "en": "Satellite pictures of your farm look like coffee, which stays green all year.", "sw": "Picha za satelaiti za shamba lako zinaonekana kama kahawa, ambayo hubaki kijani mwaka mzima." },
+    { "id": "CROP_SAT_SEASONAL", "section": "crop", "en": "Satellite pictures of your farm look like a seasonal crop such as maize, not coffee.", "sw": "Picha za satelaiti za shamba lako zinaonekana kama zao la msimu kama mahindi, si kahawa." },
+    { "id": "CROP_SAT_UNSURE", "section": "crop", "en": "Satellite pictures are not clear enough to tell which crop is on your farm.", "sw": "Picha za satelaiti hazionyeshi wazi zao lililopo shambani kwako." },
+    { "id": "PHOTO_COFFEE", "section": "photo", "en": "Your photos appear to show coffee plants.", "sw": "Picha zako zinaonekana kuonyesha mimea ya kahawa." },
+    { "id": "PHOTO_NOT_COFFEE", "section": "photo", "en": "Your photos do not appear to show coffee plants.", "sw": "Picha zako hazionekani kuonyesha mimea ya kahawa." },
+    { "id": "PHOTO_INSIDE", "section": "photo", "en": "All your photos were taken inside your farm.", "sw": "Picha zako zote zilipigwa ndani ya shamba lako." },
+    { "id": "PHOTO_DUPLICATE", "section": "photo", "en": "One photo looks the same as a photo in another report. A person will check this.", "sw": "Picha moja inafanana na picha iliyo kwenye ripoti nyingine. Mtu atakagua hili." },
+
+    { "id": "AREA_SAID", "section": "area", "slots": ["unit", "number_n"], "en": "You said your farm is {number} {unit}.", "sw": "Ulisema shamba lako lina {unit} {number}." },
+    { "id": "AREA_MAP", "section": "area", "slots": ["unit", "number_n"], "en": "The farm you drew on the map is about {number} {unit}.", "sw": "Shamba ulilochora kwenye ramani lina takriban {unit} {number}." },
+
+    { "id": "SEASON_SAID", "section": "season", "slots": ["year"], "en": "You said the bad season was in {year}.", "sw": "Ulisema msimu mbaya ulikuwa mwaka {year}." },
+    { "id": "RAIN_DRY", "section": "season", "slots": ["tens"], "en": "Rainfall records show that season had about {percent} percent less rain than normal.", "sw": "Kumbukumbu za mvua zinaonyesha msimu huo ulikuwa na mvua chache kuliko kawaida, kwa takriban asilimia {percent}." },
+    { "id": "RAIN_NORMAL", "section": "season", "en": "Rainfall was normal that season, so the cause may be something else, like pests, disease, or soil. Your extension officer can help find out.", "sw": "Mvua zilikuwa za kawaida msimu huo, kwa hiyo sababu inaweza kuwa nyingine, kama wadudu, magonjwa au udongo. Afisa ugani anaweza kukusaidia kujua sababu." },
+    { "id": "HEAT_HIGH", "section": "season", "en": "That season was also hotter than normal.", "sw": "Msimu huo pia ulikuwa na joto kuliko kawaida." },
+
+    { "id": "COOP_SAID", "section": "membership", "slots": ["number_mi"], "en": "You said you have been a cooperative member for {number} years.", "sw": "Ulisema umekuwa mwanachama wa chama cha ushirika kwa miaka {number}.", "note": "number = 1 needs 'kwa mwaka mmoja'; use COOP_SAID_ONE." },
+    { "id": "COOP_SAID_ONE", "section": "membership", "en": "You said you have been a cooperative member for one year.", "sw": "Ulisema umekuwa mwanachama wa chama cha ushirika kwa mwaka mmoja." },
+    { "id": "HARVEST_SAID", "section": "harvest", "en": "You told us how much coffee you delivered last season.", "sw": "Ulituambia kiasi cha kahawa ulichowasilisha msimu uliopita.", "note": "Quantity shown on screen only; no number clips above 20." },
+
+    { "id": "OWNERSHIP_NOT_SHOWN", "section": "ownership", "en": "This report does not show who owns the land.", "sw": "Ripoti hii haionyeshi nani anamiliki ardhi hii." },
+    { "id": "OWNERSHIP_HOW", "section": "ownership", "en": "To show this, your cooperative can co-sign, or you can add a land document.", "sw": "Ili kuonyesha hili, chama chako kinaweza kusaini, au unaweza kuongeza hati ya ardhi." },
+
+    { "id": "SOIL_ACIDIC", "section": "context", "en": "Soil maps suggest your soil may be acidic. This is only an estimate. Ask your extension officer before buying anything.", "sw": "Ramani za udongo zinaonyesha kwamba udongo wako unaweza kuwa na tindikali. Haya ni makadirio tu. Muulize afisa ugani kabla ya kununua chochote." },
+
+    { "id": "NOT_SURE", "section": "failsafe", "en": "We are not sure about some parts of this report. Please talk to your extension officer or cooperative before sharing it.", "sw": "Hatuna uhakika kuhusu baadhi ya sehemu za ripoti hii. Tafadhali zungumza na afisa ugani au chama chako kabla ya kuishiriki." },
+    { "id": "DISCLAIMER", "section": "failsafe", "en": "This report is evidence, not a guarantee. It does not approve or refuse a loan. A person will decide.", "sw": "Ripoti hii ni ushahidi, si hakikisho. Haikubali wala haikatai mkopo. Mtu ndiye atakayeamua." },
+    { "id": "SITE_VISIT", "section": "failsafe", "en": "The loan officer may visit your farm to check.", "sw": "Afisa mikopo anaweza kutembelea shamba lako ili kukagua." },
+
+    { "id": "SHARE_ASK", "section": "share", "en": "Do you want to share this report with the loan officer? Tap the green button for yes, or the red button for no.", "sw": "Je, unataka kushiriki ripoti hii na afisa mikopo? Gusa kitufe cha kijani kusema ndiyo, au kitufe chekundu kusema hapana." },
+    { "id": "SHARE_DONE", "section": "share", "en": "The report is sealed. Show this code to the loan officer.", "sw": "Ripoti imefungwa. Mwonyeshe afisa mikopo msimbo huu." },
+    { "id": "SHARE_DECLINED", "section": "share", "en": "The report was not shared. It stays on this phone.", "sw": "Ripoti haijashirikiwa. Inabaki kwenye simu hii." },
+    { "id": "DELETE_DONE", "section": "share", "en": "Everything has been deleted from this phone.", "sw": "Kila kitu kimefutwa kwenye simu hii." },
+    { "id": "REPLAY", "section": "share", "en": "Tap here to listen again.", "sw": "Gusa hapa kusikiliza tena." }
+  ],
+
+  "units": [
+    { "id": "U_HA", "en": "hectares", "sw": "hekta" },
+    { "id": "U_ACRE", "en": "acres", "sw": "ekari" }
+  ],
+
+  "numbers_n": [
+    { "id": "N_1", "value": 1, "sw": "moja" }, { "id": "N_2", "value": 2, "sw": "mbili" }, { "id": "N_3", "value": 3, "sw": "tatu" },
+    { "id": "N_4", "value": 4, "sw": "nne" }, { "id": "N_5", "value": 5, "sw": "tano" }, { "id": "N_6", "value": 6, "sw": "sita" },
+    { "id": "N_7", "value": 7, "sw": "saba" }, { "id": "N_8", "value": 8, "sw": "nane" }, { "id": "N_9", "value": 9, "sw": "tisa" },
+    { "id": "N_10", "value": 10, "sw": "kumi" }, { "id": "N_11", "value": 11, "sw": "kumi na moja" }, { "id": "N_12", "value": 12, "sw": "kumi na mbili" },
+    { "id": "N_13", "value": 13, "sw": "kumi na tatu" }, { "id": "N_14", "value": 14, "sw": "kumi na nne" }, { "id": "N_15", "value": 15, "sw": "kumi na tano" },
+    { "id": "N_16", "value": 16, "sw": "kumi na sita" }, { "id": "N_17", "value": 17, "sw": "kumi na saba" }, { "id": "N_18", "value": 18, "sw": "kumi na nane" },
+    { "id": "N_19", "value": 19, "sw": "kumi na tisa" }, { "id": "N_20", "value": 20, "sw": "ishirini" },
+    { "id": "N_HALF_ONLY", "value": 0.5, "sw": "nusu" },
+    { "id": "N_AND_HALF", "value": "+0.5", "sw": "na nusu", "note": "Appended after a whole number: mbili na nusu = 2.5" }
+  ],
+
+  "numbers_mi": [
+    { "id": "MI_2", "value": 2, "sw": "miwili" }, { "id": "MI_3", "value": 3, "sw": "mitatu" }, { "id": "MI_4", "value": 4, "sw": "minne" },
+    { "id": "MI_5", "value": 5, "sw": "mitano" }, { "id": "MI_6", "value": 6, "sw": "sita" }, { "id": "MI_7", "value": 7, "sw": "saba" },
+    { "id": "MI_8", "value": 8, "sw": "minane" }, { "id": "MI_9", "value": 9, "sw": "tisa" }, { "id": "MI_10", "value": 10, "sw": "kumi" },
+    { "id": "MI_11", "value": 11, "sw": "kumi na moja" }, { "id": "MI_12", "value": 12, "sw": "kumi na miwili" }, { "id": "MI_13", "value": 13, "sw": "kumi na mitatu" },
+    { "id": "MI_14", "value": 14, "sw": "kumi na minne" }, { "id": "MI_15", "value": 15, "sw": "kumi na mitano" }, { "id": "MI_16", "value": 16, "sw": "kumi na sita" },
+    { "id": "MI_17", "value": 17, "sw": "kumi na saba" }, { "id": "MI_18", "value": 18, "sw": "kumi na minane" }, { "id": "MI_19", "value": 19, "sw": "kumi na tisa" },
+    { "id": "MI_20", "value": 20, "sw": "ishirini" }
+  ],
+
+  "tens": [
+    { "id": "T_10", "value": 10, "sw": "kumi" }, { "id": "T_20", "value": 20, "sw": "ishirini" }, { "id": "T_30", "value": 30, "sw": "thelathini" },
+    { "id": "T_40", "value": 40, "sw": "arobaini" }, { "id": "T_50", "value": 50, "sw": "hamsini" }, { "id": "T_60", "value": 60, "sw": "sitini" },
+    { "id": "T_70", "value": 70, "sw": "sabini" }, { "id": "T_80", "value": 80, "sw": "themanini" }, { "id": "T_90", "value": 90, "sw": "tisini" }
+  ],
+
+  "years": [
+    { "id": "Y_2017", "value": 2017, "sw": "elfu mbili na kumi na saba" },
+    { "id": "Y_2018", "value": 2018, "sw": "elfu mbili na kumi na nane" },
+    { "id": "Y_2019", "value": 2019, "sw": "elfu mbili na kumi na tisa" },
+    { "id": "Y_2020", "value": 2020, "sw": "elfu mbili na ishirini" },
+    { "id": "Y_2021", "value": 2021, "sw": "elfu mbili na ishirini na moja" },
+    { "id": "Y_2022", "value": 2022, "sw": "elfu mbili na ishirini na mbili" },
+    { "id": "Y_2023", "value": 2023, "sw": "elfu mbili na ishirini na tatu" },
+    { "id": "Y_2024", "value": 2024, "sw": "elfu mbili na ishirini na nne" },
+    { "id": "Y_2025", "value": 2025, "sw": "elfu mbili na ishirini na tano" },
+    { "id": "Y_2026", "value": 2026, "sw": "elfu mbili na ishirini na sita" }
+  ],
+
+  "lender_only": [
+    { "id": "LIMIT_ownership_not_shown", "en": "Ownership is not shown. Satellites cannot see land rights; only a cooperative co-sign or a land document can." },
+    { "id": "LIMIT_gps_can_be_spoofed", "en": "GPS location can be faked on some phones. Freshness photos and satellite history reduce, but do not remove, this risk." },
+    { "id": "LIMIT_photos_can_be_faked", "en": "In-app camera only, but a modified phone could inject images. A site visit is the backstop." },
+    { "id": "LIMIT_rainfall_is_5km_average", "en": "Rainfall is a ~5 km satellite-gauge estimate (CHIRPS), not a gauge on this farm." },
+    { "id": "LIMIT_temperature_is_50km_average", "en": "Temperature anomalies come from a ~50 km grid cell (NASA POWER); absolute values do not reflect farm elevation." },
+    { "id": "LIMIT_satellite_misses_shaded_or_intercropped_coffee", "en": "10 m satellite pixels blend coffee with shade trees, bananas, and paths. Young coffee (under ~3 years) is hard to tell from bare ground." },
+    { "id": "LIMIT_soil_values_are_model_estimates", "en": "Soil values are model predictions (iSDAsoil), not lab tests of this farm." },
+    { "id": "LIMIT_speech_recognition_can_mishear", "en": "Speech recognition can mishear. The farmer confirmed every value by tapping before it entered the report." },
+    { "id": "LIMIT_yield_not_measured", "en": "Yield is not measured. Delivered quantities are only as reliable as the cooperative's records." },
+    { "id": "LENDER_CONTRADICTION_PROMPT", "en": "{n} claim(s) do not match independent records. Consider a site visit before deciding." },
+    { "id": "LENDER_UNALTERED", "en": "Unaltered: this report matches the code the farmer approved." },
+    { "id": "LENDER_ALTERED", "en": "Does not match: this report differs from what the farmer approved. Do not rely on it." }
+  ]
+}

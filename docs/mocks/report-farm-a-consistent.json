@@ -1,0 +1,897 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "ER-TZ-MBZ-A001-20261003",
+  "created_at": "2026-10-03T09:58:00+03:00",
+  "provenance": {
+    "mode": "mock",
+    "app_version": "0.0.0-mock",
+    "device_id_hash": "13c8849d879b732d7ab905e667ecc9e647dd171cb6c1cdf499db8bec1eb761a8",
+    "notes": "MOCK: invented values and placeholder geometry near Vwawa, Mbozi DC. Replace with ML lead's evidence card for demo plot A."
+  },
+  "farmer_language": "sw",
+  "farmer": {
+    "farmer_id": "F-NOOR01",
+    "display_name": "Noor (fictional)",
+    "cooperative_name": "Ondera Highlands Coffee AMCOS (fictional)"
+  },
+  "consent": {
+    "given": true,
+    "recorded_at": "2026-10-03T09:02:10+03:00",
+    "method": "tap",
+    "phrase_id": "CONSENT_ASK",
+    "scope": [
+      "record_voice",
+      "capture_photos",
+      "capture_location",
+      "use_satellite_and_weather",
+      "share_report_with_lender",
+      "share_name"
+    ],
+    "raw_audio_retention": "deleted_after_extraction",
+    "reviewed_report_audio": true,
+    "approved_for_sharing": true,
+    "approved_at": "2026-10-03T09:57:30+03:00"
+  },
+  "plot": {
+    "plot_id": "P-MBZ-A001",
+    "country": "TZ",
+    "admin_area": "Mbozi District, Songwe Region",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            32.8945,
+            -9.0712
+          ],
+          [
+            32.895937,
+            -9.071092
+          ],
+          [
+            32.896001,
+            -9.072267
+          ],
+          [
+            32.894555,
+            -9.072384
+          ],
+          [
+            32.8945,
+            -9.0712
+          ]
+        ]
+      ]
+    },
+    "geometry_source": "gps_walk_and_drawn",
+    "captured_at": "2026-10-03T09:21:40+03:00",
+    "area_ha": 2.09,
+    "centroid": [
+      32.895248,
+      -9.071736
+    ],
+    "overlap": {
+      "checked": true,
+      "overlapping_plot_count": 0,
+      "max_overlap_fraction": 0
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "c1",
+      "field": "crop_type",
+      "value": "coffee",
+      "unit": null,
+      "value_as_spoken": "nalima kahawa",
+      "value_normalized": null,
+      "tier": "machine_verified",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:04.1-00:07.9",
+        "quote": "Mimi nalima kahawa tu.",
+        "asr_confidence": 0.83,
+        "confirmed_by_farmer": true
+      },
+      "confidence": 0.91,
+      "status": "consistent",
+      "checks": [
+        {
+          "rule_id": "R-CROP-01",
+          "against": "sentinel2_ndvi_classifier",
+          "expected": "coffee",
+          "observed": {
+            "predicted_class": "coffee",
+            "p": 0.91
+          },
+          "result": "consistent",
+          "phrase_id": "CROP_SAT_COFFEE"
+        },
+        {
+          "rule_id": "R-CROP-02",
+          "against": "photo_crop_check",
+          "expected": "coffee",
+          "observed": {
+            "photos": 2,
+            "coffee": 2,
+            "not_coffee": 0,
+            "uncertain": 0
+          },
+          "result": "consistent",
+          "phrase_id": "PHOTO_COFFEE"
+        }
+      ],
+      "attestation_refs": [],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c2",
+      "field": "plot_area",
+      "value": 5,
+      "unit": "acre",
+      "value_as_spoken": "ekari tano",
+      "value_normalized": {
+        "value": 2.02,
+        "unit": "ha"
+      },
+      "tier": "machine_verified",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:11.0-00:14.6",
+        "quote": "Shamba langu lina ekari tano.",
+        "asr_confidence": 0.79,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "consistent",
+      "checks": [
+        {
+          "rule_id": "R-AREA-01",
+          "against": "polygon_area",
+          "expected": {
+            "ha": 2.02
+          },
+          "observed": {
+            "ha": 2.09,
+            "ratio": 0.97
+          },
+          "result": "consistent",
+          "phrase_id": "AREA_MAP"
+        }
+      ],
+      "attestation_refs": [],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c3",
+      "field": "cooperative_membership_years",
+      "value": 11,
+      "unit": "years",
+      "value_as_spoken": "miaka kumi na moja",
+      "value_normalized": null,
+      "tier": "attested",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:19.2-00:23.0",
+        "quote": "Nimekuwa mwanachama miaka kumi na moja.",
+        "asr_confidence": 0.81,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "consistent",
+      "checks": [],
+      "attestation_refs": [
+        "a1"
+      ],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c4",
+      "field": "bad_season",
+      "value": "2021/22",
+      "unit": null,
+      "value_as_spoken": "mwaka elfu mbili ishirini na mbili mvua zilikuwa chache",
+      "value_normalized": null,
+      "tier": "machine_verified",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:31.5-00:38.2",
+        "quote": "Mwaka elfu mbili ishirini na mbili mvua zilikuwa chache sana.",
+        "asr_confidence": 0.72,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "consistent",
+      "checks": [
+        {
+          "rule_id": "R-RAIN-01",
+          "against": "chirps_rainfall",
+          "expected": "below_normal",
+          "observed": {
+            "season": "2021/22",
+            "anomaly_pct": -26.5,
+            "percentile": 9
+          },
+          "result": "consistent",
+          "phrase_id": "RAIN_DRY"
+        }
+      ],
+      "attestation_refs": [],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c5",
+      "field": "bad_season",
+      "value": "2024/25",
+      "unit": null,
+      "value_as_spoken": "mwaka jana mavuno yalishuka",
+      "value_normalized": null,
+      "tier": "self_reported",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:41.0-00:46.4",
+        "quote": "Mwaka jana mavuno yalishuka, sijui kwa nini.",
+        "asr_confidence": 0.77,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "unverifiable",
+      "checks": [
+        {
+          "rule_id": "R-RAIN-01",
+          "against": "chirps_rainfall",
+          "expected": "below_normal",
+          "observed": {
+            "season": "2024/25",
+            "anomaly_pct": 2.2,
+            "percentile": 56
+          },
+          "result": "inconclusive",
+          "phrase_id": "RAIN_NORMAL"
+        }
+      ],
+      "attestation_refs": [],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c6",
+      "field": "last_harvest_delivered",
+      "value": 680,
+      "unit": "kg_parchment",
+      "value_as_spoken": "kilo mia sita themanini",
+      "value_normalized": null,
+      "tier": "attested",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:00:52.3-00:57.0",
+        "quote": "Niliwasilisha kilo mia sita themanini za kahawa ya maganda.",
+        "asr_confidence": 0.69,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "consistent",
+      "checks": [],
+      "attestation_refs": [
+        "a1"
+      ],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    },
+    {
+      "claim_id": "c7",
+      "field": "land_tenure",
+      "value": "customary_undocumented",
+      "unit": null,
+      "value_as_spoken": "shamba la urithi",
+      "value_normalized": null,
+      "tier": "self_reported",
+      "source": {
+        "type": "farmer_voice",
+        "ref": "audio:01:03.8-01:06.1",
+        "quote": "Ni shamba la urithi.",
+        "asr_confidence": 0.84,
+        "confirmed_by_farmer": true
+      },
+      "confidence": null,
+      "status": "unverifiable",
+      "checks": [],
+      "attestation_refs": [],
+      "timestamp": "2026-10-03T09:05:12+03:00"
+    }
+  ],
+  "attestations": [
+    {
+      "attestation_id": "a1",
+      "role": "cooperative",
+      "org_name": "Ondera Highlands Coffee AMCOS (fictional)",
+      "method": "in_app_cosign",
+      "signed_at": "2026-10-03T09:50:00+03:00",
+      "covers_claims": [
+        "c3",
+        "c6"
+      ],
+      "note": "Membership register and 2025 delivery ledger."
+    }
+  ],
+  "evidence_summary": {
+    "evidence_card_id": "EC-P-MBZ-A001-20261001",
+    "computed_at": "2026-10-01T06:00:00Z",
+    "ndvi": {
+      "source": "Sentinel-2 L2A (COPERNICUS/S2_SR_HARMONIZED), B4/B8, SCL cloud mask, monthly median",
+      "period_start": "2024-10-01",
+      "period_end": "2026-09-30",
+      "months_total": 24,
+      "months_cloud_free": 20,
+      "pixels_in_plot": 183,
+      "monthly": [
+        {
+          "month": "2024-10",
+          "ndvi": 0.57
+        },
+        {
+          "month": "2024-11",
+          "ndvi": 0.58
+        },
+        {
+          "month": "2024-12",
+          "ndvi": 0.63
+        },
+        {
+          "month": "2025-01",
+          "ndvi": null
+        },
+        {
+          "month": "2025-02",
+          "ndvi": 0.71
+        },
+        {
+          "month": "2025-03",
+          "ndvi": null
+        },
+        {
+          "month": "2025-04",
+          "ndvi": 0.72
+        },
+        {
+          "month": "2025-05",
+          "ndvi": 0.69
+        },
+        {
+          "month": "2025-06",
+          "ndvi": 0.65
+        },
+        {
+          "month": "2025-07",
+          "ndvi": 0.62
+        },
+        {
+          "month": "2025-08",
+          "ndvi": 0.6
+        },
+        {
+          "month": "2025-09",
+          "ndvi": 0.58
+        },
+        {
+          "month": "2025-10",
+          "ndvi": 0.56
+        },
+        {
+          "month": "2025-11",
+          "ndvi": 0.59
+        },
+        {
+          "month": "2025-12",
+          "ndvi": null
+        },
+        {
+          "month": "2026-01",
+          "ndvi": 0.7
+        },
+        {
+          "month": "2026-02",
+          "ndvi": null
+        },
+        {
+          "month": "2026-03",
+          "ndvi": 0.73
+        },
+        {
+          "month": "2026-04",
+          "ndvi": 0.72
+        },
+        {
+          "month": "2026-05",
+          "ndvi": 0.7
+        },
+        {
+          "month": "2026-06",
+          "ndvi": 0.66
+        },
+        {
+          "month": "2026-07",
+          "ndvi": 0.63
+        },
+        {
+          "month": "2026-08",
+          "ndvi": 0.61
+        },
+        {
+          "month": "2026-09",
+          "ndvi": 0.59
+        }
+      ],
+      "dry_season_mean": 0.6,
+      "wet_season_peak": 0.73,
+      "classifier": {
+        "model_id": "ndvi-crop-v0-mock",
+        "predicted_class": "coffee",
+        "probabilities": {
+          "coffee": 0.91,
+          "seasonal_crop": 0.05,
+          "other": 0.04
+        },
+        "heldout_accuracy": null,
+        "heldout_n_fields": null
+      }
+    },
+    "rainfall": {
+      "source": "CHIRPS v2.0 daily, 0.05 deg",
+      "season_window": "Nov-Apr",
+      "baseline_period": "1991-2020",
+      "seasons": [
+        {
+          "season": "2021/22",
+          "total_mm": 742,
+          "baseline_mean_mm": 1010,
+          "anomaly_pct": -26.5,
+          "percentile": 9
+        },
+        {
+          "season": "2022/23",
+          "total_mm": 968,
+          "baseline_mean_mm": 1010,
+          "anomaly_pct": -4.2,
+          "percentile": 41
+        },
+        {
+          "season": "2023/24",
+          "total_mm": 1121,
+          "baseline_mean_mm": 1010,
+          "anomaly_pct": 11,
+          "percentile": 74
+        },
+        {
+          "season": "2024/25",
+          "total_mm": 1032,
+          "baseline_mean_mm": 1010,
+          "anomaly_pct": 2.2,
+          "percentile": 56
+        }
+      ]
+    },
+    "temperature": {
+      "source": "NASA POWER daily T2M_MAX (MERRA-2, 0.5 x 0.625 deg)",
+      "seasons": [
+        {
+          "season": "2021/22",
+          "mean_tmax_anomaly_c": 0.8
+        },
+        {
+          "season": "2024/25",
+          "mean_tmax_anomaly_c": 0.3
+        }
+      ]
+    },
+    "soil": {
+      "source": "iSDAsoil v1 (30 m)",
+      "depth_cm": "0-20",
+      "ph": 5.1,
+      "organic_carbon_g_kg": 18.4,
+      "nitrogen_total_g_kg": 1.4,
+      "is_model_estimate": true
+    },
+    "photos": [
+      {
+        "photo_id": "ph1",
+        "captured_at": "2026-10-03T09:33:05+03:00",
+        "lat": -9.07155,
+        "lon": 32.89521,
+        "gps_accuracy_m": 6,
+        "heading_deg": 40,
+        "inside_plot": true,
+        "phash": "c3a1e09f5b2d7184",
+        "duplicate_of": null,
+        "freshness": null,
+        "crop_check": {
+          "model_id": "crop-photo-v0-mock",
+          "label": "coffee",
+          "probability": 0.88
+        }
+      },
+      {
+        "photo_id": "ph2",
+        "captured_at": "2026-10-03T09:33:24+03:00",
+        "lat": -9.07156,
+        "lon": 32.8952,
+        "gps_accuracy_m": 6,
+        "heading_deg": 218,
+        "inside_plot": true,
+        "phash": "1f7e8a40c95d3b62",
+        "duplicate_of": null,
+        "freshness": {
+          "challenge": "turn_around",
+          "paired_photo_id": "ph1",
+          "heading_delta_deg": 178,
+          "seconds_elapsed": 19,
+          "passed": true
+        },
+        "crop_check": {
+          "model_id": "crop-photo-v0-mock",
+          "label": "coffee",
+          "probability": 0.84
+        }
+      }
+    ],
+    "tally": {
+      "self_reported": 2,
+      "machine_verified": 3,
+      "attested": 2,
+      "consistent": 5,
+      "contradicted": 0,
+      "unverifiable": 2
+    }
+  },
+  "narrative": [
+    {
+      "sentence_id": "s1",
+      "phrase_id": "REVIEW_INTRO",
+      "generated_by": "template",
+      "text": {
+        "en": "This is your evidence report. Listen to it, then decide if you want to share it.",
+        "sw": "Hii ni ripoti yako ya ushahidi. Isikilize, kisha uamue kama unataka kuishiriki."
+      },
+      "claim_refs": [],
+      "audio_clips": [
+        "REVIEW_INTRO"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s2",
+      "phrase_id": "CROP_SAID_COFFEE",
+      "generated_by": "template",
+      "text": {
+        "en": "You said you grow coffee.",
+        "sw": "Ulisema unalima kahawa."
+      },
+      "claim_refs": [
+        "c1"
+      ],
+      "audio_clips": [
+        "CROP_SAID_COFFEE"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s3",
+      "phrase_id": "CROP_SAT_COFFEE",
+      "generated_by": "template",
+      "text": {
+        "en": "Satellite pictures of your farm look like coffee, which stays green all year.",
+        "sw": "Picha za satelaiti za shamba lako zinaonekana kama kahawa, ambayo hubaki kijani mwaka mzima."
+      },
+      "claim_refs": [
+        "c1"
+      ],
+      "audio_clips": [
+        "CROP_SAT_COFFEE"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s4",
+      "phrase_id": "PHOTO_COFFEE",
+      "generated_by": "template",
+      "text": {
+        "en": "Your photos appear to show coffee plants.",
+        "sw": "Picha zako zinaonekana kuonyesha mimea ya kahawa."
+      },
+      "claim_refs": [
+        "c1"
+      ],
+      "audio_clips": [
+        "PHOTO_COFFEE"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s5",
+      "phrase_id": "AREA_SAID",
+      "generated_by": "template",
+      "slots": {
+        "unit": "acre",
+        "number": 5
+      },
+      "text": {
+        "en": "You said your farm is 5 acres.",
+        "sw": "Ulisema shamba lako lina ekari tano."
+      },
+      "claim_refs": [
+        "c2"
+      ],
+      "audio_clips": [
+        "AREA_SAID",
+        "U_ACRE",
+        "N_5"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s6",
+      "phrase_id": "AREA_MAP",
+      "generated_by": "template",
+      "slots": {
+        "unit": "ha",
+        "number": 2
+      },
+      "text": {
+        "en": "The farm you drew on the map is about 2 hectares.",
+        "sw": "Shamba ulilochora kwenye ramani lina takriban hekta mbili."
+      },
+      "claim_refs": [
+        "c2"
+      ],
+      "audio_clips": [
+        "AREA_MAP",
+        "U_HA",
+        "N_2"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s7",
+      "phrase_id": "RESULT_MACHINE",
+      "generated_by": "template",
+      "text": {
+        "en": "Satellite or weather records agree with this.",
+        "sw": "Kumbukumbu za satelaiti au hali ya hewa zinakubaliana na hili."
+      },
+      "claim_refs": [
+        "c2"
+      ],
+      "audio_clips": [
+        "RESULT_MACHINE"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s8",
+      "phrase_id": "COOP_SAID",
+      "generated_by": "template",
+      "slots": {
+        "number": 11
+      },
+      "text": {
+        "en": "You said you have been a cooperative member for 11 years.",
+        "sw": "Ulisema umekuwa mwanachama wa chama cha ushirika kwa miaka kumi na moja."
+      },
+      "claim_refs": [
+        "c3"
+      ],
+      "audio_clips": [
+        "COOP_SAID",
+        "MI_11"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s9",
+      "phrase_id": "RESULT_COOP",
+      "generated_by": "template",
+      "text": {
+        "en": "Your cooperative has confirmed this.",
+        "sw": "Chama chako cha ushirika kimethibitisha hili."
+      },
+      "claim_refs": [
+        "c3"
+      ],
+      "audio_clips": [
+        "RESULT_COOP"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s10",
+      "phrase_id": "SEASON_SAID",
+      "generated_by": "template",
+      "slots": {
+        "year": 2022
+      },
+      "text": {
+        "en": "You said the bad season was in 2022.",
+        "sw": "Ulisema msimu mbaya ulikuwa mwaka elfu mbili na ishirini na mbili."
+      },
+      "claim_refs": [
+        "c4"
+      ],
+      "audio_clips": [
+        "SEASON_SAID",
+        "Y_2022"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s11",
+      "phrase_id": "RAIN_DRY",
+      "generated_by": "template",
+      "slots": {
+        "percent": 30
+      },
+      "text": {
+        "en": "Rainfall records show that season had about 30 percent less rain than normal.",
+        "sw": "Kumbukumbu za mvua zinaonyesha msimu huo ulikuwa na mvua chache kuliko kawaida, kwa takriban asilimia thelathini."
+      },
+      "claim_refs": [
+        "c4"
+      ],
+      "audio_clips": [
+        "RAIN_DRY",
+        "T_30"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s12",
+      "phrase_id": "SEASON_SAID",
+      "generated_by": "template",
+      "slots": {
+        "year": 2025
+      },
+      "text": {
+        "en": "You said the bad season was in 2025.",
+        "sw": "Ulisema msimu mbaya ulikuwa mwaka elfu mbili na ishirini na tano."
+      },
+      "claim_refs": [
+        "c5"
+      ],
+      "audio_clips": [
+        "SEASON_SAID",
+        "Y_2025"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s13",
+      "phrase_id": "RAIN_NORMAL",
+      "generated_by": "template",
+      "text": {
+        "en": "Rainfall was normal that season, so the cause may be something else, like pests, disease, or soil. Your extension officer can help find out.",
+        "sw": "Mvua zilikuwa za kawaida msimu huo, kwa hiyo sababu inaweza kuwa nyingine, kama wadudu, magonjwa au udongo. Afisa ugani anaweza kukusaidia kujua sababu."
+      },
+      "claim_refs": [
+        "c5"
+      ],
+      "audio_clips": [
+        "RAIN_NORMAL"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s14",
+      "phrase_id": "SOIL_ACIDIC",
+      "generated_by": "template",
+      "text": {
+        "en": "Soil maps suggest your soil may be acidic. This is only an estimate. Ask your extension officer before buying anything.",
+        "sw": "Ramani za udongo zinaonyesha kwamba udongo wako unaweza kuwa na tindikali. Haya ni makadirio tu. Muulize afisa ugani kabla ya kununua chochote."
+      },
+      "claim_refs": [],
+      "audio_clips": [
+        "SOIL_ACIDIC"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s15",
+      "phrase_id": "HARVEST_SAID",
+      "generated_by": "template",
+      "text": {
+        "en": "You told us how much coffee you delivered last season.",
+        "sw": "Ulituambia kiasi cha kahawa ulichowasilisha msimu uliopita."
+      },
+      "claim_refs": [
+        "c6"
+      ],
+      "audio_clips": [
+        "HARVEST_SAID"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s16",
+      "phrase_id": "RESULT_COOP",
+      "generated_by": "template",
+      "text": {
+        "en": "Your cooperative has confirmed this.",
+        "sw": "Chama chako cha ushirika kimethibitisha hili."
+      },
+      "claim_refs": [
+        "c6"
+      ],
+      "audio_clips": [
+        "RESULT_COOP"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s17",
+      "phrase_id": "OWNERSHIP_NOT_SHOWN",
+      "generated_by": "template",
+      "text": {
+        "en": "This report does not show who owns the land.",
+        "sw": "Ripoti hii haionyeshi nani anamiliki ardhi hii."
+      },
+      "claim_refs": [
+        "c7"
+      ],
+      "audio_clips": [
+        "OWNERSHIP_NOT_SHOWN"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s18",
+      "phrase_id": "OWNERSHIP_HOW",
+      "generated_by": "template",
+      "text": {
+        "en": "To show this, your cooperative can co-sign, or you can add a land document.",
+        "sw": "Ili kuonyesha hili, chama chako kinaweza kusaini, au unaweza kuongeza hati ya ardhi."
+      },
+      "claim_refs": [
+        "c7"
+      ],
+      "audio_clips": [
+        "OWNERSHIP_HOW"
+      ],
+      "grounding_passed": true
+    },
+    {
+      "sentence_id": "s19",
+      "phrase_id": "DISCLAIMER",
+      "generated_by": "template",
+      "text": {
+        "en": "This report is evidence, not a guarantee. It does not approve or refuse a loan. A person will decide.",
+        "sw": "Ripoti hii ni ushahidi, si hakikisho. Haikubali wala haikatai mkopo. Mtu ndiye atakayeamua."
+      },
+      "claim_refs": [],
+      "audio_clips": [
+        "DISCLAIMER"
+      ],
+      "grounding_passed": true
+    }
+  ],
+  "not_sure": {
+    "flag": false,
+    "reasons": [],
+    "phrase_id": null
+  },
+  "limitations": [
+    "ownership_not_shown",
+    "gps_can_be_spoofed",
+    "photos_can_be_faked",
+    "rainfall_is_5km_average",
+    "temperature_is_50km_average",
+    "satellite_misses_shaded_or_intercropped_coffee",
+    "soil_values_are_model_estimates",
+    "speech_recognition_can_mishear",
+    "yield_not_measured"
+  ],
+  "disclaimer": "This is an evidence report, not proof. It does not approve or refuse a loan. A person makes the decision.",
+  "human_decision_required": true,
+  "integrity": {
+    "canonicalization": "RFC8785-JCS",
+    "hash_alg": "SHA-256",
+    "report_hash": "53d9db2341e1de089e32b64fdd0472159d701cacf7f9c7ec67554917afba2075",
+    "hashed_at": "2026-10-03T09:57:30+03:00",
+    "signature": null,
+    "qr_payload": "https://shamba-evidence.vercel.app/verify#r=ER-TZ-MBZ-A001-20261003&h=53d9db2341e1de089e32b64fdd0472159d701cacf7f9c7ec67554917afba2075"
+  }
+}

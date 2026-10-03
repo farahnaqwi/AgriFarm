@@ -1,0 +1,56 @@
+# --- Secrets (never commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*service-account*.json
+gee-key*.json
+
+# --- Dependencies / builds ---
+node_modules/
+dist/
+build/
+.vercel/
+.next/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# --- Big data stays out of git (pull scripts are committed, outputs are not) ---
+ml/data/
+ml/runs/
+*.tif
+*.tiff
+*.nc
+*.zarr/
+*.parquet
+*.h5
+*.npz
+
+# --- Model weights (side-loaded or fetched at build; record name+hash in docs/DATA_SOURCES.md) ---
+*.onnx
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.tflite
+
+# --- Raw media: farmer recordings are personal data; video is too big ---
+*.wav
+*.m4a
+recordings/
+*.mp4
+*.mov
+video/
+
+# Small final assets ARE committed: app/public/audio/*.mp3 (phrase clips), app/public/map/*, docs/mocks/*.json
+
+# --- OS / editor ---
+.DS_Store
+.vscode/
+.idea/

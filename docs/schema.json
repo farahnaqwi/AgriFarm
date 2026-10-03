@@ -1,0 +1,431 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shamba-evidence.vercel.app/schema/evidence-report.v1.json",
+  "title": "Farm Evidence Report",
+  "description": "Evidence about one plot, built from the farmer's own statements and checked against sources she cannot edit. It is an evidence report, not proof: it never approves a loan and never asserts land ownership. Each claim has a tier (what supports it) and a status (whether independent data agrees). integrity.report_hash = SHA-256 (hex) of the RFC 8785 (JCS) canonical JSON of the whole report with the `integrity` member removed. The hash is computed on the farmer's device when she approves sharing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "report_id", "created_at", "provenance", "farmer_language",
+    "farmer", "consent", "plot", "claims", "attestations", "evidence_summary",
+    "narrative", "not_sure", "limitations", "disclaimer", "human_decision_required", "integrity"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "report_id": { "type": "string", "pattern": "^ER-[A-Za-z0-9-]{6,64}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+
+    "provenance": {
+      "type": "object",
+      "required": ["mode", "app_version", "device_id_hash"],
+      "properties": {
+        "mode": { "enum": ["mock", "demo", "live"], "description": "mock = invented values; demo = real data, fictional farmer; live = real farmer. Lender view shows a banner unless live." },
+        "app_version": { "type": "string" },
+        "device_id_hash": { "type": "string", "description": "SHA-256 of a per-install random ID. Never a raw IMEI or phone number." },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "farmer_language": { "enum": ["sw", "en"], "description": "Language the farmer used and heard the report in." },
+
+    "farmer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["farmer_id"],
+      "properties": {
+        "farmer_id": { "type": "string", "pattern": "^F-[A-Z0-9]{4,12}$", "description": "Pseudonymous. No national ID, no phone number." },
+        "display_name": { "type": ["string", "null"], "description": "Only present if consent.scope includes share_name." },
+        "cooperative_name": { "type": ["string", "null"], "description": "As stated by the farmer. Membership itself is a claim, not metadata." }
+      }
+    },
+
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["given", "recorded_at", "method", "phrase_id", "scope", "raw_audio_retention", "reviewed_report_audio", "approved_for_sharing"],
+      "properties": {
+        "given": { "const": true, "description": "No report exists without consent." },
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "method": { "enum": ["tap", "voice", "assisted_by_officer"] },
+        "phrase_id": { "type": "string", "description": "Exact consent phrase she heard (docs/phrases.json)." },
+        "scope": {
+          "type": "array", "uniqueItems": true, "minItems": 1,
+          "items": { "enum": ["record_voice", "capture_photos", "capture_location", "use_satellite_and_weather", "share_report_with_lender", "share_name"] }
+        },
+        "raw_audio_retention": { "enum": ["deleted_after_extraction", "kept_on_device"], "description": "Raw audio never leaves the device." },
+        "reviewed_report_audio": { "type": "boolean" },
+        "approved_for_sharing": { "type": "boolean" },
+        "approved_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+
+    "plot": {
+      "type": "object",
+      "required": ["plot_id", "country", "admin_area", "geometry", "geometry_source", "captured_at", "area_ha", "centroid", "overlap"],
+      "properties": {
+        "plot_id": { "type": "string" },
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "admin_area": { "type": "string" },
+        "geometry": {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": { "const": "Polygon" },
+            "coordinates": {
+              "type": "array", "minItems": 1,
+              "items": { "type": "array", "minItems": 4, "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } } }
+            }
+          },
+          "description": "GeoJSON Polygon, [lon, lat], WGS84, ring closed."
+        },
+        "geometry_source": { "enum": ["gps_walk", "drawn_on_map", "gps_walk_and_drawn"] },
+        "captured_at": { "type": "string", "format": "date-time" },
+        "area_ha": { "type": "number", "exclusiveMinimum": 0, "description": "Geodesic area of geometry. Deterministic." },
+        "centroid": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } },
+        "overlap": {
+          "type": "object",
+          "required": ["checked", "overlapping_plot_count", "max_overlap_fraction"],
+          "properties": {
+            "checked": { "type": "boolean" },
+            "overlapping_plot_count": { "type": "integer", "minimum": 0 },
+            "max_overlap_fraction": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "description": "Counts only; other farmers' IDs are never exposed."
+        }
+      }
+    },
+
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/claim" }
+    },
+
+    "attestations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attestation" }
+    },
+
+    "evidence_summary": {
+      "type": "object",
+      "required": ["evidence_card_id", "computed_at", "ndvi", "rainfall", "temperature", "soil", "photos", "tally"],
+      "properties": {
+        "evidence_card_id": { "type": "string" },
+        "computed_at": { "type": "string", "format": "date-time", "description": "When the online precompute ran. Everything after this ran offline." },
+        "ndvi": {
+          "type": "object",
+          "required": ["source", "period_start", "period_end", "months_total", "months_cloud_free", "pixels_in_plot", "monthly", "classifier"],
+          "properties": {
+            "source": { "type": "string" },
+            "period_start": { "type": "string", "format": "date" },
+            "period_end": { "type": "string", "format": "date" },
+            "months_total": { "type": "integer" },
+            "months_cloud_free": { "type": "integer" },
+            "pixels_in_plot": { "type": "integer", "description": "10 m pixels fully inside the polygon." },
+            "monthly": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["month", "ndvi"],
+                "properties": {
+                  "month": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$" },
+                  "ndvi": { "type": ["number", "null"], "minimum": -1, "maximum": 1, "description": "Median over plot pixels; null = no cloud-free scene." }
+                }
+              }
+            },
+            "dry_season_mean": { "type": ["number", "null"] },
+            "wet_season_peak": { "type": ["number", "null"] },
+            "classifier": {
+              "type": "object",
+              "required": ["model_id", "predicted_class", "probabilities", "heldout_accuracy", "heldout_n_fields"],
+              "properties": {
+                "model_id": { "type": "string" },
+                "predicted_class": { "enum": ["coffee", "seasonal_crop", "other", "uncertain"] },
+                "probabilities": {
+                  "type": "object",
+                  "required": ["coffee", "seasonal_crop", "other"],
+                  "properties": {
+                    "coffee": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "seasonal_crop": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "other": { "type": "number", "minimum": 0, "maximum": 1 }
+                  }
+                },
+                "heldout_accuracy": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+                "heldout_n_fields": { "type": ["integer", "null"] }
+              }
+            }
+          }
+        },
+        "rainfall": {
+          "type": "object",
+          "required": ["source", "season_window", "baseline_period", "seasons"],
+          "properties": {
+            "source": { "type": "string" },
+            "season_window": { "type": "string", "description": "e.g. Nov-Apr (unimodal). Season '2021/22' = Nov 2021 - Apr 2022." },
+            "baseline_period": { "type": "string" },
+            "seasons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["season", "total_mm", "baseline_mean_mm", "anomaly_pct", "percentile"],
+                "properties": {
+                  "season": { "type": "string", "pattern": "^[0-9]{4}/[0-9]{2}$" },
+                  "total_mm": { "type": "number" },
+                  "baseline_mean_mm": { "type": "number" },
+                  "anomaly_pct": { "type": "number" },
+                  "percentile": { "type": "number", "minimum": 0, "maximum": 100 }
+                }
+              }
+            }
+          }
+        },
+        "temperature": {
+          "type": "object",
+          "required": ["source", "seasons"],
+          "properties": {
+            "source": { "type": "string" },
+            "seasons": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["season", "mean_tmax_anomaly_c"],
+                "properties": {
+                  "season": { "type": "string" },
+                  "mean_tmax_anomaly_c": { "type": "number", "description": "Anomaly only. Absolute temps from a ~50 km cell are not meaningful at farm elevation." }
+                }
+              }
+            }
+          }
+        },
+        "soil": {
+          "type": "object",
+          "required": ["source", "depth_cm"],
+          "properties": {
+            "source": { "type": "string" },
+            "depth_cm": { "type": "string" },
+            "ph": { "type": ["number", "null"] },
+            "organic_carbon_g_kg": { "type": ["number", "null"] },
+            "nitrogen_total_g_kg": { "type": ["number", "null"] },
+            "is_model_estimate": { "const": true }
+          },
+          "description": "Context for 'why did yields slip', never used to verify or contradict a claim."
+        },
+        "photos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/photo" }
+        },
+        "tally": {
+          "type": "object",
+          "required": ["self_reported", "machine_verified", "attested", "consistent", "contradicted", "unverifiable"],
+          "properties": {
+            "self_reported": { "type": "integer" },
+            "machine_verified": { "type": "integer" },
+            "attested": { "type": "integer" },
+            "consistent": { "type": "integer" },
+            "contradicted": { "type": "integer" },
+            "unverifiable": { "type": "integer" }
+          }
+        }
+      }
+    },
+
+    "narrative": {
+      "type": "array",
+      "description": "Report sentences. Farmer hears them in farmer_language via pre-generated clips; lender reads text.en. Sentences failing the grounding check are dropped, never shipped.",
+      "items": { "$ref": "#/$defs/sentence" }
+    },
+
+    "not_sure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flag", "reasons", "phrase_id"],
+      "properties": {
+        "flag": { "type": "boolean", "description": "True = machine could not decide something important. Farmer is told to ask a person before sharing; lender sees a banner and the site-visit button first." },
+        "reasons": {
+          "type": "array", "uniqueItems": true,
+          "items": { "enum": ["low_classifier_confidence", "too_few_cloud_free_months", "plot_too_small_for_satellite", "low_asr_confidence", "unit_ambiguous", "possible_duplicate_photo", "plot_overlaps_other_plot", "freshness_challenge_failed", "photo_outside_plot"] }
+        },
+        "phrase_id": { "type": ["string", "null"] }
+      },
+      "if": { "properties": { "flag": { "const": true } } },
+      "then": { "properties": { "reasons": { "minItems": 1 }, "phrase_id": { "const": "NOT_SURE" } } },
+      "else": { "properties": { "reasons": { "maxItems": 0 } } }
+    },
+
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "enum": ["ownership_not_shown", "gps_can_be_spoofed", "photos_can_be_faked", "rainfall_is_5km_average", "temperature_is_50km_average", "satellite_misses_shaded_or_intercropped_coffee", "soil_values_are_model_estimates", "speech_recognition_can_mishear", "yield_not_measured"] },
+      "description": "Fixed list. Lender view renders each from docs/phrases.json (LIMIT_*)."
+    },
+
+    "disclaimer": { "const": "This is an evidence report, not proof. It does not approve or refuse a loan. A person makes the decision." },
+    "human_decision_required": { "const": true },
+
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "hash_alg", "report_hash", "hashed_at", "signature", "qr_payload"],
+      "properties": {
+        "canonicalization": { "const": "RFC8785-JCS" },
+        "hash_alg": { "const": "SHA-256" },
+        "report_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "hashed_at": { "type": "string", "format": "date-time", "description": "Moment the farmer approved sharing (on device)." },
+        "signature": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["alg", "key_id", "signed_by", "value"],
+          "properties": {
+            "alg": { "const": "ES256" },
+            "key_id": { "type": "string" },
+            "signed_by": { "enum": ["backend", "device", "cooperative"] },
+            "value": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$", "description": "base64url signature over the raw 32-byte report hash." }
+          },
+          "description": "null until the report syncs; the hash alone already lets a lender detect edits."
+        },
+        "qr_payload": { "type": "string", "description": "{VITE_PUBLIC_BASE_URL}/verify#r={report_id}&h={report_hash}. Fragment keeps the hash out of server logs." }
+      }
+    }
+  },
+
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "field", "value", "unit", "tier", "source", "confidence", "status", "checks", "attestation_refs", "timestamp"],
+      "properties": {
+        "claim_id": { "type": "string", "pattern": "^c[0-9]+$" },
+        "field": {
+          "enum": ["crop_type", "plot_area", "bad_season", "cooperative_membership_years", "last_harvest_delivered", "coffee_tree_count", "land_tenure"]
+        },
+        "value": { "description": "crop_type: coffee|maize|coffee_banana|other. bad_season: 'YYYY/YY'. land_tenure: titled|customary_ccro|customary_undocumented|leased|family_use|other. Numbers as numbers." },
+        "unit": { "type": ["string", "null"], "enum": ["ha", "acre", "years", "kg_parchment", "kg_cherry", "trees", null] },
+        "value_as_spoken": { "type": ["string", "null"], "description": "Words she used, original language, e.g. 'ekari tano'. Lets a person audit unit/number extraction." },
+        "value_normalized": {
+          "type": ["object", "null"],
+          "properties": { "value": { "type": "number" }, "unit": { "type": "string" } },
+          "description": "e.g. 5 acre -> 2.02 ha. Deterministic conversion, not AI."
+        },
+        "tier": { "enum": ["self_reported", "machine_verified", "attested"], "description": "Precedence attested > machine_verified > self_reported." },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "confirmed_by_farmer"],
+          "properties": {
+            "type": { "enum": ["farmer_voice", "farmer_tap", "ledger_ocr", "cooperative_cosign", "extension_officer_cosign", "document_upload"] },
+            "ref": { "type": ["string", "null"], "description": "e.g. audio:00:41.2-00:47.9 (audio itself stays on device)." },
+            "quote": { "type": ["string", "null"], "maxLength": 200 },
+            "asr_confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "confirmed_by_farmer": { "type": "boolean", "description": "She confirmed the extracted value via fixed-choice tap. Unconfirmed values never enter a report." }
+          }
+        },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "Confidence of the status decision when it rests on a model (e.g. classifier probability). null when the decision is deterministic or nothing could be checked." },
+        "status": { "enum": ["consistent", "contradicted", "unverifiable"] },
+        "checks": { "type": "array", "items": { "$ref": "#/$defs/check" } },
+        "attestation_refs": { "type": "array", "items": { "type": "string" } },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tier": { "const": "machine_verified" } } },
+          "then": { "properties": { "status": { "const": "consistent" }, "checks": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "tier": { "const": "attested" } } },
+          "then": { "properties": { "attestation_refs": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "field": { "const": "land_tenure" } } },
+          "then": { "properties": { "tier": { "enum": ["self_reported", "attested"] } } }
+        },
+        {
+          "if": { "properties": { "source": { "properties": { "confirmed_by_farmer": { "const": false } } } } },
+          "then": false
+        }
+      ]
+    },
+
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "against", "expected", "observed", "result"],
+      "properties": {
+        "rule_id": { "type": "string", "pattern": "^R-[A-Z]+-[0-9]{2}$", "description": "See docs/RULES.md." },
+        "against": { "enum": ["polygon_area", "sentinel2_ndvi_classifier", "photo_crop_check", "chirps_rainfall", "nasa_power_temperature", "geofence"] },
+        "expected": {},
+        "observed": {},
+        "result": { "enum": ["consistent", "contradicted", "inconclusive"] },
+        "phrase_id": { "type": ["string", "null"] }
+      }
+    },
+
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestation_id", "role", "org_name", "method", "signed_at", "covers_claims"],
+      "properties": {
+        "attestation_id": { "type": "string", "pattern": "^a[0-9]+$" },
+        "role": { "enum": ["cooperative", "extension_officer"] },
+        "org_name": { "type": "string" },
+        "method": { "enum": ["in_app_cosign", "signed_paper_upload"] },
+        "signed_at": { "type": "string", "format": "date-time" },
+        "covers_claims": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+
+    "photo": {
+      "type": "object",
+      "required": ["photo_id", "captured_at", "lat", "lon", "gps_accuracy_m", "inside_plot", "phash", "duplicate_of", "freshness"],
+      "properties": {
+        "photo_id": { "type": "string" },
+        "captured_at": { "type": "string", "format": "date-time" },
+        "lat": { "type": "number" },
+        "lon": { "type": "number" },
+        "gps_accuracy_m": { "type": "number" },
+        "heading_deg": { "type": ["number", "null"] },
+        "inside_plot": { "type": "boolean" },
+        "phash": { "type": "string", "pattern": "^[0-9a-f]{16}$", "description": "64-bit perceptual hash." },
+        "duplicate_of": { "type": ["string", "null"], "description": "photo_id of a near-duplicate (Hamming <= 6) in any report." },
+        "freshness": {
+          "type": ["object", "null"],
+          "properties": {
+            "challenge": { "enum": ["turn_around"] },
+            "paired_photo_id": { "type": "string" },
+            "heading_delta_deg": { "type": "number" },
+            "seconds_elapsed": { "type": "number" },
+            "passed": { "type": "boolean" }
+          }
+        },
+        "crop_check": {
+          "type": ["object", "null"],
+          "properties": {
+            "model_id": { "type": "string" },
+            "label": { "enum": ["coffee", "not_coffee", "uncertain"] },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+
+    "sentence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sentence_id", "phrase_id", "generated_by", "text", "claim_refs", "audio_clips", "grounding_passed"],
+      "properties": {
+        "sentence_id": { "type": "string" },
+        "phrase_id": { "type": ["string", "null"] },
+        "generated_by": { "enum": ["template", "llm"] },
+        "slots": { "type": "object" },
+        "text": {
+          "type": "object",
+          "required": ["en", "sw"],
+          "properties": { "en": { "type": "string" }, "sw": { "type": "string" } }
+        },
+        "claim_refs": { "type": "array", "items": { "type": "string" } },
+        "audio_clips": { "type": "array", "items": { "type": "string" }, "description": "Clip IDs played in order (phrase + slot clips)." },
+        "grounding_passed": { "const": true, "description": "Every number/claim in text appears in referenced claims or evidence_summary (R-NARR-01)." }
+      }
+    }
+  }
+}
