@@ -1,7 +1,17 @@
-import { Screen } from "./ui.jsx";
-import { DEMO_FARMS } from "../lib/geo.js";
+import { Screen } from "./ui.tsx";
+import { DEMO_FARMS } from "../lib/geo.ts";
+import type { DemoFarm } from "../types/index.ts";
 
-export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }) {
+interface Props {
+  demo: boolean;
+  onDemo: (on: boolean) => void;
+  farm: DemoFarm;
+  onFarm: (farm: DemoFarm) => void;
+  onStart: () => void;
+  onWipe: () => void;
+}
+
+export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }: Props) {
   return (
     <Screen title="AgriFarm" titleEn="Farm evidence report">
       <p className="lead">
@@ -18,7 +28,7 @@ export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }) {
         </label>
         <div className="row">
           Demo farm:
-          {Object.entries(DEMO_FARMS).map(([k, f]) => (
+          {(Object.entries(DEMO_FARMS) as [DemoFarm, (typeof DEMO_FARMS)[DemoFarm]][]).map(([k, f]) => (
             <button key={k} className={farm === k ? "chip on" : "chip"} onClick={() => onFarm(k)}>{f.label}</button>
           ))}
         </div>

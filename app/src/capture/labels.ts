@@ -1,6 +1,6 @@
 // On-screen labels (never spoken). Swahili is DRAFT: review together with docs/phrases.json.
 
-export const FIELD = {
+export const FIELD: Record<string, { sw: string; en: string }> = {
   crop_type: { sw: "Zao", en: "Crop" },
   plot_area: { sw: "Ukubwa wa shamba", en: "Farm size" },
   cooperative_membership_years: { sw: "Miaka katika chama", en: "Years in cooperative" },
@@ -25,20 +25,20 @@ export const TENURE = [
   { value: "other", sw: "Nyingine", en: "Other" },
 ];
 
-export const UNITS = { acre: { sw: "ekari", en: "acres" }, ha: { sw: "hekta", en: "hectares" } };
+export const UNITS: Record<"acre" | "ha", { sw: string; en: string }> = { acre: { sw: "ekari", en: "acres" }, ha: { sw: "hekta", en: "hectares" } };
 
-export const STATUS = {
+export const STATUS: Record<"consistent" | "contradicted" | "unverifiable", { icon: string; sw: string; en: string }> = {
   consistent: { icon: "✅", sw: "Inakubaliana", en: "Consistent" },
   contradicted: { icon: "❌", sw: "Haikubaliani", en: "Contradicted" },
   unverifiable: { icon: "⚪", sw: "Haikukaguliwa", en: "Could not be checked" },
 };
 
-export const TIER = {
+export const TIER: Record<"self_reported" | "machine_verified" | "attested", { sw: string; en: string }> = {
   self_reported: { sw: "Ulisema", en: "Self-reported" },
   machine_verified: { sw: "Satelaiti / hali ya hewa", en: "Machine-verified" },
   attested: { sw: "Chama kimethibitisha", en: "Attested" },
 };
 
 /** Harvest year a farmer names -> rainfall season id (2022 -> "2021/22"). */
-export const seasonFromYear = (y) => `${y - 1}/${String(y).slice(2)}`;
-export const yearFromSeason = (s) => Number(s.slice(0, 4)) + 1;
+export const seasonFromYear = (y: number): string => `${y - 1}/${String(y).slice(2)}`;
+export const yearFromSeason = (s: string): number => Number(s.slice(0, 4)) + 1;

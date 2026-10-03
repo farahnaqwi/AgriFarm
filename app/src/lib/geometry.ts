@@ -1,14 +1,16 @@
+import type { LonLat } from "../types/index.ts";
+
 // Capture-side geometry for live feedback (area while drawing, geofence at the shutter).
 // Farah's engine recomputes everything; these values are never trusted on their own.
 
 const R = 6378137;
-const rad = (d) => (d * Math.PI) / 180;
+const rad = (d: number): number => (d * Math.PI) / 180;
 export const HA_PER_ACRE = 0.40468564224;
 
-/** [[lon,lat],...] open path -> closed GeoJSON ring */
-export const closeRing = (pts) => (pts.length ? [...pts, pts[0]] : []);
+/** Open path -> closed GeoJSON ring */
+export const closeRing = (pts: LonLat[]): LonLat[] => (pts.length ? [...pts, pts[0]] : []);
 
-export function areaHa(ring) {
+export function areaHa(ring: number[][]): number {
   let s = 0;
   for (let i = 0; i < ring.length - 1; i++) {
     const [lo1, la1] = ring[i];
@@ -18,12 +20,12 @@ export function areaHa(ring) {
   return Math.abs((s * R * R) / 2) / 10000;
 }
 
-export function centroid(ring) {
+export function centroid(ring: number[][]): LonLat {
   const p = ring.slice(0, -1);
   return [p.reduce((a, q) => a + q[0], 0) / p.length, p.reduce((a, q) => a + q[1], 0) / p.length];
 }
 
-export function pointInRing([x, y], ring) {
+export function pointInRing([x, y]: LonLat, ring: number[][]): boolean {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
     const [xi, yi] = ring[i];
@@ -34,7 +36,7 @@ export function pointInRing([x, y], ring) {
 }
 
 /** Metres from a point to the nearest ring edge (local equirectangular; fine at plot scale). */
-export function distanceToRingM([lon, lat], ring) {
+export function distanceToRingM([lon, lat]: LonLat, ring: number[][]): number {
   const kx = 111320 * Math.cos(rad(lat));
   const ky = 110600;
   let best = Infinity;
@@ -49,6 +51,6 @@ export function distanceToRingM([lon, lat], ring) {
 }
 
 /** R-GEO-01: inside, or within max(10 m, GPS accuracy) of the boundary. */
-export function insidePlot(lonlat, ring, accuracyM) {
+export function insidePlot(lonlat: LonLat, ring: number[][], accuracyM: number): boolean {
   return pointInRing(lonlat, ring) || distanceToRingM(lonlat, ring) <= Math.max(10, accuracyM || 0);
 }

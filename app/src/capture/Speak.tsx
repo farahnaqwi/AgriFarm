@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say } from "./ui.jsx";
-import { stopAudio } from "../lib/audio.js";
-import { transcribe } from "../ai/asr.js";
-import { extractClaims } from "../ai/extract.js";
+import { Screen, Say } from "./ui.tsx";
+import { stopAudio } from "../lib/audio.ts";
+import { transcribe } from "../ai/asr.ts";
+import { extractClaims } from "../ai/extract.ts";
+import type { CandidateClaim, DemoFarm, Transcript } from "../types/index.ts";
 
-export default function Speak({ farm, onClaims }) {
-  const [phase, setPhase] = useState("idle"); // idle | recording | working | done
+export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (claims: CandidateClaim[]) => void }) {
+  const [phase, setPhase] = useState<"idle" | "recording" | "working" | "done">("idle");
   const [seconds, setSeconds] = useState(0);
-  const [result, setResult] = useState(null);
-  const rec = useRef(null);
+  const [result, setResult] = useState<{ transcript: Transcript; claims: CandidateClaim[] } | null>(null);
+  const rec = useRef<{ stop: () => void } | null>(null);
 
   useEffect(() => {
     if (phase !== "recording") return;
@@ -19,7 +20,7 @@ export default function Speak({ farm, onClaims }) {
 
   useEffect(() => () => rec.current?.stop?.(), []);
 
-  async function finish(blob) {
+  async function finish(blob: Blob | null) {
     setPhase("working");
     const transcript = await transcribe(blob, { demoFarm: farm });
     const claims = await extractClaims(transcript);
@@ -33,7 +34,7 @@ export default function Speak({ farm, onClaims }) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mr = new MediaRecorder(stream);
-      const chunks = [];
+      const chunks: Blob[] = [];
       mr.ondataavailable = (e) => chunks.push(e.data);
       mr.onstop = () => {
         stream.getTracks().forEach((tr) => tr.stop());
@@ -60,7 +61,7 @@ export default function Speak({ farm, onClaims }) {
       title="Eleza kuhusu shamba"
       titleEn="Tell us about your farm"
       footer={phase === "done" && (
-        <button className="big primary" onClick={() => onClaims(result.claims)}>Endelea →<span>Continue</span></button>
+        <button className="big primary" onClick={() => result && onClaims(result.claims)}>Endelea →<span>Continue</span></button>
       )}
     >
       <Say ids={["CAPTURE_SPEAK"]} />
@@ -69,7 +70,7 @@ export default function Speak({ farm, onClaims }) {
         <button className="mic live" onClick={stop} aria-label="Stop">⏹<span>{seconds}s · Simamisha</span></button>
       )}
       {phase === "working" && <p className="working">Inasikiliza… <span className="en">Listening on this phone…</span></p>}
-      {phase === "done" && (
+      {phase === "done" && result && (
         <div className="transcript">
           <h3>Tumesikia: <span className="en">What we heard</span></h3>
           <p>{result.transcript.text || "—"}</p>

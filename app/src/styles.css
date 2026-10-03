@@ -97,6 +97,8 @@ blockquote { margin: 0 0 10px; color: var(--muted); font-style: italic; }
 .map { height: 50vh; min-height: 280px; border-radius: var(--radius); border: 1px solid var(--line); background: #dfe7d4; z-index: 0; }
 .map-tools { display: flex; gap: 8px; flex-wrap: wrap; }
 .area { font-size: 1.3rem; font-weight: 700; margin: 0; }
+.gps { margin: 0; padding: 8px 10px; border-radius: 10px; background: #fbe7c6; color: #6b4300; font-weight: 600; }
+.gps.ok { background: #dcefd9; color: #1d5a26; }
 
 .camera { position: relative; border-radius: var(--radius); overflow: hidden; background: #111; aspect-ratio: 4 / 3; }
 .camera video { width: 100%; height: 100%; object-fit: cover; display: block; }

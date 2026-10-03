@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "node:url";
 
-const fromRoot = (p) => fileURLToPath(new URL(p, import.meta.url));
+const fromRoot = (p: string): string => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
   resolve: {

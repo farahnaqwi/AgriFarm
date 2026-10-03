@@ -1,16 +1,17 @@
 // OWNER: Sakeet. FAKE until the on-device speech model (whisper-tiny via transformers.js) lands.
 //
 // CONTRACT
-//   transcribe(audioBlob, { demoFarm }) -> Promise<{
-//     text: string,
-//     segments: [{ start: seconds, end: seconds, text: string, confidence: 0..1 }]
-//   }>
+//   transcribe(audioBlob, { demoFarm }) -> Promise<Transcript>  (types/index.ts):
+//     { text, segments: [{ start, end, text, confidence }] }
 // Runs fully offline. The raw audio is discarded after this call (consent: deleted_after_extraction).
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+import type { DemoFarm, Transcript } from "../types/index.ts";
 
-export const DEMO_TRANSCRIPTS = {
+const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
+
+export const DEMO_TRANSCRIPTS: Record<DemoFarm, Transcript> = {
   A: {
+    text: "",
     segments: [
       { start: 4.1, end: 7.9, text: "Mimi nalima kahawa tu.", confidence: 0.83 },
       { start: 11.0, end: 14.6, text: "Shamba langu lina ekari tano.", confidence: 0.79 },
@@ -22,6 +23,7 @@ export const DEMO_TRANSCRIPTS = {
     ],
   },
   B: {
+    text: "",
     segments: [
       { start: 3.2, end: 5.9, text: "Nina kahawa shambani.", confidence: 0.86 },
       { start: 8.4, end: 11.7, text: "Shamba ni hekta tano.", confidence: 0.88 },
@@ -32,8 +34,8 @@ export const DEMO_TRANSCRIPTS = {
   },
 };
 
-export async function transcribe(_audioBlob, { demoFarm = "A" } = {}) {
+export async function transcribe(_audioBlob: Blob | null, { demoFarm = "A" }: { demoFarm?: DemoFarm } = {}): Promise<Transcript> {
   await sleep(900);
-  const { segments } = DEMO_TRANSCRIPTS[demoFarm] ?? DEMO_TRANSCRIPTS.A;
+  const { segments } = DEMO_TRANSCRIPTS[demoFarm];
   return { text: segments.map((s) => s.text).join(" "), segments };
 }

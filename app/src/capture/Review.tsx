@@ -1,22 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Screen } from "./ui.jsx";
-import { playClips, stopAudio } from "../lib/audio.js";
-import { t } from "../lib/phrases.js";
-import { STATUS, TIER } from "./labels.js";
+import { Screen } from "./ui.tsx";
+import { playClips, stopAudio } from "../lib/audio.ts";
+import { t } from "../lib/phrases.ts";
+import { STATUS, TIER } from "./labels.ts";
+import type { Claim, Report, Sentence } from "../types/index.ts";
 
-export default function Review({ report, onNext }) {
+export default function Review({ report, onNext }: { report: Report; onNext: () => void }) {
   const [active, setActive] = useState(-1);
   const [heard, setHeard] = useState(false);
 
   // Fail-safe first: if the machine is unsure, she hears that before anything else.
-  const sentences = useMemo(() => {
+  const sentences = useMemo((): Sentence[] => {
     const ns = report.not_sure.flag
-      ? [{ sentence_id: "ns", text: { sw: t("NOT_SURE"), en: t("NOT_SURE", "en") }, audio_clips: ["NOT_SURE"], claim_refs: [] }]
+      ? [{ sentence_id: "ns", phrase_id: "NOT_SURE", generated_by: "template" as const, text: { sw: t("NOT_SURE"), en: t("NOT_SURE", "en") }, audio_clips: ["NOT_SURE"], claim_refs: [], grounding_passed: true as const }]
       : [];
     return [...ns, ...report.narrative];
   }, [report]);
 
-  const claims = useMemo(() => Object.fromEntries(report.claims.map((c) => [c.claim_id, c])), [report]);
+  const claims = useMemo((): Record<string, Claim> => Object.fromEntries(report.claims.map((c) => [c.claim_id, c])), [report]);
 
   const playAll = useCallback(async () => {
     for (let i = 0; i < sentences.length; i++) {

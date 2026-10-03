@@ -1,9 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
-import { t } from "../lib/phrases.js";
-import { playClips, stopAudio, audioMissing, onAudioMissing } from "../lib/audio.js";
+import { useEffect, useState, useCallback, type ReactNode } from "react";
+import { t } from "../lib/phrases.ts";
+import { playClips, stopAudio, audioMissing, onAudioMissing } from "../lib/audio.ts";
 
 /** Shows phrases (Swahili large, English small) and plays their clips in order. */
-export function Say({ ids, autoplay = true, onDone }) {
+export function Say({ ids, autoplay = true, onDone }: { ids: string[]; autoplay?: boolean; onDone?: () => void }) {
   const [active, setActive] = useState(-1);
   const key = ids.join("|");
   const play = useCallback(async () => {
@@ -29,7 +29,9 @@ export function Say({ ids, autoplay = true, onDone }) {
   );
 }
 
-export function YesNo({ onYes, onNo, yes = "Ndiyo", no = "Hapana", disabled }) {
+export function YesNo({ onYes, onNo, yes = "Ndiyo", no = "Hapana", disabled }: {
+  onYes: () => void; onNo: () => void; yes?: string; no?: string; disabled?: boolean;
+}) {
   return (
     <div className="yesno">
       <button className="big yes" onClick={onYes} disabled={disabled} aria-label="Yes">✓<span>{yes}</span></button>
@@ -38,7 +40,9 @@ export function YesNo({ onYes, onNo, yes = "Ndiyo", no = "Hapana", disabled }) {
   );
 }
 
-export function Screen({ step, title, titleEn, children, footer }) {
+export function Screen({ step, title, titleEn, children, footer }: {
+  step?: number; title: string; titleEn: string; children?: ReactNode; footer?: ReactNode;
+}) {
   return (
     <section className="screen">
       <header>
@@ -51,7 +55,7 @@ export function Screen({ step, title, titleEn, children, footer }) {
   );
 }
 
-export function Badges({ demo }) {
+export function Badges({ demo }: { demo: boolean }) {
   const [missing, setMissing] = useState(audioMissing());
   useEffect(() => onAudioMissing(() => setMissing(true)), []);
   const [online, setOnline] = useState(navigator.onLine);

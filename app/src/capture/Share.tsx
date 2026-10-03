@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Screen, Say, YesNo } from "./ui.jsx";
-import { seal } from "../engine.js";
-import { uploadReport } from "../data/reports.js";
+import { Screen, Say, YesNo } from "./ui.tsx";
+import { seal } from "../engine.ts";
+import { uploadReport } from "../data/reports.ts";
+import type { Report } from "../types/index.ts";
 
-export default function Share({ report, sealed, onSealed, onHome }) {
-  const [phase, setPhase] = useState(sealed ? "done" : "ask"); // ask | sealing | done | declined
-  const [qr, setQr] = useState(null);
+interface Props {
+  report: Report;
+  sealed: Report | null;
+  onSealed: (sealed: Report) => void;
+  onHome: () => void;
+}
+
+export default function Share({ report, sealed, onSealed, onHome }: Props) {
+  const [phase, setPhase] = useState<"ask" | "sealing" | "done" | "declined">(sealed ? "done" : "ask");
+  const [qr, setQr] = useState<string | null>(null);
   const [queued, setQueued] = useState(false);
 
   useEffect(() => {

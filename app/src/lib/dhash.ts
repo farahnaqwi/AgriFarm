@@ -1,12 +1,12 @@
 // 64-bit difference hash (a perceptual hash) for duplicate-photo detection (R-DUP-01).
-export function dhash(source) {
+export function dhash(source: CanvasImageSource): string {
   const c = document.createElement("canvas");
   c.width = 9;
   c.height = 8;
-  const g = c.getContext("2d", { willReadFrequently: true });
+  const g = c.getContext("2d", { willReadFrequently: true })!;
   g.drawImage(source, 0, 0, 9, 8);
   const d = g.getImageData(0, 0, 9, 8).data;
-  const lum = (x, y) => {
+  const lum = (x: number, y: number): number => {
     const i = (y * 9 + x) * 4;
     return d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
   };

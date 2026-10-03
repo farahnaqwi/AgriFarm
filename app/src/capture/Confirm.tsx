@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Screen, Say } from "./ui.jsx";
-import { FIELD, CROPS, TENURE, UNITS, seasonFromYear, yearFromSeason } from "./labels.js";
-import { HA_PER_ACRE } from "../lib/geometry.js";
-import { now } from "./capture.js";
+import { Screen, Say } from "./ui.tsx";
+import { FIELD, CROPS, TENURE, UNITS, seasonFromYear, yearFromSeason } from "./labels.ts";
+import { HA_PER_ACRE } from "../lib/geometry.ts";
+import { now } from "./capture.ts";
+import type { CandidateClaim, ClaimField, ConfirmedClaim } from "../types/index.ts";
+
+type Draft = CandidateClaim & { key: number; confirmed: boolean };
+type Editable = Pick<CandidateClaim, "value" | "unit">;
 
 const YEARS = Array.from({ length: 10 }, (_, i) => 2017 + i);
 
-const BLANK = {
+const BLANK: Partial<Record<ClaimField, Editable>> = {
   crop_type: { value: "coffee", unit: null },
   plot_area: { value: 1, unit: "acre" },
   cooperative_membership_years: { value: 1, unit: "years" },
@@ -15,7 +19,7 @@ const BLANK = {
   land_tenure: { value: "customary_undocumented", unit: null },
 };
 
-function Stepper({ value, step = 1, min = 0, onChange }) {
+function Stepper({ value, step = 1, min = 0, onChange }: { value: number; step?: number; min?: number; onChange: (v: number) => void }) {
   return (
     <div className="stepper">
       <button onClick={() => onChange(Math.max(min, +(value - step).toFixed(1)))}>−</button>
@@ -25,8 +29,9 @@ function Stepper({ value, step = 1, min = 0, onChange }) {
   );
 }
 
-function Editor({ claim, set }) {
+function Editor({ claim, set }: { claim: Draft; set: (patch: Partial<Editable>) => void }) {
   const { field, value, unit } = claim;
+  const num = Number(value);
   switch (field) {
     case "crop_type":
       return (
@@ -41,28 +46,28 @@ function Editor({ claim, set }) {
     case "plot_area":
       return (
         <>
-          <Stepper value={value} step={0.5} onChange={(v) => set({ value: v })} />
+          <Stepper value={num} step={0.5} onChange={(v) => set({ value: v })} />
           <div className="choices two">
-            {Object.entries(UNITS).map(([u, l]) => (
-              <button key={u} className={unit === u ? "choice on" : "choice"} onClick={() => set({ unit: u })}>{l.sw}<span className="en">{l.en}</span></button>
+            {(Object.keys(UNITS) as (keyof typeof UNITS)[]).map((u) => (
+              <button key={u} className={unit === u ? "choice on" : "choice"} onClick={() => set({ unit: u })}>{UNITS[u].sw}<span className="en">{UNITS[u].en}</span></button>
             ))}
           </div>
-          <p className="en">= {(unit === "acre" ? value * HA_PER_ACRE : value).toFixed(2)} ha</p>
+          <p className="en">= {(unit === "acre" ? num * HA_PER_ACRE : num).toFixed(2)} ha</p>
         </>
       );
     case "cooperative_membership_years":
-      return <Stepper value={value} onChange={(v) => set({ value: v })} />;
+      return <Stepper value={num} onChange={(v) => set({ value: v })} />;
     case "last_harvest_delivered":
       return (
         <label className="row">
-          <input type="number" inputMode="numeric" value={value} onChange={(e) => set({ value: Number(e.target.value) })} /> kg
+          <input type="number" inputMode="numeric" value={num} onChange={(e) => set({ value: Number(e.target.value) })} /> kg
         </label>
       );
     case "bad_season":
       return (
         <div className="choices years">
           {YEARS.map((y) => (
-            <button key={y} className={yearFromSeason(value) === y ? "choice on" : "choice"} onClick={() => set({ value: seasonFromYear(y) })}>{y}</button>
+            <button key={y} className={yearFromSeason(String(value)) === y ? "choice on" : "choice"} onClick={() => set({ value: seasonFromYear(y) })}>{y}</button>
           ))}
         </div>
       );
@@ -79,26 +84,26 @@ function Editor({ claim, set }) {
   }
 }
 
-export default function Confirm({ candidates, onDone }) {
-  const [claims, setClaims] = useState(() => candidates.map((c, i) => ({ ...c, key: i, confirmed: false })));
+export default function Confirm({ candidates, onDone }: { candidates: CandidateClaim[]; onDone: (claims: ConfirmedClaim[]) => void }) {
+  const [claims, setClaims] = useState<Draft[]>(() => candidates.map((c, i) => ({ ...c, key: i, confirmed: false })));
 
-  const update = (key, patch) =>
+  const update = (key: number, patch: Partial<Editable>) =>
     setClaims((cs) => cs.map((c) => (c.key === key ? {
       ...c, ...patch, confirmed: false,
-      source: { ...c.source, type: "farmer_tap" }, // value now comes from her tap, the quote stays for audit
+      source: { ...c.source, type: "farmer_tap" as const }, // value now comes from her tap, the quote stays for audit
     } : c)));
-  const confirm = (key) => setClaims((cs) => cs.map((c) => (c.key === key ? { ...c, confirmed: true } : c)));
-  const remove = (key) => setClaims((cs) => cs.filter((c) => c.key !== key));
-  const add = (field) =>
+  const confirm = (key: number) => setClaims((cs) => cs.map((c) => (c.key === key ? { ...c, confirmed: true } : c)));
+  const remove = (key: number) => setClaims((cs) => cs.filter((c) => c.key !== key));
+  const add = (field: ClaimField) =>
     setClaims((cs) => [...cs, {
-      field, ...BLANK[field], value_as_spoken: null, key: Date.now(), confirmed: false,
+      field, ...BLANK[field]!, value_as_spoken: null, key: Date.now(), confirmed: false,
       source: { type: "farmer_tap", ref: null, quote: null, asr_confidence: null, confirmed_by_farmer: false },
     }]);
 
   const ready = claims.length > 0 && claims.every((c) => c.confirmed);
 
   function finish() {
-    onDone(claims.map(({ key, confirmed, ...c }, i) => ({
+    onDone(claims.map(({ key: _key, confirmed: _confirmed, ...c }, i) => ({
       claim_id: `c${i + 1}`,
       ...c,
       source: { ...c.source, confirmed_by_farmer: true },
@@ -123,7 +128,7 @@ export default function Confirm({ candidates, onDone }) {
       ))}
       <div className="add">
         <span className="en">Add something we missed:</span>
-        {Object.keys(BLANK).map((f) => (
+        {(Object.keys(BLANK) as ClaimField[]).map((f) => (
           <button key={f} className="chip" onClick={() => add(f)}>+ {FIELD[f].sw}</button>
         ))}
       </div>

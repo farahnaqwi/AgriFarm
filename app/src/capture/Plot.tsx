@@ -1,24 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Screen, Say } from "./ui.jsx";
-import { DEMO_FARMS, watchWalk } from "../lib/geo.js";
-import { areaHa, centroid, closeRing, HA_PER_ACRE } from "../lib/geometry.js";
-import { now } from "./capture.js";
+import { Screen, Say } from "./ui.tsx";
+import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type Fix } from "../lib/geo.ts";
+import type { DemoFarm, LonLat, PlotCapture } from "../types/index.ts";
 
-export default function Plot({ farm, onDone }) {
-  const mapEl = useRef(null);
-  const layer = useRef(null);
-  const modeRef = useRef(null);
-  const stopWalk = useRef(null);
-  const [mode, setModeState] = useState(null); // "walk" | "draw" | null
-  const [pts, setPts] = useState([]);
-  const setMode = (m) => { modeRef.current = m; setModeState(m); };
+type Mode = "walk" | "draw" | "walked" | null;
+import { areaHa, centroid, closeRing, HA_PER_ACRE } from "../lib/geometry.ts";
+import { now } from "./capture.ts";
+
+export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture) => void }) {
+  const mapEl = useRef<HTMLDivElement>(null);
+  const layer = useRef<L.LayerGroup | null>(null);
+  const modeRef = useRef<Mode>(null);
+  const stopWalk = useRef<(() => void) | null>(null);
+  const [mode, setModeState] = useState<Mode>(null);
+  const [pts, setPts] = useState<LonLat[]>([]);
+  const [fix, setFix] = useState<Fix | null>(null);
+  const setMode = (m: Mode) => { modeRef.current = m; setModeState(m); };
+  const goodFix = !!fix && fix.accuracy <= GOOD_FIX_M;
+
+  // GPS needs no internet, but without it the first satellite lock can take minutes.
+  useEffect(() => watchFix(setFix), []);
 
   useEffect(() => {
     const ring = DEMO_FARMS[farm]?.ring;
     const [lon, lat] = ring ? centroid(ring) : [32.93, -9.11];
-    const map = L.map(mapEl.current, { attributionControl: true }).setView([lat, lon], 17);
+    const map = L.map(mapEl.current!, { attributionControl: true }).setView([lat, lon], 17);
     if (navigator.onLine) {
       // Online-only reference layer. Offline basemap = Sentinel-2 RGB overlay from ml/ (TODO Sakeet: /map/{plot_id}.png).
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map);
@@ -38,7 +46,7 @@ export default function Plot({ farm, onDone }) {
     const g = layer.current;
     if (!g) return;
     g.clearLayers();
-    const latlngs = pts.map(([lo, la]) => [la, lo]);
+    const latlngs = pts.map(([lo, la]): L.LatLngTuple => [la, lo]);
     if (latlngs.length >= 3) L.polygon(latlngs, { color: "#2f6b3a", weight: 3, fillOpacity: 0.25 }).addTo(g);
     else if (latlngs.length === 2) L.polyline(latlngs, { color: "#2f6b3a", weight: 3 }).addTo(g);
     latlngs.forEach((ll) => L.circleMarker(ll, { radius: 5, color: "#1d3b22", fillOpacity: 1 }).addTo(g));
@@ -68,7 +76,7 @@ export default function Plot({ farm, onDone }) {
       footer={
         <button className="big primary" disabled={pts.length < 3 || mode === "walk"}
           onClick={() => onDone({
-            geometry: { type: "Polygon", coordinates: [closeRing(pts)] },
+            geometry: { type: "Polygon", coordinates: [closeRing(pts) as PlotCapture["geometry"]["coordinates"][0]] }, // ≥3 points + closing point = schema minItems 4
             geometry_source: mode === "draw" ? "drawn_on_map" : "gps_walk",
             captured_at: now(),
           })}>
@@ -76,11 +84,16 @@ export default function Plot({ farm, onDone }) {
         </button>
       }>
       <Say ids={["CAPTURE_WALK", "CAPTURE_DRAW"]} />
+      <p className={goodFix ? "gps ok" : "gps"}>
+        {!fix && <>📡 Inatafuta satelaiti… <span className="en">Searching for satellites. Without internet the first lock can take a few minutes. Stand in the open.</span></>}
+        {fix && !goodFix && <>📡 ±{fix.accuracy} m · subiri kidogo <span className="en">Not accurate enough yet, wait a moment</span></>}
+        {goodFix && <>📡 ±{fix.accuracy} m ✓ <span className="en">GPS ready</span></>}
+      </p>
       <div className="map" ref={mapEl} />
       <div className="map-tools">
         {mode === "walk"
           ? <button className="chip on" onClick={finishWalk}>⏹ Nimemaliza <span className="en">Done walking</span></button>
-          : <button className="chip" onClick={walk}>🚶 Tembea <span className="en">Walk</span></button>}
+          : <button className="chip" disabled={!goodFix} onClick={walk}>🚶 Tembea <span className="en">Walk</span></button>}
         <button className={mode === "draw" ? "chip on" : "chip"} onClick={draw}>✏️ Chora <span className="en">Draw</span></button>
         <button className="chip" disabled={!pts.length || mode === "walk"} onClick={() => setPts((p) => p.slice(0, -1))}>↶</button>
       </div>

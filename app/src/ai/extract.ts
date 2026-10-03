@@ -2,13 +2,17 @@
 // Real version: rule-based Swahili extraction (crop words, numbers, ekari/hekta, years), small LLM as a stretch.
 //
 // CONTRACT
-//   extractClaims(transcript) -> candidate claims, each:
+//   extractClaims(transcript: Transcript) -> CandidateClaim[]  (types/index.ts), each:
 //   { field, value, unit, value_as_spoken,
 //     source: { type: "farmer_voice", ref: "audio:SS.s-SS.s", quote, asr_confidence, confirmed_by_farmer: false } }
 // Candidates are NEVER used until the farmer confirms each one by tap (Confirm screen).
 // Unknown speech -> return [] and the farmer enters values by tap instead.
 
-const FIELDS_BY_DEMO = {
+import type { CandidateClaim, ClaimField, ClaimUnit, Transcript } from "../types/index.ts";
+
+type Row = [field: ClaimField, value: string | number, unit: ClaimUnit, spoken: string];
+
+const FIELDS_BY_DEMO: Record<string, Row[]> = {
   "Mimi nalima kahawa tu.": [
     ["crop_type", "coffee", null, "nalima kahawa"],
     ["plot_area", 5, "acre", "ekari tano"],
@@ -27,7 +31,7 @@ const FIELDS_BY_DEMO = {
   ],
 };
 
-export async function extractClaims({ segments }) {
+export async function extractClaims({ segments }: Transcript): Promise<CandidateClaim[]> {
   const rows = FIELDS_BY_DEMO[segments[0]?.text] ?? [];
   return rows.map(([field, value, unit, spoken], i) => {
     const seg = segments[i] ?? segments[segments.length - 1];

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Screen, Say, YesNo } from "./ui.jsx";
-import { CONSENT_SCOPE, now } from "./capture.js";
+import { Screen, Say, YesNo } from "./ui.tsx";
+import { CONSENT_SCOPE, now } from "./capture.ts";
+import type { Consent as ConsentRecord } from "../types/index.ts";
 
-export default function Consent({ onAgree, onDecline }) {
+export default function Consent({ onAgree, onDecline }: { onAgree: (c: ConsentRecord) => void; onDecline: () => void }) {
   const [declined, setDeclined] = useState(false);
 
   if (declined) {

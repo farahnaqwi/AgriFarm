@@ -1,18 +1,27 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say } from "./ui.jsx";
-import { getPosition, getHeading, startCompass, demoOn } from "../lib/geo.js";
-import { insidePlot } from "../lib/geometry.js";
-import { dhash } from "../lib/dhash.js";
-import { save } from "../offline/store.js";
-import { now } from "./capture.js";
+import { Screen, Say } from "./ui.tsx";
+import { getPosition, getHeading, startCompass, demoOn } from "../lib/geo.ts";
+import { insidePlot } from "../lib/geometry.ts";
+import { dhash } from "../lib/dhash.ts";
+import { save } from "../offline/store.ts";
+import { now } from "./capture.ts";
+import type { CapturePhoto, DemoFarm } from "../types/index.ts";
+
+interface Props {
+  farm: DemoFarm;
+  ring: number[][];
+  photos: CapturePhoto[];
+  onAdd: (photo: CapturePhoto) => void;
+  onDone: () => void;
+}
 
 // In-app camera only: there is deliberately no file/gallery picker.
 
-function demoFrame(n) {
+function demoFrame(n: number): HTMLCanvasElement {
   const c = document.createElement("canvas");
   c.width = 640;
   c.height = 480;
-  const g = c.getContext("2d");
+  const g = c.getContext("2d")!;
   const grad = g.createLinearGradient(0, 0, 640 * Math.random(), 480);
   grad.addColorStop(0, `hsl(${100 + n * 30}, 45%, 35%)`);
   grad.addColorStop(1, `hsl(${60 + Math.random() * 40}, 35%, ${45 + n * 8}%)`);
@@ -33,35 +42,35 @@ function demoFrame(n) {
   return c;
 }
 
-const angleDelta = (a, b) => (a == null || b == null ? null : Math.round(((b - a) % 360 + 360) % 360));
+const angleDelta = (a: number | null | undefined, b: number | null): number | null => (a == null || b == null ? null : Math.round(((b - a) % 360 + 360) % 360));
 
-export default function Photos({ farm, ring, photos, onAdd, onDone }) {
-  const video = useRef(null);
-  const [camera, setCamera] = useState("starting"); // starting | live | demo
-  const [say, setSay] = useState(["CAPTURE_PHOTO"]);
+export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
+  const video = useRef<HTMLVideoElement>(null);
+  const [camera, setCamera] = useState<"starting" | "live" | "demo">("starting");
+  const [say, setSay] = useState<string[]>(["CAPTURE_PHOTO"]);
   const [busy, setBusy] = useState(false);
-  const [thumbs, setThumbs] = useState({});
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    let stream;
+    let stream: MediaStream | undefined;
     navigator.mediaDevices?.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then((s) => {
         stream = s;
-        video.current.srcObject = s;
+        if (video.current) video.current.srcObject = s;
         setCamera("live");
       })
       .catch(() => setCamera("demo"));
     return () => stream?.getTracks().forEach((tr) => tr.stop());
   }, []);
 
-  function grab() {
+  function grab(): HTMLCanvasElement {
     const v = video.current;
     if (camera !== "live" || !v?.videoWidth) return demoFrame(photos.length);
     const scale = Math.min(1, 1280 / v.videoWidth);
     const c = document.createElement("canvas");
     c.width = v.videoWidth * scale;
     c.height = v.videoHeight * scale;
-    c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+    c.getContext("2d")!.drawImage(v, 0, 0, c.width, c.height);
     return c;
   }
 
@@ -83,7 +92,7 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }) {
     const idx = photos.length;
     const photo_id = `ph${idx + 1}`;
     const heading_deg = getHeading(idx);
-    let freshness = null;
+    let freshness: CapturePhoto["freshness"] = null;
     const prev = photos[idx - 1];
     if (idx % 2 === 1 && prev) {
       const delta = angleDelta(prev.heading_deg, heading_deg);
@@ -96,7 +105,7 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }) {
         passed: delta != null && delta >= 120 && delta <= 240 && secs <= 60,
       };
     }
-    const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.8));
+    const blob = await new Promise<Blob>((r, reject) => canvas.toBlob((b) => (b ? r(b) : reject(new Error("toBlob failed"))), "image/jpeg", 0.8));
     await save(`photo:${photo_id}`, blob);
     setThumbs((t) => ({ ...t, [photo_id]: URL.createObjectURL(blob) }));
     onAdd({
