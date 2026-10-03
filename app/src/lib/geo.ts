@@ -41,23 +41,35 @@ export function getPosition({ farm = "A", outside = false }: { farm?: DemoFarm; 
 }
 
 export const GOOD_FIX_M = 20;
-export interface Fix { accuracy: number; demo: boolean }
+export type FixState =
+  | { status: "searching" }
+  | { status: "fix"; accuracy: number; demo: boolean }
+  | { status: "denied" }
+  | { status: "unavailable" };
 
-/** Reports GPS lock quality: onFix({ accuracy, demo }) or onFix(null) while searching. Returns stop(). */
-export function watchFix(onFix: (fix: Fix | null) => void): () => void {
+/** Reports GPS lock quality as it changes. Returns stop(). */
+export function watchFix(onFix: (fix: FixState) => void): () => void {
   if (demoOn()) {
-    onFix({ accuracy: 6, demo: true });
+    onFix({ status: "fix", accuracy: 6, demo: true });
     return () => {};
   }
-  if (!navigator.geolocation) return () => {};
-  onFix(null);
+  if (!navigator.geolocation) {
+    onFix({ status: "unavailable" });
+    return () => {};
+  }
+  onFix({ status: "searching" });
   const id = navigator.geolocation.watchPosition(
-    (p) => onFix({ accuracy: Math.round(p.coords.accuracy), demo: false }),
-    () => onFix(null),
+    (p) => onFix({ status: "fix", accuracy: Math.round(p.coords.accuracy), demo: false }),
+    // Timeouts keep searching; only a refusal or a dead GPS is reported as a problem.
+    (e) => onFix(e.code === e.PERMISSION_DENIED ? { status: "denied" } : e.code === e.POSITION_UNAVAILABLE ? { status: "unavailable" } : { status: "searching" }),
     { enableHighAccuracy: true, maximumAge: 0 },
   );
   return () => navigator.geolocation.clearWatch(id);
 }
+
+/** GeolocationPositionError code 1 = the user or browser refused location. */
+export const isLocationDenied = (e: unknown): boolean =>
+  typeof e === "object" && e !== null && "code" in e && (e as GeolocationPositionError).code === 1;
 
 /** Streams [lon,lat] points while the farmer walks her boundary. Returns a stop() function. */
 export function watchWalk(onPoint: (p: LonLat) => void, { farm = "A" }: { farm?: DemoFarm } = {}): () => void {

@@ -3,6 +3,9 @@
 // CONTRACT
 //   transcribe(audioBlob, { demoFarm }) -> Promise<Transcript>  (types/index.ts):
 //     { text, segments: [{ start, end, text, confidence }] }
+//   prepareAsr(onProgress?: (fraction 0..1) => void) -> Promise<void>
+//     loads the model from the app's own offline cache (bundled at install, never downloaded on first use).
+//     The Speak screen shows progress and keeps the mic button disabled until it resolves.
 // Runs fully offline. The raw audio is discarded after this call (consent: deleted_after_extraction).
 
 import type { DemoFarm, Transcript } from "../types/index.ts";
@@ -33,6 +36,13 @@ export const DEMO_TRANSCRIPTS: Record<DemoFarm, Transcript> = {
     ],
   },
 };
+
+export async function prepareAsr(onProgress?: (fraction: number) => void): Promise<void> {
+  for (let i = 1; i <= 5; i++) {
+    await sleep(120);
+    onProgress?.(i / 5);
+  }
+}
 
 export async function transcribe(_audioBlob: Blob | null, { demoFarm = "A" }: { demoFarm?: DemoFarm } = {}): Promise<Transcript> {
   await sleep(900);

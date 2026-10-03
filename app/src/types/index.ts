@@ -48,3 +48,9 @@ export interface Transcript {
 }
 
 export type LonLat = [number, number];
+
+/** A plot in the cooperative's registry, with a precomputed evidence card bundled on the phone. */
+export interface RegisteredPlot {
+  plot_id: string;
+  ring: number[][];
+}

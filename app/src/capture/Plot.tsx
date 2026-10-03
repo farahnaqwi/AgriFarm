@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Screen, Say } from "./ui.tsx";
-import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type Fix } from "../lib/geo.ts";
-import type { DemoFarm, LonLat, PlotCapture } from "../types/index.ts";
+import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type FixState } from "../lib/geo.ts";
+import { matchRegisteredPlot } from "../lib/registry.ts";
+import { listRegisteredPlots } from "../data/cards.ts";
+import { PROBLEM } from "./labels.ts";
+import type { DemoFarm, LonLat, PlotCapture, RegisteredPlot } from "../types/index.ts";
 import { areaHa, centroid, closeRing, HA_PER_ACRE } from "../lib/geometry.ts";
 import { now } from "./capture.ts";
 
@@ -12,19 +15,21 @@ type Mode = "walk" | "draw" | "walked" | null;
 /** Written by `npm run basemap` (app/public/map/basemap.json); precached, so it works offline. */
 interface Basemap { file: string; bounds: L.LatLngBoundsLiteral; attribution: string }
 
-export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture) => void }) {
+export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture, plotId: string | null) => void }) {
   const mapEl = useRef<HTMLDivElement>(null);
   const layer = useRef<L.LayerGroup | null>(null);
   const modeRef = useRef<Mode>(null);
   const stopWalk = useRef<(() => void) | null>(null);
   const [mode, setModeState] = useState<Mode>(null);
   const [pts, setPts] = useState<LonLat[]>([]);
-  const [fix, setFix] = useState<Fix | null>(null);
+  const [fix, setFix] = useState<FixState>({ status: "searching" });
+  const [registry, setRegistry] = useState<RegisteredPlot[]>([]);
   const setMode = (m: Mode) => { modeRef.current = m; setModeState(m); };
-  const goodFix = !!fix && fix.accuracy <= GOOD_FIX_M;
+  const goodFix = fix.status === "fix" && fix.accuracy <= GOOD_FIX_M;
 
   // GPS needs no internet, but without it the first satellite lock can take minutes.
   useEffect(() => watchFix(setFix), []);
+  useEffect(() => { listRegisteredPlots().then(setRegistry); }, []);
 
   useEffect(() => {
     const ring = DEMO_FARMS[farm]?.ring;
@@ -80,25 +85,29 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
     setMode("walked");
   }
 
-  const ha = pts.length >= 3 ? areaHa(closeRing(pts)) : 0;
+  const ring = pts.length >= 3 ? closeRing(pts) : null;
+  const ha = ring ? areaHa(ring) : 0;
+  const match = ring ? matchRegisteredPlot(ring, registry) : null;
 
   return (
     <Screen step={4} title="Mipaka ya shamba" titleEn="Your farm boundary"
       footer={
         <button className="big primary" disabled={pts.length < 3 || mode === "walk"}
-          onClick={() => onDone({
-            geometry: { type: "Polygon", coordinates: [closeRing(pts) as PlotCapture["geometry"]["coordinates"][0]] }, // ≥3 points + closing point = schema minItems 4
+          onClick={() => ring && onDone({
+            geometry: { type: "Polygon", coordinates: [ring as PlotCapture["geometry"]["coordinates"][0]] }, // ≥3 points + closing point = schema minItems 4
             geometry_source: mode === "draw" ? "drawn_on_map" : "gps_walk",
             captured_at: now(),
-          })}>
+          }, match?.plot_id ?? null)}>
           Endelea →<span>Continue</span>
         </button>
       }>
       <Say ids={["CAPTURE_WALK", "CAPTURE_DRAW"]} />
-      <p className={goodFix ? "gps ok" : "gps"}>
-        {!fix && <>📡 Inatafuta satelaiti… <span className="en">Searching for satellites. Without internet the first lock can take a few minutes. Stand in the open.</span></>}
-        {fix && !goodFix && <>📡 ±{fix.accuracy} m · subiri kidogo <span className="en">Not accurate enough yet, wait a moment</span></>}
+      <p className={goodFix ? "gps ok" : fix.status === "denied" || fix.status === "unavailable" ? "gps bad" : "gps"}>
+        {fix.status === "searching" && <>📡 Inatafuta satelaiti… <span className="en">Searching for satellites. Without internet the first lock can take a few minutes. Stand in the open.</span></>}
+        {fix.status === "fix" && !goodFix && <>📡 ±{fix.accuracy} m · subiri kidogo <span className="en">Not accurate enough yet, wait a moment</span></>}
         {goodFix && <>📡 ±{fix.accuracy} m ✓ <span className="en">GPS ready</span></>}
+        {fix.status === "denied" && <>⚠ {PROBLEM.gps_denied.sw}<span className="en">{PROBLEM.gps_denied.en}</span></>}
+        {fix.status === "unavailable" && <>⚠ {PROBLEM.gps_unavailable.sw}<span className="en">{PROBLEM.gps_unavailable.en}</span></>}
       </p>
       <div className="map" ref={mapEl} />
       <div className="map-tools">
@@ -111,6 +120,9 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
       {ha > 0 && (
         <p className="area">≈ {ha.toFixed(2)} ha · {(ha / HA_PER_ACRE).toFixed(1)} ekari</p>
       )}
+      {ring && mode !== "walk" && (match
+        ? <p className="registry ok">✓ Shamba limesajiliwa na chama <span className="en">Matches registered plot {match.plot_id}, so satellite checks will run</span></p>
+        : <p className="registry">⚠ {PROBLEM.not_registered.sw}<span className="en">{PROBLEM.not_registered.en}</span></p>)}
     </Screen>
   );
 }

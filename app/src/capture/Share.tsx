@@ -47,7 +47,8 @@ export default function Share({ report, sealed, onSealed, onHome }: Props) {
   }
   return (
     <Screen step={6} title="Shiriki?" titleEn="Share?">
-      <Say ids={["DISCLAIMER", "SHARE_ASK"]} />
+      {report.not_sure.flag && <p className="banner warn">⚠ Hatuna uhakika kuhusu baadhi ya sehemu. <span className="en">Some parts are uncertain. Talk to your extension officer or cooperative before sharing.</span></p>}
+      <Say ids={report.not_sure.flag ? ["NOT_SURE", "DISCLAIMER", "SHARE_ASK"] : ["DISCLAIMER", "SHARE_ASK"]} />
       <YesNo disabled={phase === "sealing"} onYes={approve} onNo={() => setPhase("declined")} />
     </Screen>
   );

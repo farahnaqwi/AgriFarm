@@ -133,3 +133,11 @@ blockquote { margin: 0 0 10px; color: var(--muted); font-style: italic; }
 
 .lender { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
 code { word-break: break-all; }
+.gps.bad, .problem { background: #f9d9d2; color: #7d2414; }
+.problem { margin: 0; padding: 8px 10px; border-radius: 10px; font-weight: 600; }
+.registry { margin: 0; padding: 8px 10px; border-radius: 10px; background: #fbe7c6; color: #6b4300; font-weight: 600; font-size: 0.9rem; }
+.registry.ok { background: #dcefd9; color: #1d5a26; }
+.pending { margin: 0; padding: 8px 10px; border-radius: 10px; background: #ece9e0; color: var(--ink); font-weight: 600; }
+.cam-problem { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center; text-align: center; padding: 16px; color: #fff; background: #3a2a26; }
+.cam-problem .en { color: #e9d9d2; }
+.cam-problem .chip { color: var(--ink); }

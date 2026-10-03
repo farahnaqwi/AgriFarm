@@ -1,4 +1,4 @@
-// GENERATED from docs/schema.json by `npm run types`. Do not edit by hand.
+// GENERATED from docs/schema.json by: npm run types. Do not edit by hand.
 
 export type Claim = {
   claim_id: string;
@@ -348,6 +348,7 @@ export interface FarmEvidenceReport {
       | "low_classifier_confidence"
       | "too_few_cloud_free_months"
       | "plot_too_small_for_satellite"
+      | "plot_not_registered"
       | "low_asr_confidence"
       | "unit_ambiguous"
       | "possible_duplicate_photo"

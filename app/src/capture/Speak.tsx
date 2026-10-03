@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Screen, Say } from "./ui.tsx";
 import { stopAudio } from "../lib/audio.ts";
-import { transcribe } from "../ai/asr.ts";
+import { prepareAsr, transcribe } from "../ai/asr.ts";
+import { demoOn } from "../lib/geo.ts";
+import { PROBLEM } from "./labels.ts";
 import { extractClaims } from "../ai/extract.ts";
 import type { CandidateClaim, DemoFarm, Transcript } from "../types/index.ts";
 
@@ -10,6 +12,12 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (c
   const [seconds, setSeconds] = useState(0);
   const [result, setResult] = useState<{ transcript: Transcript; claims: CandidateClaim[] } | null>(null);
   const rec = useRef<{ stop: () => void } | null>(null);
+  const [modelReady, setModelReady] = useState(0); // 0..1 while the on-device speech model loads
+  const [micBlocked, setMicBlocked] = useState(false);
+
+  useEffect(() => {
+    prepareAsr(setModelReady).then(() => setModelReady(1));
+  }, []);
 
   useEffect(() => {
     if (phase !== "recording") return;
@@ -43,8 +51,12 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (c
       mr.start();
       rec.current = mr;
     } catch {
-      // No microphone (e.g. desktop preview): continue with no audio; the fake/real ASR handles null.
-      rec.current = { stop: () => finish(null) };
+      if (!demoOn()) {
+        // Blocked or missing mic: say so, and offer tapping instead. Values are confirmed by tap either way.
+        setMicBlocked(true);
+        return;
+      }
+      rec.current = { stop: () => finish(null) }; // demo without a mic: the fake transcript stands in
     }
     setPhase("recording");
   }
@@ -65,7 +77,16 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (c
       )}
     >
       <Say ids={["CAPTURE_SPEAK"]} />
-      {phase === "idle" && <button className="mic" onClick={start} aria-label="Record">🎙<span>Bonyeza uongee</span></button>}
+      {phase === "idle" && modelReady < 1 && (
+        <p className="working">Inaandaa… {Math.round(modelReady * 100)}% <span className="en">Preparing speech recognition on this phone</span></p>
+      )}
+      {phase === "idle" && modelReady >= 1 && !micBlocked && (
+        <button className="mic" onClick={start} aria-label="Record">🎙<span>Bonyeza uongee</span></button>
+      )}
+      {micBlocked && <p className="problem">⚠ {PROBLEM.mic_denied.sw}<span className="en">{PROBLEM.mic_denied.en}</span></p>}
+      {(phase === "idle" || micBlocked) && (
+        <button className="link" onClick={() => onClaims([])}>✍ Jaza kwa kugusa <span className="en">Fill in by tapping instead</span></button>
+      )}
       {phase === "recording" && (
         <button className="mic live" onClick={stop} aria-label="Stop">⏹<span>{seconds}s · Simamisha</span></button>
       )}

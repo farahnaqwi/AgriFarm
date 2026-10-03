@@ -243,7 +243,7 @@
         "flag": { "type": "boolean", "description": "True = machine could not decide something important. Farmer is told to ask a person before sharing; lender sees a banner and the site-visit button first." },
         "reasons": {
           "type": "array", "uniqueItems": true,
-          "items": { "enum": ["low_classifier_confidence", "too_few_cloud_free_months", "plot_too_small_for_satellite", "low_asr_confidence", "unit_ambiguous", "possible_duplicate_photo", "plot_overlaps_other_plot", "freshness_challenge_failed", "photo_outside_plot"] }
+          "items": { "enum": ["low_classifier_confidence", "too_few_cloud_free_months", "plot_too_small_for_satellite", "plot_not_registered", "low_asr_confidence", "unit_ambiguous", "possible_duplicate_photo", "plot_overlaps_other_plot", "freshness_challenge_failed", "photo_outside_plot"] }
         },
         "phrase_id": { "type": ["string", "null"] }
       },

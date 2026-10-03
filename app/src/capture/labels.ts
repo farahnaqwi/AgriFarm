@@ -42,3 +42,14 @@ export const TIER: Record<"self_reported" | "machine_verified" | "attested", { s
 /** Harvest year a farmer names -> rainfall season id (2022 -> "2021/22"). */
 export const seasonFromYear = (y: number): string => `${y - 1}/${String(y).slice(2)}`;
 export const yearFromSeason = (s: string): number => Number(s.slice(0, 4)) + 1;
+
+/** On-screen problems and what to do about them (not spoken). Swahili is DRAFT. */
+export const PROBLEM = {
+  camera_denied: { sw: "Kamera imezuiwa. Ruhusu kamera kwenye mipangilio ya kivinjari, kisha jaribu tena.", en: "The camera is blocked. Allow camera access in the browser settings, then try again." },
+  camera_missing: { sw: "Simu hii haina kamera inayopatikana.", en: "No camera is available on this device." },
+  insecure: { sw: "Fungua programu kupitia kiungo cha https.", en: "Open the app from its https link: camera, microphone and GPS only work over a secure connection." },
+  mic_denied: { sw: "Kipaza sauti kimezuiwa. Unaweza kuendelea kwa kugusa badala ya kuongea.", en: "The microphone is blocked. You can continue by tapping instead of speaking." },
+  gps_denied: { sw: "Mahali (GPS) pamezuiwa. Ruhusu mahali kwenye mipangilio, kisha jaribu tena. Bado unaweza kuchora shamba.", en: "Location is blocked. Allow location in the settings, then try again. You can still draw your farm." },
+  gps_unavailable: { sw: "Simu haipati mahali. Nenda mahali pa wazi na usubiri kidogo.", en: "The phone can't get a location. Move to an open place and wait a moment." },
+  not_registered: { sw: "Shamba hili halijasajiliwa na chama, kwa hiyo picha za satelaiti haziwezi kukagua madai yako bado.", en: "This plot isn't in the cooperative's registry yet, so satellite and rain checks will say \"could not be checked\". The cooperative can register it." },
+} as const;

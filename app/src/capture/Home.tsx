@@ -10,9 +10,10 @@ interface Props {
   onFarm: (farm: DemoFarm) => void;
   onStart: () => void;
   onWipe: () => void;
+  pending: number;
 }
 
-export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }: Props) {
+export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe, pending }: Props) {
   return (
     <Screen title="AgriFarm" titleEn="Farm evidence report">
       <p className="lead">
@@ -21,6 +22,9 @@ export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe }: Pr
       </p>
       <button className="big primary" onClick={onStart}>▶ Anza<span>Start</span></button>
       <Install />
+      {pending > 0 && (
+        <p className="pending">📤 Ripoti {pending} inasubiri mtandao <span className="en">{pending} shared report(s) will send automatically when there is internet</span></p>
+      )}
 
       <details className="panel">
         <summary>Demo settings</summary>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Screen, Say } from "./ui.tsx";
-import { getPosition, getHeading, startCompass, demoOn } from "../lib/geo.ts";
+import { getPosition, getHeading, startCompass, demoOn, isLocationDenied } from "../lib/geo.ts";
+import { PROBLEM } from "./labels.ts";
 import { insidePlot } from "../lib/geometry.ts";
 import { dhash } from "../lib/dhash.ts";
 import { save } from "../offline/store.ts";
@@ -16,6 +17,15 @@ interface Props {
 }
 
 // In-app camera only: there is deliberately no file/gallery picker.
+// Generated frames exist ONLY in demo mode. Outside it, no working camera means no photos.
+
+type Camera = "starting" | "live" | "demo" | "denied" | "missing" | "insecure";
+
+function cameraProblem(e: unknown): Camera {
+  const name = e instanceof DOMException ? e.name : "";
+  if (name === "NotAllowedError" || name === "SecurityError") return "denied";
+  return "missing"; // NotFoundError, NotReadableError (in use), OverconstrainedError...
+}
 
 function demoFrame(n: number): HTMLCanvasElement {
   const c = document.createElement("canvas");
@@ -46,26 +56,36 @@ const angleDelta = (a: number | null | undefined, b: number | null): number | nu
 
 export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
   const video = useRef<HTMLVideoElement>(null);
-  const [camera, setCamera] = useState<"starting" | "live" | "demo">("starting");
+  const [camera, setCamera] = useState<Camera>("starting");
+  const [problem, setProblem] = useState<{ sw: string; en: string } | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [say, setSay] = useState<string[]>(["CAPTURE_PHOTO"]);
   const [busy, setBusy] = useState(false);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let stream: MediaStream | undefined;
-    navigator.mediaDevices?.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+    setCamera("starting");
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCamera(demoOn() ? "demo" : window.isSecureContext ? "missing" : "insecure");
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
       .then((s) => {
         stream = s;
         if (video.current) video.current.srcObject = s;
         setCamera("live");
       })
-      .catch(() => setCamera("demo"));
+      .catch((e: unknown) => setCamera(demoOn() ? "demo" : cameraProblem(e)));
     return () => stream?.getTracks().forEach((tr) => tr.stop());
-  }, []);
+  }, [attempt]);
 
-  function grab(): HTMLCanvasElement {
+  const canShoot = camera === "live" || camera === "demo";
+
+  function grab(): HTMLCanvasElement | null {
+    if (camera === "demo") return demoFrame(photos.length);
     const v = video.current;
-    if (camera !== "live" || !v?.videoWidth) return demoFrame(photos.length);
+    if (camera !== "live" || !v?.videoWidth) return null;
     const scale = Math.min(1, 1280 / v.videoWidth);
     const c = document.createElement("canvas");
     c.width = v.videoWidth * scale;
@@ -75,10 +95,17 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
   }
 
   async function shoot({ outside = false } = {}) {
+    if (!canShoot) return;
     setBusy(true);
+    setProblem(null);
     await startCompass();
-    const pos = await getPosition({ farm, outside }).catch(() => null);
+    let locationDenied = false;
+    const pos = await getPosition({ farm, outside }).catch((e: unknown) => {
+      locationDenied = isLocationDenied(e);
+      return null;
+    });
     if (!pos) {
+      if (locationDenied) setProblem(PROBLEM.gps_denied);
       setSay(["CAPTURE_NO_GPS"]);
       setBusy(false);
       return;
@@ -89,6 +116,10 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
       return;
     }
     const canvas = grab();
+    if (!canvas) {
+      setBusy(false);
+      return;
+    }
     const idx = photos.length;
     const photo_id = `ph${idx + 1}`;
     const heading_deg = getHeading(idx);
@@ -119,7 +150,7 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
       phash: dhash(canvas),
       duplicate_of: null,
       freshness,
-      demo: pos.demo || camera !== "live",
+      demo: pos.demo || camera === "demo",
     });
     setSay(idx % 2 === 0 ? ["CAPTURE_TURN"] : ["PHOTO_INSIDE"]);
     setBusy(false);
@@ -131,9 +162,19 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
       <Say key={say.join()} ids={say} />
       <div className="camera">
         <video ref={video} autoPlay playsInline muted hidden={camera !== "live"} />
-        {camera === "demo" && <div className="cam-demo">DEMO CAMERA<span className="en">No camera here, so frames are generated.</span></div>}
-        <button className="shutter" disabled={busy || camera === "starting"} onClick={() => shoot()} aria-label="Take photo" />
+        {camera === "demo" && <div className="cam-demo">DEMO CAMERA<span className="en">Demo mode without a camera, so frames are generated.</span></div>}
+        {(camera === "denied" || camera === "missing" || camera === "insecure") && (
+          <div className="cam-problem">
+            <b>📷 ⚠ {PROBLEM[`camera_${camera === "insecure" ? "denied" : camera}`].sw}</b>
+            <span className="en">{camera === "insecure" ? PROBLEM.insecure.en : PROBLEM[`camera_${camera}`].en}</span>
+            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>↻ Jaribu tena <span className="en">Try again</span></button>
+          </div>
+        )}
+        {(canShoot || camera === "starting") && (
+          <button className="shutter" disabled={busy || !canShoot} onClick={() => shoot()} aria-label="Take photo" />
+        )}
       </div>
+      {problem && <p className="problem">⚠ {problem.sw}<span className="en">{problem.en}</span></p>}
       <div className="thumbs">
         {photos.map((p) => (
           <figure key={p.photo_id}>

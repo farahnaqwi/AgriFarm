@@ -5,7 +5,6 @@
 // tier/status/checks/confidence and everything else. Photo pixels stay in IndexedDB.
 
 import { deviceIdHash } from "../offline/store.ts";
-import { DEMO_FARMS } from "../lib/geo.ts";
 import type { Capture, Consent, DemoFarm } from "../types/index.ts";
 
 export async function newCapture(demoFarm: DemoFarm | null): Promise<Capture> {
@@ -14,7 +13,7 @@ export async function newCapture(demoFarm: DemoFarm | null): Promise<Capture> {
     farmer_language: "sw",
     device_id_hash: await deviceIdHash(),
     demo_farm: demoFarm,
-    plot_id: demoFarm ? DEMO_FARMS[demoFarm].plot_id : null,
+    plot_id: null, // set on the plot screen by matching the drawn plot to the cooperative registry
     consent: null,
     claims: [],
     plot: null,

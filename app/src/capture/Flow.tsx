@@ -4,6 +4,7 @@ import { demoOn, setDemo } from "../lib/geo.ts";
 import { playClips } from "../lib/audio.ts";
 import { buildReport } from "../engine.ts";
 import { getEvidenceCard } from "../data/cards.ts";
+import { flushOutbox } from "../data/reports.ts";
 import { newCapture } from "./capture.ts";
 import { Badges, Screen, Say } from "./ui.tsx";
 import Home from "./Home.tsx";
@@ -43,6 +44,15 @@ export default function Flow() {
     if (st) save("flow", st);
   }, [st]);
 
+  // Shared reports wait on the phone; send them on start and whenever a connection comes back.
+  const [pending, setPending] = useState(0);
+  useEffect(() => {
+    const flush = () => flushOutbox().then(({ pending }) => setPending(pending));
+    flush();
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [st?.sealed]);
+
   const patch = (p: Partial<FlowState>) => setSt((s) => (s ? { ...s, ...p } : s));
   const go = (step: Step, extra: Partial<FlowState> = {}) => patch({ ...extra, step });
   const setCapture = (p: Partial<Capture>) => setSt((s) => (s?.capture ? { ...s, capture: { ...s.capture, ...p } } : s));
@@ -79,7 +89,7 @@ export default function Flow() {
   } else if (st.step === "confirm") {
     view = <Confirm candidates={st.candidates} onDone={(claims) => (setCapture({ claims }), go("plot"))} />;
   } else if (st.step === "plot") {
-    view = <Plot farm={st.farm} onDone={(plot) => (setCapture({ plot }), go("photos"))} />;
+    view = <Plot farm={st.farm} onDone={(plot, plot_id) => (setCapture({ plot, plot_id }), go("photos"))} />;
   } else if (st.step === "photos" && capture?.plot) {
     view = (
       <Photos
@@ -105,6 +115,7 @@ export default function Flow() {
         onFarm={(farm) => patch({ farm })}
         onStart={async () => go("consent", { capture: await newCapture(st.farm), candidates: [], report: null, sealed: null })}
         onWipe={wipe}
+        pending={pending}
       />
     );
   }
