@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/((?!api/|assets/|audio/|cards/|map/).*)", "destination": "/index.html" }]
+}

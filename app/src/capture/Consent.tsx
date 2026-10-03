@@ -1,0 +1,36 @@
+import { useState } from "react";
+import { Screen, Say, YesNo, Next } from "./ui.tsx";
+import { CONSENT_SCOPE, now } from "./capture.ts";
+import type { Consent as ConsentRecord } from "../types/index.ts";
+
+export default function Consent({ onAgree, onDecline }: { onAgree: (c: ConsentRecord) => void; onDecline: () => void }) {
+  const [declined, setDeclined] = useState(false);
+
+  if (declined) {
+    return (
+      <Screen title="Sawa" titleEn="Okay" footer={<Next onClick={onDecline} sw="Mwanzo" en="Back to start" />}>
+        <Say ids={["CONSENT_DECLINED"]} />
+      </Screen>
+    );
+  }
+
+  return (
+    <Screen title="Idhini yako" titleEn="Your permission" footer={
+      <YesNo
+        onYes={() =>
+          onAgree({
+            given: true,
+            recorded_at: now(),
+            method: "tap",
+            phrase_id: "CONSENT_ASK",
+            scope: CONSENT_SCOPE,
+            raw_audio_retention: "deleted_after_extraction",
+          })
+        }
+        onNo={() => setDeclined(true)}
+      />
+    }>
+      <Say ids={["CONSENT_INTRO", "CONSENT_PRIVACY", "CONSENT_DELETE", "CONSENT_ASK"]} />
+    </Screen>
+  );
+}
