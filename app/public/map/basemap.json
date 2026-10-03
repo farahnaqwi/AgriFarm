@@ -1,0 +1,21 @@
+[
+  {
+    "id": "s2-2025-08-08-32.85_-9.20_33.00_-9.05",
+    "file": "/map/s2-2025-08-08-32.85_-9.20_33.00_-9.05.jpg",
+    "bounds": [
+      [
+        -9.2,
+        32.85
+      ],
+      [
+        -9.05,
+        33
+      ]
+    ],
+    "scene": "S2C_MSIL2A_20250808T074631_R135_T36LVQ_20250808T111514",
+    "date": "2025-08-08",
+    "cloud_cover_pct": 0.00002,
+    "attribution": "Contains modified Copernicus Sentinel data 2025",
+    "source": "Microsoft Planetary Computer, sentinel-2-l2a, asset visual (10 m)"
+  }
+]

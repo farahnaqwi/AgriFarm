@@ -4,10 +4,13 @@ import "leaflet/dist/leaflet.css";
 import { Screen, Say } from "./ui.tsx";
 import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type Fix } from "../lib/geo.ts";
 import type { DemoFarm, LonLat, PlotCapture } from "../types/index.ts";
-
-type Mode = "walk" | "draw" | "walked" | null;
 import { areaHa, centroid, closeRing, HA_PER_ACRE } from "../lib/geometry.ts";
 import { now } from "./capture.ts";
+
+type Mode = "walk" | "draw" | "walked" | null;
+
+/** Written by `npm run basemap` (app/public/map/basemap.json); precached, so it works offline. */
+interface Basemap { file: string; bounds: L.LatLngBoundsLiteral; attribution: string }
 
 export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture) => void }) {
   const mapEl = useRef<HTMLDivElement>(null);
@@ -26,10 +29,18 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
   useEffect(() => {
     const ring = DEMO_FARMS[farm]?.ring;
     const [lon, lat] = ring ? centroid(ring) : [32.93, -9.11];
-    const map = L.map(mapEl.current!, { attributionControl: true }).setView([lat, lon], 17);
+    const map = L.map(mapEl.current!, { attributionControl: true, maxZoom: 18 }).setView([lat, lon], 16);
+
+    // Offline background: bundled dry-season Sentinel-2 image (coffee stays green, maize fields are bare).
+    const satellite = L.layerGroup().addTo(map);
+    fetch("/map/basemap.json")
+      .then((r) => (r.ok ? (r.json() as Promise<Basemap[]>) : []))
+      .then((maps) => maps.forEach((b) => L.imageOverlay(b.file, b.bounds, { attribution: b.attribution, pane: "tilePane" }).addTo(satellite)))
+      .catch(() => { /* no basemap bundled */ });
     if (navigator.onLine) {
-      // Online-only reference layer. Offline basemap = Sentinel-2 RGB overlay from ml/ (TODO Sakeet: /map/{plot_id}.png).
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map);
+      // Street map only as an optional online layer; its tile servers don't allow offline bundling.
+      const streets = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" });
+      L.control.layers({ "🛰 Satelaiti": satellite, "🗺 Ramani (online)": streets }, undefined, { position: "topright" }).addTo(map);
     }
     layer.current = L.layerGroup().addTo(map);
     map.on("click", (e) => {

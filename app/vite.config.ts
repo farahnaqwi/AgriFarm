@@ -40,7 +40,7 @@ export default defineConfig({
       },
       workbox: {
         // Everything the farmer flow needs offline: app shell, phrase audio, evidence cards, map overlay.
-        globPatterns: ["**/*.{js,css,html,png,svg,json,mp3,webp}"],
+        globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,json,mp3,webp}"],
         maximumFileSizeToCacheInBytes: 60 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/api\//],
       },
