@@ -298,7 +298,7 @@
         "field": {
           "enum": ["crop_type", "plot_area", "bad_season", "cooperative_membership_years", "last_harvest_delivered", "coffee_tree_count", "land_tenure"]
         },
-        "value": { "description": "crop_type: coffee|maize|coffee_banana|other. bad_season: 'YYYY/YY'. land_tenure: titled|customary_ccro|customary_undocumented|leased|family_use|other. Numbers as numbers." },
+        "value": { "type": ["string", "number"], "description": "crop_type: coffee|maize|coffee_banana|other. bad_season: 'YYYY/YY'. land_tenure: titled|customary_ccro|customary_undocumented|leased|family_use|other. Numbers as numbers." },
         "unit": { "type": ["string", "null"], "enum": ["ha", "acre", "years", "kg_parchment", "kg_cherry", "trees", null] },
         "value_as_spoken": { "type": ["string", "null"], "description": "Words she used, original language, e.g. 'ekari tano'. Lets a person audit unit/number extraction." },
         "value_normalized": {
