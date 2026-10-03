@@ -32,15 +32,19 @@ function wait(ms: number): Promise<void> {
   });
 }
 
-/** true = played to the end, false = failed to load/play, null = stopped. */
-function playUrl(url: string): Promise<boolean | null> {
+/**
+ * "ended" = played through; "missing" = file failed to load (not generated yet);
+ * "blocked" = play() refused (e.g. autoplay policy), file may be fine; "stopped" = stopAudio() called.
+ */
+type PlayResult = "ended" | "missing" | "blocked" | "stopped";
+function playUrl(url: string): Promise<PlayResult> {
   return new Promise((resolve) => {
     const a = new Audio(url);
     audio = a;
-    wake = () => resolve(null);
-    a.onended = () => resolve(true);
-    a.onerror = () => resolve(false);
-    a.play().catch(() => resolve(false));
+    wake = () => resolve("stopped");
+    a.onended = () => resolve("ended");
+    a.onerror = () => resolve("missing");
+    a.play().catch(() => resolve(a.error ? "missing" : "blocked"));
   });
 }
 
@@ -58,15 +62,13 @@ export async function playClips(
     if (mine !== token) return false;
     onClip?.(ids[i], i);
     const key = `${lang}/${ids[i]}`;
-    const ok = missing.has(key) ? false : await playUrl(`/audio/${key}.mp3`);
+    const result: PlayResult = missing.has(key) ? "missing" : await playUrl(`/audio/${key}.mp3`);
     if (mine !== token) return false;
-    if (!ok) {
-      if (!missing.has(key)) {
-        missing.add(key);
-        listeners.forEach((fn) => fn());
-      }
-      await wait(fallbackMs(ids[i], lang));
+    if (result === "missing" && !missing.has(key)) {
+      missing.add(key); // only a real load failure is remembered; a blocked play() is retried next time
+      listeners.forEach((fn) => fn());
     }
+    if (result !== "ended") await wait(fallbackMs(ids[i], lang));
   }
   return mine === token;
 }
