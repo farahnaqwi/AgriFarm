@@ -1,4 +1,4 @@
-# Shamba Evidence
+# AgriFarm
 
 Hack-Nation × World Bank "Small AI for Development", Challenge 4, Agriculture.
 

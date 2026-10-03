@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://shamba-evidence.vercel.app/schema/evidence-report.v1.json",
+  "$id": "https://agrifarm-evidence.vercel.app/schema/evidence-report.v1.json",
   "title": "Farm Evidence Report",
   "description": "Evidence about one plot, built from the farmer's own statements and checked against sources she cannot edit. It is an evidence report, not proof: it never approves a loan and never asserts land ownership. Each claim has a tier (what supports it) and a status (whether independent data agrees). integrity.report_hash = SHA-256 (hex) of the RFC 8785 (JCS) canonical JSON of the whole report with the `integrity` member removed. The hash is computed on the farmer's device when she approves sharing.",
   "type": "object",
