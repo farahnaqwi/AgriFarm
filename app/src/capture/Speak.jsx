@@ -1,0 +1,81 @@
+import { useEffect, useRef, useState } from "react";
+import { Screen, Say } from "./ui.jsx";
+import { stopAudio } from "../lib/audio.js";
+import { transcribe } from "../ai/asr.js";
+import { extractClaims } from "../ai/extract.js";
+
+export default function Speak({ farm, onClaims }) {
+  const [phase, setPhase] = useState("idle"); // idle | recording | working | done
+  const [seconds, setSeconds] = useState(0);
+  const [result, setResult] = useState(null);
+  const rec = useRef(null);
+
+  useEffect(() => {
+    if (phase !== "recording") return;
+    setSeconds(0);
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [phase]);
+
+  useEffect(() => () => rec.current?.stop?.(), []);
+
+  async function finish(blob) {
+    setPhase("working");
+    const transcript = await transcribe(blob, { demoFarm: farm });
+    const claims = await extractClaims(transcript);
+    // `blob` goes out of scope here: raw audio is never stored (consent: deleted_after_extraction).
+    setResult({ transcript, claims });
+    setPhase("done");
+  }
+
+  async function start() {
+    stopAudio();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      const chunks = [];
+      mr.ondataavailable = (e) => chunks.push(e.data);
+      mr.onstop = () => {
+        stream.getTracks().forEach((tr) => tr.stop());
+        finish(new Blob(chunks, { type: mr.mimeType }));
+      };
+      mr.start();
+      rec.current = mr;
+    } catch {
+      // No microphone (e.g. desktop preview): continue with no audio; the fake/real ASR handles null.
+      rec.current = { stop: () => finish(null) };
+    }
+    setPhase("recording");
+  }
+
+  function stop() {
+    const r = rec.current;
+    rec.current = null;
+    r?.stop();
+  }
+
+  return (
+    <Screen
+      step={2}
+      title="Eleza kuhusu shamba"
+      titleEn="Tell us about your farm"
+      footer={phase === "done" && (
+        <button className="big primary" onClick={() => onClaims(result.claims)}>Endelea →<span>Continue</span></button>
+      )}
+    >
+      <Say ids={["CAPTURE_SPEAK"]} />
+      {phase === "idle" && <button className="mic" onClick={start} aria-label="Record">🎙<span>Bonyeza uongee</span></button>}
+      {phase === "recording" && (
+        <button className="mic live" onClick={stop} aria-label="Stop">⏹<span>{seconds}s · Simamisha</span></button>
+      )}
+      {phase === "working" && <p className="working">Inasikiliza… <span className="en">Listening on this phone…</span></p>}
+      {phase === "done" && (
+        <div className="transcript">
+          <h3>Tumesikia: <span className="en">What we heard</span></h3>
+          <p>{result.transcript.text || "—"}</p>
+          {result.claims.length === 0 && <p className="en">Nothing recognised. You can enter everything by tapping on the next screen.</p>}
+        </div>
+      )}
+    </Screen>
+  );
+}
