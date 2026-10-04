@@ -54,3 +54,6 @@ video/
 .DS_Store
 .vscode/
 .idea/
+
+app/public/models/**/*.onnx
+app/public/models/**/*.bin

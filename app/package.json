@@ -10,7 +10,8 @@
     "typecheck": "tsc",
     "types": "json2ts -i ../docs/schema.json -o src/types/report.ts --bannerComment \"// GENERATED from docs/schema.json by: npm run types. Do not edit by hand.\"",
     "audio": "node scripts/generate-audio.ts",
-    "basemap": "node scripts/fetch-basemap.ts"
+    "basemap": "node scripts/fetch-basemap.ts",
+    "fetch-models": "node scripts/fetch-models.mjs"
   },
   "dependencies": {
     "@fontsource/atkinson-hyperlegible-mono": "^5.3.0",
