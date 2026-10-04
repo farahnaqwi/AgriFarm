@@ -13,7 +13,13 @@ export default defineConfig({
       "@engine": fromRoot("../backend/engine"),
     },
   },
-  server: { fs: { allow: [".."] } },
+  // ADDED: don't pre-bundle the huge speech library; it ships its own bundle.
+  optimizeDeps: { exclude: ["@huggingface/transformers"] },
+  server: {
+    fs: { allow: [".."] },
+    // ADDED: stop the file watcher locking the big model files (the EBUSY errors).
+    watch: { ignored: ["**/public/models/**", "**/public/ort/**"] },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -39,8 +45,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Everything the farmer flow needs offline: app shell, phrase audio, evidence cards, map overlay.
-        globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,json,mp3,webp,woff2}"],
+        // ADDED onnx, wasm, mjs, txt so the speech model is cached for airplane mode.
+        globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,json,mp3,webp,woff2,onnx,wasm,mjs,txt}"],
         maximumFileSizeToCacheInBytes: 60 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/api\//],
       },

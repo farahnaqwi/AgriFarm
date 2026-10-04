@@ -44,7 +44,7 @@ export interface Capture {
 
 export interface Transcript {
   text: string;
-  segments: { start: number; end: number; text: string; confidence: number }[];
+  segments: { start: number; end: number; text: string; confidence: number | null }[];
 }
 
 export type LonLat = [number, number];

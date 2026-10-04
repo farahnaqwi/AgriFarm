@@ -11,6 +11,8 @@ import type { CandidateClaim, ClaimField, ClaimUnit, Transcript } from "../types
 
 const UNITS: Record<string, number> = {
   moja: 1, mbili: 2, tatu: 3, nne: 4, tano: 5, sita: 6, saba: 7, nane: 8, tisa: 9,
+  // Noun-class agreement forms used with "miaka" (years): miaka mitatu = 3 years
+  mmoja: 1, miwili: 2, mitatu: 3, minne: 4, mitano: 5, minane: 8,
 };
 const TENS: Record<string, number> = {
   kumi: 10, ishirini: 20, thelathini: 30, arobaini: 40, hamsini: 50,
@@ -21,13 +23,79 @@ const isDigits = (w: string) => /^\d+([.]\d+)?$/.test(w);
 const isNumWord = (w: string) =>
   isDigits(w) || w in UNITS || w in TENS || w === "mia" || w === "elfu";
 
+// ---- Cleaning up speech-recognition output ----
+
+// Other words farmers (or the speech model) use for the same unit.
+const ALIASES: Record<string, string> = {
+  heka: "ekari", eka: "ekari", acre: "ekari", acres: "ekari",
+  hektari: "hekta", hectare: "hekta", hectares: "hekta",
+  kilogramu: "kilo", kg: "kilo",
+};
+
+// Words worth correcting when misheard by one letter (e.g. "tanu" -> "tano").
+const FUZZY_TARGETS = [
+  ...Object.keys(UNITS), ...Object.keys(TENS),
+  "ekari", "hekta", "kahawa", "mahindi", "maganda",
+].filter((w) => w.length >= 4);
+
+// Common words that are one letter away from a target and must never be "corrected"
+// (sasa~saba, nani~nane, hata~hati, kila~kilo, mwaka~miaka).
+const NEVER_FUZZ = new Set(["sasa", "nani", "hata", "kila", "tena", "sana", "mwaka", "miaka", "kama", "hapa", "bado"]);
+
+// Unit words the speech model sometimes glues to the following number ("ekaritanu").
+const GLUED_PREFIXES = ["ekari", "hekta", "miaka", "kilo"];
+
+const VOWELS = new Set(["a", "e", "i", "o", "u"]);
+
+// vowelSwapCost < 1 makes o<->u, e<->i swaps (common speech-recognition slips) count as more likely.
+function editDistance(a: string, b: string, vowelSwapCost = 1): number {
+  const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++) {
+      const x = a[i - 1], y = b[j - 1];
+      const sub = x === y ? 0 : VOWELS.has(x) && VOWELS.has(y) ? vowelSwapCost : 1;
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + sub);
+    }
+  return d[a.length][b.length];
+}
+
+// Correct a word only when exactly one known word is the clear best match within one edit.
+// If two candidates are equally likely (a tie), leave the word alone: no guess, the farmer taps instead.
+const nearest = (w: string): string => {
+  if (w.length < 4 || NEVER_FUZZ.has(w) || isNumWord(w) || FUZZY_TARGETS.includes(w)) return w;
+  const candidates = FUZZY_TARGETS.filter((k) => editDistance(w, k) === 1);
+  if (candidates.length === 0) return w;
+  const scored = candidates
+    .map((k) => ({ k, cost: editDistance(w, k, 0.5) }))
+    .sort((p, q) => p.cost - q.cost);
+  if (scored.length > 1 && scored[0].cost === scored[1].cost) return w;
+  return scored[0].k;
+};
+
+// Split "ekaritanu" into ["ekari", "tano"], but only when the rest is really a number word.
+const splitGlued = (w: string): string[] => {
+  for (const p of GLUED_PREFIXES) {
+    if (w.startsWith(p) && w.length > p.length) {
+      const rest = nearest(w.slice(p.length));
+      if (isNumWord(rest)) return [p, rest];
+    }
+  }
+  return [w];
+};
+
 const tokenize = (s: string) =>
   s
     .toLowerCase()
     .replace(/[!?;:"]/g, " ")
     .replace(/[.,](?!\d)/g, " ")
     .split(/\s+/)
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((w) => ALIASES[w] ?? w)
+    .flatMap(splitGlued)
+    .map(nearest);
+
+// ---- Number parsing ----
 
 // Parses Swahili number words starting at index i.
 //   "elfu mbili ishirini na mbili" -> 2022
@@ -53,8 +121,34 @@ function parseNumber(t: string[], i: number): { value: number; next: number } | 
 
 const numberAfter = (t: string[], word: string) => {
   const k = t.indexOf(word);
-  return k >= 0 ? parseNumber(t, k + 1) : null;
+  if (k < 0) return null;
+  // Allow one short junk token between the unit and the number ("ekari di tano").
+  return parseNumber(t, k + 1) ?? ((t[k + 1]?.length ?? 9) <= 2 ? parseNumber(t, k + 2) : null);
 };
+
+// Number words, longest first, for matching inside text with the spaces removed.
+const NUMBER_WORDS = [...Object.keys(UNITS), ...Object.keys(TENS), "mia", "elfu", "na"]
+  .sort((a, b) => b.length - a.length);
+
+// "ekari tano" / "ekaritano" / "ekarita no" -> 5. Ignores where the speech model put spaces.
+function looseNumberAfter(text: string, unitWord: string): number | null {
+  const s = text.toLowerCase().replace(/[^a-z]/g, "");
+  const k = s.indexOf(unitWord);
+  if (k < 0) return null;
+  let i = k + unitWord.length;
+  const words: string[] = [];
+  while (i < s.length) {
+    const w = NUMBER_WORDS.find((n) => s.startsWith(n, i));
+    if (!w) break;
+    words.push(w);
+    i += w.length;
+  }
+  while (words.length && words[words.length - 1] === "na") words.pop();
+  const n = parseNumber(words, 0);
+  return n ? n.value : null;
+}
+
+// ---- Claim extraction ----
 
 export async function extractClaims({ segments }: Transcript): Promise<CandidateClaim[]> {
   const out: CandidateClaim[] = [];
@@ -87,13 +181,15 @@ export async function extractClaims({ segments }: Transcript): Promise<Candidate
       else if (has("mahindi")) push("crop_type", "maize", null, "mahindi");
     }
 
-    // Plot area: "ekari tano" / "hekta tano"
+    // Plot area: "ekari tano" / "hekta tano"; falls back to ignoring spaces ("ekarita no").
     for (const [word, unit] of [["ekari", "acre"], ["hekta", "ha"]] as const) {
-      if (!has(word)) continue;
-      const after = numberAfter(t, word);
+      const after = has(word) ? numberAfter(t, word) : null;
       if (after) {
         const k = t.indexOf(word);
         push("plot_area", after.value, unit, t.slice(k, after.next).join(" "));
+      } else {
+        const loose = looseNumberAfter(seg.text, word);
+        if (loose !== null) push("plot_area", loose, unit, seg.text);
       }
     }
 
@@ -107,7 +203,7 @@ export async function extractClaims({ segments }: Transcript): Promise<Candidate
       }
     }
 
-    // Cooperative membership years: "miaka kumi na moja"
+    // Cooperative membership years: "miaka kumi na moja", "miaka mitatu"
     if (has("miaka") && !isHarvest && !has("mavuno")) {
       const n = numberAfter(t, "miaka");
       if (n && n.value <= 80) {
@@ -133,7 +229,7 @@ export async function extractClaims({ segments }: Transcript): Promise<Candidate
     if (has("sina", "hakuna") && has("hati")) push("land_tenure", "customary_undocumented", null, "sina hati");
     else if (has("hati")) push("land_tenure", "titled", null, "hati");
     else if (has("urithi")) push("land_tenure", "customary_undocumented", null, "urithi");
-    else if (has("kukodi", "nimekodi", "kodi")) push("land_tenure", "leased", null, "kukodi");
+    else if (has("kukodi", "nimekodi", "ninakodi", "nakodi", "kodi")) push("land_tenure", "leased", null, "kukodi");
   }
 
   return out;
