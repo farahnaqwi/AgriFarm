@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useMemo, type ReactNode } from "react";
 import { t } from "../lib/phrases.ts";
 import { playClips, stopAudio, audioMissing, onAudioMissing, audioBlocked, onAudioBlocked } from "../lib/audio.ts";
+import { LANGUAGES, setLang, useLang } from "../lib/lang.ts";
+import type { Lang } from "../lib/phrases.ts";
 import { Icon } from "./icons.tsx";
 
 const BARS = 30;
@@ -13,6 +15,11 @@ function waveform(seed: string): number[] {
     h = (Math.imul(h, 1103515245) + 12345) >>> 0;
     return 0.22 + ((h >>> 8) % 1000) / 1280;
   });
+}
+
+/** Text in the chosen language. In Swahili, the English follows as the quiet second line. */
+export function T({ sw, en }: { sw: ReactNode; en: ReactNode }) {
+  return useLang() === "sw" ? <>{sw}<span className="en">{en}</span></> : <>{en}</>;
 }
 
 /** True while the browser refuses sound until the farmer taps. */
@@ -34,7 +41,7 @@ export function VoiceNote({ seed, playing, progress, onToggle }: { seed: string;
       <div className="wave" aria-hidden="true">
         {bars.map((b, i) => <i key={i} style={{ height: `${b * 100}%` }} className={i / BARS < progress ? "on" : ""} />)}
       </div>
-      {blocked && !playing && <span className="nudge-label">Gusa ▶ usikilize<span className="en">Tap ▶ to listen</span></span>}
+      {blocked && !playing && <span className="nudge-label"><T sw="Gusa ▶ usikilize" en="Tap ▶ to listen" /></span>}
     </div>
   );
 }
@@ -42,13 +49,14 @@ export function VoiceNote({ seed, playing, progress, onToggle }: { seed: string;
 /** A voice note (the WhatsApp idiom she already knows) with its transcript underneath. */
 export function Say({ ids, autoplay = true, onDone }: { ids: string[]; autoplay?: boolean; onDone?: () => void }) {
   const [active, setActive] = useState(-1);
+  const lang = useLang();
   const key = ids.join("|");
   const play = useCallback(async () => {
-    const done = await playClips(ids, { onClip: (_, i) => setActive(i) });
+    const done = await playClips(ids, { lang, onClip: (_, i) => setActive(i) });
     setActive(-1);
     if (done) onDone?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, lang]);
   useEffect(() => {
     if (autoplay) play();
     return stopAudio;
@@ -63,8 +71,7 @@ export function Say({ ids, autoplay = true, onDone }: { ids: string[]; autoplay?
       <div className="said">
         {ids.map((id, i) => (
           <p key={id + i} className={i === active ? "now" : ""}>
-            {t(id)}
-            <span className="en">{t(id, "en")}</span>
+            <T sw={t(id)} en={t(id, "en")} />
           </p>
         ))}
       </div>
@@ -82,13 +89,12 @@ export function Stamp({ tone, children, en, tilt = -4 }: { tone: "green" | "red"
   );
 }
 
-export function YesNo({ onYes, onNo, yes = "Ndiyo", no = "Hapana", disabled }: {
-  onYes: () => void; onNo: () => void; yes?: string; no?: string; disabled?: boolean;
-}) {
+export function YesNo({ onYes, onNo, disabled }: { onYes: () => void; onNo: () => void; disabled?: boolean }) {
+  const sw = useLang() === "sw";
   return (
     <div className="yesno">
-      <button className="yes" onClick={onYes} disabled={disabled}><Icon name="check" size={40} />{yes}<span>Yes</span></button>
-      <button className="no" onClick={onNo} disabled={disabled}><Icon name="cross" size={40} />{no}<span>No</span></button>
+      <button className="yes" onClick={onYes} disabled={disabled}><Icon name="check" size={40} />{sw ? <>Ndiyo<span>Yes</span></> : "Yes"}</button>
+      <button className="no" onClick={onNo} disabled={disabled}><Icon name="cross" size={40} />{sw ? <>Hapana<span>No</span></> : "No"}</button>
     </div>
   );
 }
@@ -98,18 +104,18 @@ export function Screen({ title, titleEn, children, footer, className }: {
 }) {
   return (
     <section className={className ? `screen ${className}` : "screen"}>
-      <h1>{title}<span className="en">{titleEn}</span></h1>
+      <h1><T sw={title} en={titleEn} /></h1>
       <div className="body">{children}</div>
       {footer && <footer>{footer}</footer>}
     </section>
   );
 }
 
-/** Primary action: ink block, Swahili large, English small. */
+/** Primary action: the chosen language large (Swahili with English small underneath). */
 export function Next({ onClick, disabled, sw = "Endelea", en = "Continue" }: { onClick: () => void; disabled?: boolean; sw?: string; en?: string }) {
   return (
     <button className="btn primary" onClick={onClick} disabled={disabled}>
-      <span className="label">{sw}<span className="en">{en}</span></span>
+      <span className="label"><T sw={sw} en={en} /></span>
       <Icon name="arrow" />
     </button>
   );
@@ -137,8 +143,22 @@ export function TopBar({ step, total, demo, onHome }: { step: number | null; tot
         {!online && <span className="tag solid">Offline</span>}
         {demo && <span className="tag">Demo GPS</span>}
         {missing && <span className="tag" title="ElevenLabs clips not generated yet">Text only</span>}
+        <LanguagePicker />
         {onHome && <button className="icon-btn" onClick={onHome} aria-label="Home"><Icon name="home" size={20} /></button>}
       </div>
     </div>
+  );
+}
+
+/** Language picker in the top bar. Native select, so phones show their own big picker. */
+function LanguagePicker() {
+  const lang = useLang();
+  return (
+    <label className="lang">
+      <span className="sr-only">Language</span>
+      <select value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+        {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+      </select>
+    </label>
   );
 }

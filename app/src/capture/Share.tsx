@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { Screen, Say, YesNo, Next, Stamp } from "./ui.tsx";
+import { Screen, Say, YesNo, Next, Stamp, T } from "./ui.tsx";
+import { useLang } from "../lib/lang.ts";
 import { Icon } from "./icons.tsx";
 import { seal } from "../engine.ts";
 import { uploadReport } from "../data/reports.ts";
@@ -20,6 +21,7 @@ export default function Share({ report, sealed, onSealed, onHome }: Props) {
   const [phase, setPhase] = useState<"ask" | "sealing" | "done" | "declined">(sealed ? "done" : "ask");
   const [qr, setQr] = useState<string | null>(null);
   const [queued, setQueued] = useState(false);
+  const sw = useLang() === "sw";
 
   useEffect(() => {
     if (sealed) QRCode.toDataURL(sealed.integrity.qr_payload, { margin: 0, width: 520, errorCorrectionLevel: "M", color: { dark: "#1b2333", light: "#fbf8f1" } }).then(setQr);
@@ -43,10 +45,10 @@ export default function Share({ report, sealed, onSealed, onHome }: Props) {
   if (phase === "done" && sealed) {
     return (
       <Screen className="sealed" title="Imefungwa" titleEn="Sealed. Show this to the loan officer." footer={home}>
-        <Stamp tone="green" en="Unchanged since you approved it" tilt={-3}>Ripoti ya ushahidi</Stamp>
+        <Stamp tone="green" en="Unchanged since you approved it" tilt={-3}>{sw ? "Ripoti ya ushahidi" : "Evidence report"}</Stamp>
         {qr && <div className="qr-frame"><img className="qr" src={qr} alt="QR code for the loan officer" /></div>}
         <p className="code"><b>{groupCode(sealed.integrity.report_hash)}</b><span className="en">Report code · SHA-256</span></p>
-        {queued && <p className="pending"><Icon name="upload" size={20} />Itatumwa ukipata mtandao · sends when online</p>}
+        {queued && <p className="pending"><Icon name="upload" size={20} /><T sw="Itatumwa ukipata mtandao" en="Sends when the phone is online" /></p>}
         <Say ids={["SHARE_DONE", "DISCLAIMER"]} />
       </Screen>
     );
@@ -56,7 +58,7 @@ export default function Share({ report, sealed, onSealed, onHome }: Props) {
     <Screen title="Ushiriki?" titleEn="Share it with the loan officer?"
       footer={<YesNo disabled={phase === "sealing"} onYes={approve} onNo={() => setPhase("declined")} />}>
       {report.not_sure.flag && (
-        <p className="banner warn"><Icon name="warn" /><span>Hatuna uhakika kuhusu baadhi ya sehemu.<span className="en">Some parts are uncertain. Talk to your extension officer or cooperative before sharing.</span></span></p>
+        <p className="banner warn"><Icon name="warn" /><span><T sw="Hatuna uhakika kuhusu baadhi ya sehemu." en="Some parts are uncertain. Talk to your extension officer or cooperative before sharing." /></span></p>
       )}
       <Say ids={report.not_sure.flag ? ["NOT_SURE", "DISCLAIMER", "SHARE_ASK"] : ["DISCLAIMER", "SHARE_ASK"]} />
     </Screen>
