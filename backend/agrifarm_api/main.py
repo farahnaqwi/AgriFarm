@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 from fastapi import FastAPI  # noqa: E402
+from fastapi.responses import RedirectResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
 
 from . import store  # noqa: E402
 from .routers import (advisor, alerts, farmers, institution, insurance, payments,  # noqa: E402
@@ -42,3 +44,18 @@ def reset_demo():
     """Restore the dummy data to its starting state."""
     store.reset()
     return {"status": "reset"}
+
+
+@app.get("/demo/farmers", tags=["System"])
+def demo_farmers():
+    """Farmer picker for the demo page only. A real app knows who is signed in."""
+    return [{k: f[k] for k in ("farmer_id", "display_name", "ward", "language")}
+            for f in store.db["farmers"].values() if not f.get("withdrawn")]
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse("/demo/")
+
+
+app.mount("/demo", StaticFiles(directory=Path(__file__).resolve().parent.parent / "demo", html=True), name="demo")

@@ -17,9 +17,11 @@ FastAPI backend for the wider platform. Evidence reports use the live Supabase t
 ```powershell
 cd backend
 python -m venv .venv; .venv\Scripts\activate; pip install -r requirements.txt   # once
-uvicorn main:app --reload          # then open http://127.0.0.1:8000/docs
+uvicorn main:app --reload          # demo UI: http://127.0.0.1:8000  ·  API docs: /docs
 python -m pytest -q                # tests
 ```
+
+The demo UI (`demo/index.html`, served at `/`) lets you switch between farmer, programme officer, extension officer and dealer, and shows every API call it makes.
 
 | Area | Endpoints |
 |---|---|

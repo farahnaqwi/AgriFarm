@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgriFarm Platform Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root {
+    --paper: #f3ede0; --paper-2: #e9e1cf; --white: #fbf8f1; --ink: #1b2333; --ink-2: #263048;
+    --green: #1d6a44; --green-2: #175a39; --red: #b3261e; --amber: #9a6200; --rule: #d3c8b0; --dim: #5d6680;
+    --sans: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+    --mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --paper: #161c29; --paper-2: #1f2737; --white: #222b3d; --ink: #ece6d8;
+      --ink-2: #c9c2b2; --rule: #36405a; --dim: #a3a6ad; --green: #4fae7c; --green-2: #175a39; --red: #e5736b; --amber: #e0a54a; }
+  }
+  :root[data-theme="dark"] { --paper: #161c29; --paper-2: #1f2737; --white: #222b3d; --ink: #ece6d8;
+    --ink-2: #c9c2b2; --rule: #36405a; --dim: #a3a6ad; --green: #4fae7c; --green-2: #175a39; --red: #e5736b; --amber: #e0a54a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.45 var(--sans); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  h1, h2, h3 { margin: 0; line-height: 1.2; }
+  h2 { font-size: 1.15rem; margin-bottom: 4px; }
+  h3 { font-size: 0.95rem; }
+  .mono { font-family: var(--mono); }
+  .dim { color: var(--dim); font-size: 0.9rem; }
+
+  header { background: #1b2333; color: #fbf8f1; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+  header h1 { font-size: 1.1rem; letter-spacing: 0.01em; }
+  header h1 span { color: #6fd3a0; }
+  .roles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .roles button { background: transparent; border: 1.5px solid #47516b; color: #fbf8f1; padding: 6px 12px; cursor: pointer; border-radius: 2px; }
+  .roles button[aria-pressed="true"] { background: #1d6a44; border-color: #1d6a44; }
+  .hdr-right { margin-left: auto; display: flex; gap: 10px; align-items: center; font-size: 0.85rem; }
+  .status-dot { width: 9px; height: 9px; border-radius: 50%; background: #aab0bc; display: inline-block; margin-right: 6px; }
+  .status-dot.ok { background: #4fae7c; } .status-dot.bad { background: #e5736b; }
+  .ghost { background: transparent; border: 1.5px solid currentColor; padding: 5px 10px; cursor: pointer; border-radius: 2px; }
+
+  .intro { padding: 14px 16px 0; max-width: 1280px; margin: 0 auto; }
+  .intro p { margin: 0; color: var(--dim); max-width: 80ch; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; padding: 16px; max-width: 1280px; margin: 0 auto; }
+  @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+
+  .card { background: var(--white); border: 1.5px solid var(--rule); padding: 14px; border-radius: 3px; }
+  .stack { display: grid; gap: 12px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn { background: var(--green); color: #fbf8f1; border: 0; padding: 9px 14px; cursor: pointer; border-radius: 2px; font-weight: 600; }
+  .btn.secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn.danger { background: var(--red); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  input, select, textarea { background: var(--paper); border: 1.5px solid var(--rule); padding: 8px 10px; border-radius: 2px; min-width: 0; }
+  textarea { width: 100%; resize: vertical; }
+  label { font-size: 0.85rem; color: var(--dim); display: grid; gap: 3px; }
+
+  .tag { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 6px; border: 1.5px solid currentColor; white-space: nowrap; display: inline-block; }
+  .tag.green { color: var(--green); } .tag.red { color: var(--red); } .tag.amber { color: var(--amber); } .tag.grey { color: var(--dim); }
+  .notice { border-left: 4px solid var(--amber); background: var(--paper); padding: 10px 12px; }
+  .notice.ok { border-color: var(--green); } .notice.bad { border-color: var(--red); }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 0.9rem; }
+  .kv dt { color: var(--dim); } .kv dd { margin: 0; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .stat { border: 1.5px solid var(--rule); padding: 10px; background: var(--paper); }
+  .stat b { display: block; font: 600 1.5rem/1.1 var(--mono); }
+  .stat span { font-size: 0.82rem; color: var(--dim); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; color: var(--dim); font-size: 0.8rem; }
+  .scroll-x { overflow-x: auto; }
+
+  /* Farmer phone */
+  .phone { max-width: 400px; margin: 0 auto; background: var(--green-2); color: #fbf8f1; border: 10px solid #1b2333; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; min-height: 640px; }
+  .phone-top { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .phone-top select { background: #175a39; color: #fbf8f1; border-color: #4f8f6d; }
+  .phone-body { flex: 1; background: var(--paper); color: var(--ink); padding: 14px; display: grid; gap: 12px; align-content: start; overflow-y: auto; max-height: 560px; }
+  .phone-nav { display: grid; grid-template-columns: repeat(5, 1fr); background: #1b2333; }
+  .phone-nav button { background: none; border: 0; color: #c6dfd1; padding: 10px 2px; font-size: 0.72rem; cursor: pointer; display: grid; justify-items: center; gap: 2px; }
+  .phone-nav button[aria-current="true"] { color: #fff; background: #263048; }
+  .phone-nav svg { width: 20px; height: 20px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: var(--paper-2); border: 1.5px solid var(--rule); padding: 5px 9px; border-radius: 14px; font-size: 0.82rem; cursor: pointer; text-align: left; }
+  .say { font-size: 1.02rem; }
+  .map { height: 260px; border: 1.5px solid var(--rule); }
+  .map.tall { height: 420px; }
+
+  /* Staff layout */
+  .staff { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 14px; }
+  @media (max-width: 700px) { .staff { grid-template-columns: 1fr; } }
+  .side { display: grid; gap: 4px; align-content: start; }
+  .side button { text-align: left; background: none; border: 1.5px solid transparent; padding: 8px 10px; cursor: pointer; border-radius: 2px; }
+  .side button[aria-current="true"] { border-color: var(--ink); background: var(--white); font-weight: 600; }
+
+  /* API log */
+  aside h2 { display: flex; justify-content: space-between; align-items: center; }
+  .log { display: grid; gap: 8px; max-height: 75vh; overflow-y: auto; }
+  .log details { border: 1.5px solid var(--rule); background: var(--white); }
+  .log summary { cursor: pointer; padding: 6px 8px; font: 0.8rem var(--mono); display: flex; gap: 6px; align-items: baseline; }
+  .log summary .p { overflow-wrap: anywhere; flex: 1; }
+  .log pre { margin: 0; padding: 8px; font: 0.72rem/1.4 var(--mono); max-height: 280px; overflow: auto; background: var(--paper); border-top: 1px solid var(--rule); white-space: pre-wrap; word-break: break-word; }
+  .m { font-weight: 600; } .s2 { color: var(--green); } .s4 { color: var(--red); }
+  .empty { color: var(--dim); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>AgriFarm <span>platform demo</span></h1>
+  <nav class="roles" aria-label="Who are you?">
+    <button data-role="farmer" aria-pressed="true">Farmer</button>
+    <button data-role="officer" aria-pressed="false">Programme officer</button>
+    <button data-role="extension" aria-pressed="false">Extension officer</button>
+    <button data-role="dealer" aria-pressed="false">Input dealer</button>
+  </nav>
+  <div class="hdr-right">
+    <span id="api-status"><span class="status-dot"></span>checking API…</span>
+    <button class="ghost" id="reset">Reset demo data</button>
+  </div>
+</header>
+<div class="intro"><p id="role-intro"></p></div>
+<main>
+  <section id="view" aria-live="polite"></section>
+  <aside class="card">
+    <h2>Behind the scenes <button class="ghost" id="clear-log" style="font-size:0.8rem">Clear</button></h2>
+    <p class="dim" style="margin:0 0 10px">Every API call the screen makes, with the JSON the Python backend returned.</p>
+    <div class="log" id="log"><p class="empty">Calls will appear here.</p></div>
+  </aside>
+</main>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const tzs = n => "TZS " + Math.round(n).toLocaleString();
+const ROLE_HEADER = { officer: "program_officer", extension: "extension_officer" };
+const INTROS = {
+  farmer: "Noor and her neighbours use a voice-first phone app. Pick a farmer, then try each tab. Answers come in Swahili or English; tap 🔊 to hear them.",
+  officer: "A government or World Bank programme officer. They see pseudonymous farmers who opted in, and nothing pays out until they approve it.",
+  extension: "The extension officer answers questions the AI advisor was not sure about. The farmer's phone picks up the reply when it has signal.",
+  dealer: "A verified input dealer redeems a farmer's e-voucher. Unverified dealers and reused codes are refused and flagged.",
+};
+const state = { role: "farmer", farmer: "F-MBZ001", tab: "farm", lang: "sw", staff: "overview", maps: [] };
+
+// ---------- API ----------
+async function api(method, path, body) {
+  const headers = { "Content-Type": "application/json" };
+  if (ROLE_HEADER[state.role]) headers["X-Role"] = ROLE_HEADER[state.role];
+  const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const data = await res.json().catch(() => null);
+  logCall(method, path, res.status, body, data, headers["X-Role"]);
+  if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
+  return data;
+}
+function logCall(method, path, status, body, data, role) {
+  const log = $("#log");
+  $(".empty", log)?.remove();
+  const d = document.createElement("details");
+  d.innerHTML = `<summary><span class="m">${method}</span><span class="p">${esc(path)}</span><span class="${status < 400 ? "s2" : "s4"}">${status}</span></summary>
+    <pre>${role ? `X-Role: ${esc(role)}\n` : ""}${body ? "Request: " + esc(JSON.stringify(body, null, 2)) + "\n\n" : ""}Response: ${esc(JSON.stringify(data, null, 2))}</pre>`;
+  log.prepend(d);
+}
+const errBox = e => `<div class="notice bad">${esc(e.message)}</div>`;
+
+// ---------- speech ----------
+function speak(text, lang) {
+  if (!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang === "sw" ? "sw-TZ" : "en-GB";
+  const v = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(lang));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+const sayBtn = (text, lang) => `<button class="btn secondary" data-say="${esc(text)}" data-lang="${lang}">🔊 Listen</button>`;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-say]");
+  if (b) speak(b.dataset.say, b.dataset.lang);
+});
+
+// ---------- maps ----------
+const CROP_COLOR = { coffee: "#7a4b1f", maize: "#c79a12", beans: "#1d6a44", other: "#5d6680" };
+function makeMap(el, features, extras = []) {
+  if (!window.L) { el.innerHTML = '<p class="dim" style="padding:10px">Map needs an internet connection.</p>'; return; }
+  const map = L.map(el, { scrollWheelZoom: false });
+  state.maps.push(map);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(map);
+  const layer = L.geoJSON({ type: "FeatureCollection", features }, {
+    style: f => ({ color: CROP_COLOR[f.properties.crop] || "#333", weight: 2, fillOpacity: 0.45 }),
+    onEachFeature: (f, l) => l.bindPopup(`<b>${esc(f.properties.plot_id)}</b> · ${esc(f.properties.crop)}<br>${esc(f.properties.area_ha)} ha${f.properties.farmer_id ? "<br>" + esc(f.properties.farmer_id) : ""}`),
+  }).addTo(map);
+  extras.forEach(x => x.addTo(map));
+  const b = layer.getBounds();
+  b.isValid() ? map.fitBounds(b, { padding: [20, 20], maxZoom: 15 }) : map.setView([-9.12, 32.93], 11);
+  setTimeout(() => map.invalidateSize(), 50);
+}
+function clearMaps() { state.maps.forEach(m => m.remove()); state.maps = []; }
+
+// ---------- icons ----------
+const ICON = {
+  farm: '<path d="M3 20h18M5 20V10l7-5 7 5v10M10 20v-5h4v5"/>',
+  advisor: '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  alerts: '<path d="M12 3 2 20h20L12 3zM12 10v4M12 17v.5"/>',
+  prices: '<path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/>',
+  wallet: '<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3V7zM3 7l12-3v3M16 13h2"/>',
+};
+const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+// =================== FARMER ===================
+const T = {
+  farm: ["Shamba", "Farm"], advisor: ["Uliza", "Ask"], alerts: ["Tahadhari", "Alerts"], prices: ["Bei", "Prices"], wallet: ["Pochi", "Wallet"],
+};
+async function renderFarmer() {
+  const farmers = await api("GET", "/demo/farmers");
+  if (!farmers.some(f => f.farmer_id === state.farmer)) state.farmer = farmers[0].farmer_id;
+  $("#view").innerHTML = `
+    <div class="phone">
+      <div class="phone-top">
+        <select id="farmer-pick" aria-label="Farmer">${farmers.map(f => `<option value="${f.farmer_id}" ${f.farmer_id === state.farmer ? "selected" : ""}>${esc(f.display_name)} · ${esc(f.ward)}</option>`).join("")}</select>
+        <button class="ghost" id="lang" style="color:#fbf8f1">${state.lang === "sw" ? "Kiswahili" : "English"}</button>
+      </div>
+      <div class="phone-body" id="pbody"><p class="dim">Loading…</p></div>
+      <nav class="phone-nav">${Object.keys(T).map(k => `<button data-tab="${k}" aria-current="${k === state.tab}">${icon(k)}${T[k][state.lang === "sw" ? 0 : 1]}</button>`).join("")}</nav>
+    </div>`;
+  $("#farmer-pick").onchange = e => { state.farmer = e.target.value; renderFarmer(); };
+  $("#lang").onclick = () => { state.lang = state.lang === "sw" ? "en" : "sw"; renderFarmer(); };
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { state.tab = b.dataset.tab; renderFarmer(); });
+  const body = $("#pbody");
+  try { await FARMER_TABS[state.tab](body); } catch (e) { body.innerHTML = errBox(e); }
+}
+
+const FARMER_TABS = {
+  async farm(el) {
+    const f = await api("GET", `/farmers/${state.farmer}`);
+    const sw = state.lang === "sw";
+    el.innerHTML = `
+      <div><h2>${esc(f.display_name)}</h2><p class="dim mono" style="margin:0">${esc(f.farmer_id)} · ${esc(f.ward)}, ${esc(f.district)}</p></div>
+      ${f.plots.length ? `<div class="map" id="fmap"></div>` : `<div class="notice">${sw ? "Hujachora shamba bado. Tembea mipaka yake ili kulisajili." : "No plot mapped yet. Walk its boundary to register it."}</div>`}
+      ${f.plots.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><h3>${esc(p.plot_id)} · ${esc(p.crop)}</h3><span class="tag green">${sw ? "imepimwa" : "measured"}</span></div>
+        <dl class="kv" style="margin:6px 0 0"><dt>${sw ? "Ukubwa uliopimwa" : "Measured size"}</dt><dd>${p.area_ha} ha</dd><dt>${sw ? "Alichosema" : "She said"}</dt><dd>${p.claimed_area_ha ?? "–"} ha</dd><dt>${sw ? "Njia" : "Method"}</dt><dd>${esc(p.boundary_method)}</dd></dl></div>`).join("")}
+      <div class="card stack">
+        <h3>${sw ? "Ridhaa yangu" : "My consent"}</h3>
+        <label class="row" style="color:var(--ink)"><input type="checkbox" id="share" ${f.consent.share_with_programmes ? "checked" : ""}> ${sw ? "Ruhusu programu za serikali kuona rekodi yangu (bila jina)" : "Let government programmes see my record (no name)"}</label>
+        <p class="dim" style="margin:0">${f.programmes.length ? (sw ? "Umesajiliwa katika: " : "Enrolled in: ") + esc(f.programmes.join(", ")) : (sw ? "Hujasajiliwa katika programu." : "Not in a programme.")}</p>
+      </div>`;
+    if (f.plots.length) makeMap($("#fmap"), f.plots.map(p => ({ type: "Feature", geometry: p.geometry, properties: p })));
+    $("#share").onchange = async e => {
+      await api("PUT", `/farmers/${state.farmer}/consent`, { registry: true, share_with_programmes: e.target.checked });
+    };
+  },
+
+  async advisor(el) {
+    const sw = state.lang === "sw";
+    const samples = sw
+      ? ["Majani ya kahawa yana madoa ya unga wa machungwa", "Viwavi wamekula majani ya mahindi", "Nihifadhi vipi magunia ili panya wasiingie?", "Ng'ombe wangu anaumwa"]
+      : ["Orange powder spots on my coffee leaves", "Worms have eaten my maize leaves", "Is this fertilizer fake? The seal looks wrong", "My cow is sick"];
+    el.innerHTML = `
+      <div><h2>${sw ? "Uliza mshauri" : "Ask the advisor"}</h2><p class="dim" style="margin:0">${sw ? "Sema au andika swali lako." : "Speak or type your question."}</p></div>
+      <textarea id="q" rows="3" placeholder="${sw ? "Swali lako…" : "Your question…"}"></textarea>
+      <div class="row"><button class="btn" id="ask">${sw ? "Uliza" : "Ask"}</button><button class="btn secondary" id="mic">🎤 ${sw ? "Sema" : "Speak"}</button></div>
+      <div class="chips">${samples.map(s => `<button class="chip" data-q="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      <div id="ans"></div>`;
+    el.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { $("#q").value = b.dataset.q; $("#ask").click(); });
+    const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    $("#mic").disabled = !Rec;
+    $("#mic").title = Rec ? "" : "Voice input is not supported in this browser";
+    $("#mic").onclick = () => {
+      const r = new Rec(); r.lang = sw ? "sw-TZ" : "en-GB";
+      r.onresult = ev => { $("#q").value = ev.results[0][0].transcript; $("#ask").click(); };
+      r.start();
+    };
+    $("#ask").onclick = async () => {
+      const text = $("#q").value.trim();
+      if (!text) return;
+      try {
+        const r = await api("POST", "/advisor/ask", { text, language: state.lang, farmer_id: state.farmer });
+        $("#ans").innerHTML = r.status === "answered"
+          ? `<div class="card stack"><div class="row"><span class="tag green">${esc(r.confidence)}</span><span class="tag grey">${esc(r.answer_id)}</span></div>
+             <p class="say" style="margin:0">${esc(r.answer)}</p>${sayBtn(r.answer, state.lang)}
+             <p class="dim" style="margin:0">${esc(r.note)}<br><i>${esc(r.review_status)}</i></p></div>`
+          : `<div class="notice stack"><span class="tag amber">${sw ? "sina uhakika" : "not sure"}</span><p class="say" style="margin:0">${esc(r.answer)}</p>${sayBtn(r.answer, state.lang)}
+             <div class="row"><button class="btn secondary" id="poll" data-id="${r.escalation_id}">${sw ? "Angalia jibu" : "Check for reply"}</button><span class="dim mono">${esc(r.escalation_id)}</span></div><div id="reply"></div></div>`;
+        const poll = $("#poll");
+        if (poll) poll.onclick = async () => {
+          const s = await api("GET", `/advisor/escalations/${poll.dataset.id}`);
+          $("#reply").innerHTML = s.answer
+            ? `<div class="notice ok"><b>${sw ? "Afisa ugani:" : "Extension officer:"}</b> ${esc(s.answer)}</div>${sayBtn(s.answer, state.lang)}`
+            : `<p class="dim">${sw ? "Bado hakuna jibu. Jaribu kama afisa ugani (juu)." : "No reply yet. Switch to Extension officer (top) to answer it."}</p>`;
+        };
+      } catch (e) { $("#ans").innerHTML = errBox(e); }
+    };
+  },
+
+  async alerts(el) {
+    const sw = state.lang === "sw";
+    const f = await api("GET", `/farmers/${state.farmer}`);
+    const months = [["2026-09", sw ? "Sasa (Sep 2026)" : "Now (Sep 2026)"], ["2026-02", "Feb 2026"], ["2025-02", sw ? "Feb 2025 (ukame)" : "Feb 2025 (drought)"]];
+    el.innerHTML = `<div><h2>${sw ? "Tahadhari za satelaiti" : "Satellite alerts"}</h2><p class="dim" style="margin:0">${sw ? "Kila mwezi, satelaiti inaangalia shamba lako." : "Each month a satellite checks how green your field is."}</p></div>
+      <label>${sw ? "Mwezi" : "Month"}<select id="month">${months.map(([v, t]) => `<option value="${v}" ${v === (state.month || "2026-09") ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+      <div id="alist" class="stack"></div>
+      <p class="dim" style="margin:0">${sw ? "Jaribu: Daudi (Igamba) sasa · Rehema Feb 2026 · Mwanaisha Feb 2025" : "Try: Daudi (Igamba) now · Rehema Feb 2026 · Mwanaisha Feb 2025"}</p>`;
+    $("#month").onchange = e => { state.month = e.target.value; FARMER_TABS.alerts(el); };
+    const month = state.month || "2026-09";
+    if (!f.plots.length) { $("#alist").innerHTML = `<p class="dim">${sw ? "Hakuna shamba lililosajiliwa." : "No registered plot."}</p>`; return; }
+    const results = await Promise.all(f.plots.map(p => api("GET", `/alerts/plots/${p.plot_id}?month=${month}`)));
+    $("#alist").innerHTML = results.map(r => {
+      const msg = r.message?.[state.lang];
+      const tag = r.status === "alert" ? `<span class="tag red">${esc(r.alert)}</span>` : r.status === "ok" ? `<span class="tag green">${sw ? "sawa" : "looks normal"}</span>` : `<span class="tag amber">${sw ? "sina uhakika" : "not sure"}</span>`;
+      const ev = r.evidence;
+      return `<div class="card stack"><div class="row" style="justify-content:space-between"><h3>${esc(r.plot_id)} · ${esc(r.crop)}</h3>${tag}</div>
+        ${msg ? `<p class="say" style="margin:0">${esc(msg)}</p>${sayBtn(msg, state.lang)}` : ""}
+        ${r.confidence ? `<p class="dim" style="margin:0">${sw ? "Uhakika" : "Confidence"}: ${esc(r.confidence)}</p>` : ""}
+        ${ev ? `<dl class="kv" style="margin:0"><dt>NDVI</dt><dd>${ev.ndvi} (${sw ? "kawaida" : "usual"} ${ev.ndvi_usual}, ${Math.round(ev.ndvi_ratio * 100)}%)</dd><dt>${sw ? "Mvua" : "Rain"}</dt><dd>${ev.rain_mm} mm (${sw ? "kawaida" : "normal"} ${ev.rain_normal_mm} mm)</dd></dl>` : ""}
+        ${r.reason ? `<p class="dim" style="margin:0">${esc(r.reason)}</p>` : ""}</div>`;
+    }).join("");
+  },
+
+  async prices(el) {
+    const sw = state.lang === "sw";
+    el.innerHTML = `<div><h2>${sw ? "Linganisha bei" : "Check a price"}</h2><p class="dim" style="margin:0">${sw ? "Mnunuzi amekupa bei gani?" : "What price did the buyer offer?"}</p></div>
+      <div class="row"><select id="com"><option value="coffee_parchment">${sw ? "Kahawa (maganda)" : "Coffee parchment"}</option><option value="maize">${sw ? "Mahindi" : "Maize"}</option></select>
+      <select id="mkt"><option value="">${sw ? "Masoko yote" : "All markets"}</option><option>Vwawa</option><option>Mlowo</option><option>Mbeya</option></select></div>
+      <div class="row"><input id="offer" type="number" value="5800" style="width:130px" aria-label="Offer TZS per kg"><span class="dim">TZS / kg</span><button class="btn" id="chk">${sw ? "Linganisha" : "Compare"}</button></div>
+      <div id="pres"></div><div id="ptable"></div>`;
+    const run = async () => {
+      try {
+        const body = { commodity: $("#com").value, offer_tzs_per_kg: +$("#offer").value, market: $("#mkt").value || null };
+        const r = await api("POST", "/prices/check-offer", body);
+        if (r.status !== "ok") { $("#pres").innerHTML = `<div class="notice">${esc(r.reason)}</div>`; return; }
+        const m = r.message[state.lang];
+        $("#pres").innerHTML = `<div class="notice ${r.gap_percent < -5 ? "bad" : "ok"} stack"><p class="say" style="margin:0">${esc(m)}</p>${sayBtn(m, state.lang)}<p class="dim" style="margin:0">${r.based_on.points} ${sw ? "bei" : "prices"}, ${esc(r.based_on.from)} → ${esc(r.based_on.to)} · ${esc(r.based_on.source)}</p></div>`;
+        const rows = await api("GET", `/prices?commodity=${body.commodity}${body.market ? "&market=" + body.market : ""}`);
+        const recent = rows.slice(-9).reverse();
+        $("#ptable").innerHTML = `<div class="scroll-x"><table><tr><th>${sw ? "Tarehe" : "Date"}</th><th>${sw ? "Soko" : "Market"}</th><th>TZS/kg</th></tr>${recent.map(p => `<tr><td class="mono">${p.date}</td><td>${esc(p.market)}</td><td class="mono">${p.tzs_per_kg.toLocaleString()}</td></tr>`).join("")}</table></div>`;
+      } catch (e) { $("#pres").innerHTML = errBox(e); }
+    };
+    $("#chk").onclick = run;
+    $("#com").onchange = () => { $("#offer").value = $("#com").value === "maize" ? 650 : 5800; };
+  },
+
+  async wallet(el) {
+    const sw = state.lang === "sw";
+    const [w, vouchers, policies, payouts] = await Promise.all([
+      api("GET", `/wallets/W-${state.farmer}`), api("GET", `/vouchers?farmer_id=${state.farmer}`),
+      api("GET", `/insurance/policies?farmer_id=${state.farmer}`), api("GET", "/payouts"),
+    ]);
+    const mine = payouts.filter(p => p.payee_wallet === `W-${state.farmer}`);
+    el.innerHTML = `
+      <div class="card"><span class="dim">${sw ? "Salio" : "Balance"} · ${esc(w.provider)}</span><b class="mono" style="font-size:1.6rem;display:block">${tzs(w.balance_tzs)}</b></div>
+      <h3>${sw ? "Vocha za ruzuku" : "Subsidy vouchers"}</h3>
+      ${vouchers.length ? vouchers.map(v => `<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(v.item)}</b><span class="tag ${v.status === "issued" ? "green" : "grey"}">${esc(v.status)}</span></div>
+        <p style="margin:4px 0 0">${sw ? "Msimbo" : "Code"}: <b class="mono">${esc(v.code)}</b> · ${tzs(v.value_tzs)}</p>
+        <p class="dim" style="margin:0">${v.status === "issued" ? (sw ? "Tumia kwa muuzaji aliyethibitishwa tu." : "Use only at a verified dealer.") : (sw ? "Imetumika " : "Redeemed ") + esc((v.redeemed_at || "").slice(0, 10))}</p></div>`).join("") : `<p class="dim">${sw ? "Hakuna vocha." : "No vouchers."}</p>`}
+      <h3>${sw ? "Bima ya mvua" : "Rainfall insurance"}</h3>
+      ${policies.length ? policies.map(p => `<div class="card"><b>${esc(p.product)}</b> · ${esc(p.season)}<p class="dim" style="margin:0">${sw ? "Kiasi cha bima" : "Sum insured"} ${tzs(p.sum_insured_tzs)} · ${sw ? "inalipa mvua ikiwa chini ya" : "pays if rain below"} ${p.trigger_ratio * 100}% ${sw ? "ya kawaida katika" : "of normal in"} ${esc(p.ward)}</p></div>`).join("") : `<p class="dim">${sw ? "Huna bima." : "No policy."}</p>`}
+      <h3>${sw ? "Malipo" : "Payments"}</h3>
+      ${mine.length ? mine.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(p.kind.replace("_", " "))}</b><span class="tag ${p.status === "paid" ? "green" : p.status === "rejected" ? "red" : "amber"}">${esc(p.status.replaceAll("_", " "))}</span></div><p style="margin:4px 0 0">${tzs(p.amount_tzs)} · ${esc(p.reason)}</p></div>`).join("")
+        : `<p class="dim">${sw ? "Hakuna malipo bado. (Afisa wa programu hutathmini bima na kuidhinisha malipo.)" : "No payments yet. (A programme officer runs the insurance check and approves payouts.)"}</p>`}`;
+  },
+};
+
+// =================== PROGRAMME OFFICER ===================
+const OFFICER_SECTIONS = {
+  overview: "Overview", map: "Registry map", targeting: "Targeting", insurance: "Insurance",
+  payouts: "Payout approvals", delivery: "Delivery tracking", disaster: "Disaster response",
+};
+async function renderOfficer() {
+  $("#view").innerHTML = `<div class="staff"><nav class="side">${Object.entries(OFFICER_SECTIONS).map(([k, t]) =>
+    `<button data-sec="${k}" aria-current="${k === state.staff}">${t}</button>`).join("")}</nav><div id="sec" class="stack"></div></div>`;
+  document.querySelectorAll("[data-sec]").forEach(b => b.onclick = () => { state.staff = b.dataset.sec; renderOfficer(); });
+  try { await OFFICER[state.staff]($("#sec")); } catch (e) { $("#sec").innerHTML = errBox(e); }
+}
+
+const OFFICER = {
+  async overview(el) {
+    const [h, climate, impact] = await Promise.all([api("GET", "/health"), api("GET", "/institution/climate"), api("GET", "/institution/impact")]);
+    el.innerHTML = `
+      <div class="card stack"><h2>Programme overview</h2><p class="dim" style="margin:0">Mbozi district · Climate-smart coffee (demo programme)</p>
+        <div class="stats">
+          <div class="stat"><b>${h.dummy_data.farmers}</b><span>registered farmers</span></div>
+          <div class="stat"><b>${h.dummy_data.plots}</b><span>mapped plots</span></div>
+          <div class="stat"><b>${climate.area_under_climate_smart_programme_ha} ha</b><span>in climate-smart programme</span></div>
+          <div class="stat"><b>${climate.drought_affected_ha} ha</b><span>drought-hit, ${esc(climate.season)}</span></div>
+          <div class="stat"><b>${climate.flood_affected_ha} ha</b><span>flood-hit, Mar 2026</span></div>
+          <div class="stat"><b>${h.supabase.status === "connected" ? h.supabase.reports : "–"}</b><span>evidence reports (Supabase)</span></div>
+        </div></div>
+      <div class="card stack"><h2>Impact: did programme plots get greener?</h2>
+        <div class="stats">
+          <div class="stat"><b>${fmtSigned(impact.groups.programme.mean_ndvi_change)}</b><span>programme plots (n=${impact.groups.programme.plots})</span></div>
+          <div class="stat"><b>${fmtSigned(impact.groups.comparison.mean_ndvi_change)}</b><span>comparison plots (n=${impact.groups.comparison.plots})</span></div>
+          <div class="stat"><b>${fmtSigned(impact.difference_in_differences)}</b><span>difference-in-differences</span></div>
+        </div>
+        <p class="dim" style="margin:0">Rainy-season NDVI, ${esc(impact.baseline)} → ${esc(impact.followup)}, ${esc(impact.crop)}. ${esc(impact.caveat)}</p></div>
+      <div class="card stack"><h2>Climate reporting</h2>
+        <div class="scroll-x"><table><tr><th>Ward</th><th>Rain vs normal, ${esc(climate.season)}</th><th>Drought</th><th>Registered ha</th></tr>
+        ${Object.entries(climate.wards).map(([w, v]) => `<tr><td>${esc(w)}</td><td class="mono">${Math.round(v.rain_ratio * 100)}%</td><td>${v.drought ? '<span class="tag red">yes</span>' : '<span class="tag grey">no</span>'}</td><td class="mono">${v.registered_ha}</td></tr>`).join("")}</table></div>
+        <div class="notice"><b>Water saved: not reported.</b> ${esc(climate.water_saved_note)}</div></div>`;
+  },
+
+  async map(el) {
+    const [reg, events] = await Promise.all([api("GET", "/institution/registry.geojson"), api("GET", "/institution/disasters")]);
+    el.innerHTML = `<div class="card stack"><h2>Live farmer registry</h2>
+      <p class="dim" style="margin:0">${reg.features.length} plots from farmers who agreed to share. Pseudonymous IDs only. Dashed red: March 2026 flood.</p>
+      <div class="row">${Object.entries(CROP_COLOR).slice(0, 3).map(([c, col]) => `<span class="row" style="gap:4px"><span style="width:12px;height:12px;background:${col};display:inline-block"></span>${c}</span>`).join("")}</div>
+      <div class="map tall" id="omap"></div></div>`;
+    const extras = window.L ? events.map(e => L.geoJSON(e.geometry, { style: { color: "#b3261e", dashArray: "6 4", weight: 2, fillOpacity: 0.08 } })) : [];
+    makeMap($("#omap"), reg.features, extras);
+  },
+
+  async targeting(el) {
+    el.innerHTML = `<div class="card stack"><h2>Who needs help most?</h2>
+      <p class="dim" style="margin:0">Build a shortlist, then issue vouchers. The system refuses ghosts and non-consenting farmers.</p>
+      <div class="row">
+        <label>Max farm size (ha)<input id="tmax" type="number" step="0.5" value="2" style="width:100px"></label>
+        <label>Drought season<select id="tdry"><option value="2024/25">2024/25</option><option value="">any</option></select></label>
+        <label>Crop<select id="tcrop"><option value="">any</option><option>coffee</option><option>maize</option><option>beans</option></select></label>
+        <label class="row" style="color:var(--ink);align-self:end"><input type="checkbox" id="talert"> has a current alert</label>
+        <button class="btn" id="trun" style="align-self:end">Find farmers</button>
+      </div></div><div id="tres"></div>`;
+    $("#trun").onclick = async () => {
+      const q = new URLSearchParams();
+      if ($("#tmax").value) q.set("max_ha", $("#tmax").value);
+      if ($("#tdry").value) q.set("drought_season", $("#tdry").value);
+      if ($("#tcrop").value) q.set("crop", $("#tcrop").value);
+      if ($("#talert").checked) q.set("with_alert", "true");
+      try {
+        const r = await api("GET", "/institution/targeting?" + q);
+        $("#tres").innerHTML = `<div class="card stack"><h3>${r.count} farmers · <span class="dim">${esc(r.note)}</span></h3>
+          ${r.count ? `<div class="scroll-x"><table><tr><th>Farmer</th><th>Ward</th><th>Crops</th><th>Why</th></tr>${r.farmers.map(f => `<tr><td class="mono">${f.farmer_id}</td><td>${esc(f.ward)}</td><td>${esc(f.crops.join(", "))}</td><td>${esc(f.why.join("; "))}</td></tr>`).join("")}</table></div>` : ""}
+          <div class="row"><button class="btn" id="issue" ${r.count ? "" : "disabled"}>Issue fertilizer vouchers to these</button>
+          <button class="btn secondary" id="issue-test">Also try F-MBZ011 + F-MBZ012</button></div><div id="ires"></div></div>`;
+        const issue = async ids => {
+          const res = await api("POST", "/vouchers/issue", { programme_id: "P-CSC-DEMO", farmer_ids: ids });
+          $("#ires").innerHTML = `${res.issued.length ? `<div class="notice ok">Issued ${res.issued.length}: ${res.issued.map(v => `<span class="mono">${v.farmer_id} → ${v.code}</span>`).join(", ")}</div>` : ""}
+            ${res.refused.map(x => `<div class="notice bad"><span class="mono">${x.farmer_id}</span> refused: ${esc(x.reason)}</div>`).join("")}`;
+        };
+        const ids = r.farmers.map(f => f.farmer_id);
+        $("#issue").onclick = () => issue(ids).catch(e => $("#ires").innerHTML = errBox(e));
+        $("#issue-test").onclick = () => issue([...ids, "F-MBZ011", "F-MBZ012"]).catch(e => $("#ires").innerHTML = errBox(e));
+      } catch (e) { $("#tres").innerHTML = errBox(e); }
+    };
+    $("#trun").click();
+  },
+
+  async insurance(el) {
+    const policies = await api("GET", "/insurance/policies");
+    const wards = [...new Set(policies.map(p => p.ward))];
+    const idx = await Promise.all(wards.map(w => api("GET", `/insurance/index/${w}?season=2024/25`)));
+    el.innerHTML = `<div class="card stack"><h2>Rainfall-index insurance · 2024/25</h2>
+      <p class="dim" style="margin:0">${policies.length} policies. Pays when ward rain for Nov–Apr falls below 75% of normal, rising to 100% at 40%. No claim forms.</p>
+      <div class="scroll-x"><table><tr><th>Ward</th><th>Rain</th><th>Normal</th><th>Index</th><th>Policies</th></tr>
+      ${idx.map(i => `<tr><td>${esc(i.ward)}</td><td class="mono">${i.rain_mm} mm</td><td class="mono">${i.normal_mm} mm</td><td>${i.ratio < 0.75 ? `<span class="tag red">${Math.round(i.ratio * 100)}%</span>` : `<span class="tag green">${Math.round(i.ratio * 100)}%</span>`}</td><td>${policies.filter(p => p.ward === i.ward).length}</td></tr>`).join("")}</table></div>
+      <div class="row"><button class="btn" id="eval">Run the index for all policies</button></div><div id="eres"></div></div>`;
+    $("#eval").onclick = async () => {
+      try {
+        const r = await api("POST", "/insurance/evaluate", { season: "2024/25" });
+        $("#eres").innerHTML = `<div class="notice ok">${r.triggered.length} payouts proposed, ${r.not_triggered.length} policies not triggered. Nothing is paid yet: approve them under <b>Payout approvals</b>.</div>
+          ${r.triggered.map(p => `<div class="card"><b>${tzs(p.amount_tzs)}</b> → <span class="mono">${esc(p.payee_wallet)}</span><p class="dim" style="margin:0">${esc(p.reason)} · payout fraction ${p.evidence.payout_fraction}</p></div>`).join("")}
+          <p class="dim">${esc(r.caveat)}</p>`;
+      } catch (e) { $("#eres").innerHTML = errBox(e); }
+    };
+  },
+
+  async payouts(el) {
+    const all = await api("GET", "/payouts");
+    const pending = all.filter(p => p.status === "pending_approval");
+    el.innerHTML = `<div class="card stack"><h2>Payout approvals</h2>
+      <p class="dim" style="margin:0">Insurance, disaster relief and dealer reimbursements wait here. A person approves each one.</p>
+      ${pending.length ? "" : `<div class="notice">Nothing waiting. Run <b>Insurance</b>, propose <b>Disaster</b> relief, or redeem a voucher as a dealer.</div>`}
+      ${pending.map(p => `<div class="card stack"><div class="row" style="justify-content:space-between"><b>${esc(p.kind.replaceAll("_", " "))} · ${tzs(p.amount_tzs)}</b><span class="mono dim">${p.payout_id}</span></div>
+        <p style="margin:0">To <span class="mono">${esc(p.payee_wallet)}</span> · ${esc(p.reason)}</p>
+        <details><summary class="dim">Evidence</summary><pre class="mono" style="font-size:0.75rem;white-space:pre-wrap">${esc(JSON.stringify(p.evidence, null, 2))}</pre></details>
+        <div class="row"><button class="btn" data-ok="${p.payout_id}">Approve &amp; pay</button><button class="btn danger" data-no="${p.payout_id}">Reject</button></div></div>`).join("")}
+      ${all.length > pending.length ? `<h3>Decided</h3><div class="scroll-x"><table><tr><th>ID</th><th>Kind</th><th>Amount</th><th>Status</th><th>By</th></tr>${all.filter(p => p.status !== "pending_approval").map(p => `<tr><td class="mono">${p.payout_id}</td><td>${esc(p.kind)}</td><td class="mono">${tzs(p.amount_tzs)}</td><td><span class="tag ${p.status === "paid" ? "green" : "red"}">${p.status}</span></td><td>${esc(p.decided_by)}</td></tr>`).join("")}</table></div>` : ""}
+      </div>`;
+    el.querySelectorAll("[data-ok],[data-no]").forEach(b => b.onclick = async () => {
+      const id = b.dataset.ok || b.dataset.no;
+      try { await api("POST", `/payouts/${id}/${b.dataset.ok ? "approve" : "reject"}`, { note: "demo decision" }); OFFICER.payouts(el); }
+      catch (e) { b.closest(".card").insertAdjacentHTML("beforeend", errBox(e)); }
+    });
+  },
+
+  async delivery(el) {
+    const d = await api("GET", "/institution/delivery");
+    const v = d.vouchers;
+    el.innerHTML = `<div class="card stack"><h2>Delivery tracking</h2>
+      <div class="stats">
+        <div class="stat"><b>${v.issued}</b><span>vouchers issued</span></div>
+        <div class="stat"><b>${v.redeemed} (${Math.round((v.redemption_rate || 0) * 100)}%)</b><span>redeemed</span></div>
+        <div class="stat"><b>${tzs(v.value_redeemed_tzs)}</b><span>value delivered</span></div>
+        <div class="stat"><b>${d.payouts.paid.count}</b><span>payouts paid · ${tzs(d.payouts.paid.tzs)}</span></div>
+        <div class="stat"><b>${d.payouts.pending_approval.count}</b><span>awaiting approval</span></div>
+      </div>
+      <h3>Redemptions by dealer</h3><p style="margin:0" class="mono">${Object.entries(v.by_dealer).map(([k, n]) => `${k}: ${n}`).join(" · ") || "none"}</p>
+      <h3>Leakage flags</h3>
+      ${d.ghost_risk.map(g => `<div class="notice bad"><span class="mono">${g.farmer_id}</span>: ${esc(g.reason)}</div>`).join("")}
+      ${v.refused_redemptions.map(f => `<div class="notice bad">Refused redemption <span class="mono">${esc(f.code)}</span> at ${esc(f.dealer_id)}: ${esc(f.reason)}</div>`).join("") || '<p class="dim" style="margin:0">No refused redemptions yet. Try one as the Input dealer.</p>'}
+      </div>`;
+  },
+
+  async disaster(el) {
+    const events = await api("GET", "/institution/disasters");
+    const e = events[0];
+    const a = await api("GET", `/institution/disasters/${e.event_id}/affected`);
+    el.innerHTML = `<div class="card stack"><h2>${esc(e.type)} · ${esc(e.date)}</h2><p class="dim" style="margin:0">Source: ${esc(e.source)}</p>
+      <div class="stats"><div class="stat"><b>${a.farmers.length}</b><span>registered farmers affected</span></div><div class="stat"><b>${a.affected_ha} ha</b><span>plots inside the flood</span></div>
+      <div class="stat"><b>${a.not_listed_without_consent}</b><span>affected, no sharing consent</span></div></div>
+      <div class="map" id="dmap"></div>
+      <div class="scroll-x"><table><tr><th>Farmer</th><th>Ward</th><th>Crops</th><th>ha</th></tr>${a.farmers.map(f => `<tr><td class="mono">${f.farmer_id}</td><td>${esc(f.ward)}</td><td>${esc(f.crops.join(", "))}</td><td class="mono">${f.total_ha}</td></tr>`).join("")}</table></div>
+      <div class="row"><label>Relief per farmer (TZS)<input id="amt" type="number" value="100000" style="width:140px"></label><button class="btn" id="relief" style="align-self:end">Propose relief payments</button></div><div id="rres"></div></div>`;
+    const reg = await api("GET", "/institution/registry.geojson?ward=Mlowo");
+    makeMap($("#dmap"), reg.features, window.L ? [L.geoJSON(e.geometry, { style: { color: "#b3261e", dashArray: "6 4", weight: 2, fillOpacity: 0.1 } })] : []);
+    $("#relief").onclick = async () => {
+      try {
+        const r = await api("POST", `/institution/disasters/${e.event_id}/propose-relief`, { amount_tzs_per_farmer: +$("#amt").value });
+        $("#rres").innerHTML = `<div class="notice ok">${r.proposals.length} relief payments proposed. ${esc(r.next_step.replace("POST /payouts/{id}/approve", "Payout approvals"))}</div>`;
+      } catch (err) { $("#rres").innerHTML = errBox(err); }
+    };
+  },
+};
+const fmtSigned = n => n == null ? "–" : (n > 0 ? "+" : "") + n.toFixed(3);
+
+// =================== EXTENSION OFFICER ===================
+async function renderExtension() {
+  const open = await api("GET", "/advisor/escalations?status=open");
+  const done = await api("GET", "/advisor/escalations?status=answered");
+  $("#view").innerHTML = `<div class="card stack"><h2>Questions the AI was not sure about</h2>
+    ${open.length ? "" : `<div class="notice">No open questions. As the Farmer, ask something the advisor can't answer (e.g. “Ng'ombe wangu anaumwa”).</div>`}
+    ${open.map(e => `<div class="card stack"><div class="row" style="justify-content:space-between"><span class="mono">${e.escalation_id} · ${esc(e.farmer_id || "anonymous")}</span><span class="tag amber">${esc(e.language)}</span></div>
+      <p class="say" style="margin:0">“${esc(e.question)}”</p>
+      <textarea rows="2" data-ans="${e.escalation_id}" placeholder="Your answer, in the farmer's language"></textarea>
+      <div class="row"><button class="btn" data-send="${e.escalation_id}">Send answer</button></div></div>`).join("")}
+    ${done.length ? `<h3>Answered</h3>${done.map(e => `<div class="card"><p style="margin:0">“${esc(e.question)}”</p><p class="dim" style="margin:4px 0 0">→ ${esc(e.answer)}</p></div>`).join("")}` : ""}
+    </div>`;
+  document.querySelectorAll("[data-send]").forEach(b => b.onclick = async () => {
+    const text = $(`[data-ans="${b.dataset.send}"]`).value.trim();
+    if (!text) return;
+    await api("POST", `/advisor/escalations/${b.dataset.send}/answer`, { answer: text });
+    renderExtension();
+  });
+}
+
+// =================== DEALER ===================
+async function renderDealer() {
+  const [dealers, vouchers] = await Promise.all([api("GET", "/vouchers/dealers"), api("GET", "/vouchers?status=issued")]);
+  $("#view").innerHTML = `<div class="card stack"><h2>Redeem an e-voucher</h2>
+    <div class="row"><label>Dealer<select id="dealer">${dealers.map(d => `<option value="${d.dealer_id}">${esc(d.name)} ${d.verified ? "✓ verified" : "✗ not verified"}</option>`).join("")}</select></label>
+    <label>Voucher code<input id="code" class="mono" placeholder="CSC-…"></label><button class="btn" id="redeem" style="align-self:end">Redeem</button></div>
+    <div id="dres"></div>
+    <p class="dim" style="margin:0">Unused codes (demo shortcut; the farmer would read hers out): ${vouchers.map(v => `<button class="chip mono" data-code="${v.code}">${v.code}</button>`).join(" ") || "none"}</p>
+    <p class="dim" style="margin:0">Try the roadside seller first, then a verified dealer, then the same code twice.</p></div>`;
+  document.querySelectorAll("[data-code]").forEach(b => b.onclick = () => $("#code").value = b.dataset.code);
+  $("#redeem").onclick = async () => {
+    try {
+      const r = await api("POST", "/vouchers/redeem", { code: $("#code").value.trim(), dealer_id: $("#dealer").value });
+      $("#dres").innerHTML = `<div class="notice ok">Redeemed ${esc(r.voucher.item)} for <span class="mono">${r.voucher.farmer_id}</span>. Reimbursement of ${tzs(r.reimbursement.amount_tzs)} is <b>${esc(r.reimbursement.status.replaceAll("_", " "))}</b> by the programme officer.</div>`;
+    } catch (e) { $("#dres").innerHTML = errBox(e); }
+  };
+}
+
+// =================== shell ===================
+async function render() {
+  clearMaps();
+  $("#role-intro").textContent = INTROS[state.role];
+  document.querySelectorAll("[data-role]").forEach(b => b.setAttribute("aria-pressed", b.dataset.role === state.role));
+  try {
+    await ({ farmer: renderFarmer, officer: renderOfficer, extension: renderExtension, dealer: renderDealer })[state.role]();
+  } catch (e) { $("#view").innerHTML = errBox(e); }
+}
+document.querySelectorAll("[data-role]").forEach(b => b.onclick = () => { state.role = b.dataset.role; render(); });
+$("#reset").onclick = async () => { await api("POST", "/demo/reset"); render(); };
+$("#clear-log").onclick = () => { $("#log").innerHTML = '<p class="empty">Calls will appear here.</p>'; };
+
+(async () => {
+  try {
+    const h = await (await fetch("/health")).json();
+    const ok = h.supabase?.status === "connected";
+    $("#api-status").innerHTML = `<span class="status-dot ${ok ? "ok" : "bad"}"></span>API ok · Supabase ${ok ? "connected" : "offline"}`;
+  } catch { $("#api-status").innerHTML = '<span class="status-dot bad"></span>API not reachable'; }
+  render();
+})();
+</script>
+</body>
+</html>
