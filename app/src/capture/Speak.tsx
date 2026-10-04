@@ -6,6 +6,8 @@ import { prepareAsr, transcribe } from "../ai/asr.ts";
 import { demoOn } from "../lib/geo.ts";
 import { PROBLEM } from "./labels.ts";
 import { extractClaims } from "../ai/extract.ts";
+import { extractClaimsEnglish } from "../ai/extract-en.ts";
+import { useLang } from "../lib/lang.ts";
 import type { CandidateClaim, DemoFarm, Transcript } from "../types/index.ts";
 
 export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onClaims: (claims: CandidateClaim[]) => void }) {
@@ -16,6 +18,7 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
   const [modelReady, setModelReady] = useState(0); // 0..1 while the on-device speech model loads
   const [asrFailed, setAsrFailed] = useState(false);
   const [micBlocked, setMicBlocked] = useState(false);
+  const lang = useLang(); // she speaks the language the app is set to
 
   useEffect(() => {
     prepareAsr(setModelReady).then(() => setModelReady(1)).catch(() => setAsrFailed(true));
@@ -33,8 +36,11 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
   async function finish(blob: Blob | null) {
     setPhase("working");
     // If recognition fails on this phone, carry on with nothing heard: every value can still be tapped.
-    const transcript = await transcribe(blob, { demoFarm: farm }).catch((): Transcript => ({ text: "", segments: [] }));
-    const claims = await extractClaims(transcript);
+    const transcript = await transcribe(blob, { demoFarm: farm, language: lang === "en" ? "english" : "swahili" })
+      .catch((): Transcript => ({ text: "", segments: [] }));
+    // English answers first in English mode; the Swahili reader still catches Swahili (and the scripted demo transcript).
+    const english = lang === "en" ? await extractClaimsEnglish(transcript) : [];
+    const claims = english.length ? english : await extractClaims(transcript);
     // `blob` goes out of scope here: raw audio is never stored (consent: deleted_after_extraction).
     setResult({ transcript, claims });
     setPhase("done");
@@ -88,7 +94,7 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
       {phase === "idle" && modelReady >= 1 && !micBlocked && (
         <>
           <button className="mic" onClick={start} aria-label="Record"><Icon name="mic" size={56} /></button>
-          <p className="mic-caption"><T sw="Gusa uongee" en="Tap and speak in Swahili for about two minutes" /></p>
+          <p className="mic-caption"><T sw="Gusa uongee" en="Tap and speak for about two minutes" /></p>
         </>
       )}
       {phase === "recording" && (

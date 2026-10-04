@@ -16,8 +16,8 @@ A smallholder coffee farmer speaks for ~2 minutes in Swahili, walks or draws her
 
 | Real, running | Stand-in or not built |
 |---|---|
-| On-device Swahili speech-to-text (whisper-tiny, 8-bit, WebAssembly), offline | Farmers are fictional; the two demo fields are real but nobody visited them |
-| Swahili claim extraction + tap-to-confirm | Crop check is a transparent **rule** (green through the dry season?), not a trained classifier; no accuracy claimed |
+| On-device speech-to-text in Swahili or English (whisper-tiny, 8-bit, WebAssembly), offline: she speaks the language the app is set to | Farmers are fictional; the two demo fields are real but nobody visited them |
+| Swahili and English claim extraction (rules) + tap-to-confirm | Crop check is a transparent **rule** (green through the dry season?), not a trained classifier; no accuracy claimed |
 | **Satellite greenness, rainfall, temperature and soil for the two demo plots: real data** (Sentinel-2, CHIRPS, NASA POWER, SoilGrids; [docs/EVIDENCE.md](docs/EVIDENCE.md)) | Other plots get no satellite check ("plot not registered"): only the demo plots have evidence cards |
 | Rule engine, report sentences, Swahili/English voice (ElevenLabs clips), SHA-256 seal + QR | Cooperative co-signing: designed in the schema, not built |
 | Supabase upload (offline queue), lender page re-hash check, site-visit requests | No digital signature yet (`signature: null`); the fingerprint detects edits, it doesn't prove who made the report |
