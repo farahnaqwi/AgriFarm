@@ -45,9 +45,9 @@ export default function Share({ report, sealed, onSealed, onHome }: Props) {
   if (phase === "done" && sealed) {
     return (
       <Screen className="sealed" title="Imefungwa" titleEn="Sealed. Show this to the loan officer." footer={home}>
-        <Stamp tone="green" en="Unchanged since you approved it" tilt={-3}>{sw ? "Ripoti ya ushahidi" : "Evidence report"}</Stamp>
+        <Stamp tone="green" en={sw ? "Haijabadilika tangu uliporidhia" : "Unchanged since you approved it"} tilt={-3}>{sw ? "Ripoti ya ushahidi" : "Evidence report"}</Stamp>
         {qr && <div className="qr-frame"><img className="qr" src={qr} alt="QR code for the loan officer" /></div>}
-        <p className="code"><b>{groupCode(sealed.integrity.report_hash)}</b><span className="en">Report code · SHA-256</span></p>
+        <p className="code"><b>{groupCode(sealed.integrity.report_hash)}</b><span className="en"><T sw="Msimbo wa ripoti · SHA-256" en="Report code · SHA-256" /></span></p>
         {queued && <p className="pending"><Icon name="upload" size={20} /><T sw="Itatumwa ukipata mtandao" en="Sends when the phone is online" /></p>}
         <Say ids={["SHARE_DONE", "DISCLAIMER"]} />
       </Screen>

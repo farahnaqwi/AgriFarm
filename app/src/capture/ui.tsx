@@ -17,9 +17,9 @@ function waveform(seed: string): number[] {
   });
 }
 
-/** Text in the chosen language. In Swahili, the English follows as the quiet second line. */
+/** Text in the chosen language, and only that language. */
 export function T({ sw, en }: { sw: ReactNode; en: ReactNode }) {
-  return useLang() === "sw" ? <>{sw}<span className="en">{en}</span></> : <>{en}</>;
+  return <>{useLang() === "sw" ? sw : en}</>;
 }
 
 /** True while the browser refuses sound until the farmer taps. */
@@ -93,8 +93,8 @@ export function YesNo({ onYes, onNo, disabled }: { onYes: () => void; onNo: () =
   const sw = useLang() === "sw";
   return (
     <div className="yesno">
-      <button className="yes" onClick={onYes} disabled={disabled}><Icon name="check" size={40} />{sw ? <>Ndiyo<span>Yes</span></> : "Yes"}</button>
-      <button className="no" onClick={onNo} disabled={disabled}><Icon name="cross" size={40} />{sw ? <>Hapana<span>No</span></> : "No"}</button>
+      <button className="yes" onClick={onYes} disabled={disabled}><Icon name="check" size={40} />{sw ? "Ndiyo" : "Yes"}</button>
+      <button className="no" onClick={onNo} disabled={disabled}><Icon name="cross" size={40} />{sw ? "Hapana" : "No"}</button>
     </div>
   );
 }
@@ -111,7 +111,7 @@ export function Screen({ title, titleEn, children, footer, className }: {
   );
 }
 
-/** Primary action: the chosen language large (Swahili with English small underneath). */
+/** Primary action, in the chosen language. */
 export function Next({ onClick, disabled, sw = "Endelea", en = "Continue" }: { onClick: () => void; disabled?: boolean; sw?: string; en?: string }) {
   return (
     <button className="btn primary" onClick={onClick} disabled={disabled}>
@@ -140,9 +140,9 @@ export function TopBar({ step, total, demo, onHome }: { step: number | null; tot
         </div>
       ) : <span className="wordmark">AgriFarm</span>}
       <div className="tags">
-        {!online && <span className="tag solid">Offline</span>}
-        {demo && <span className="tag">Demo GPS</span>}
-        {missing && <span className="tag" title="ElevenLabs clips not generated yet">Text only</span>}
+        {!online && <span className="tag solid"><T sw="Bila mtandao" en="Offline" /></span>}
+        {demo && <span className="tag"><T sw="Maonyesho" en="Demo GPS" /></span>}
+        {missing && <span className="tag" title="ElevenLabs clips not generated yet"><T sw="Maandishi tu" en="Text only" /></span>}
         <LanguagePicker />
         {onHome && <button className="icon-btn" onClick={onHome} aria-label="Home"><Icon name="home" size={20} /></button>}
       </div>
@@ -150,13 +150,14 @@ export function TopBar({ step, total, demo, onHome }: { step: number | null; tot
   );
 }
 
-/** Language picker in the top bar. Native select, so phones show their own big picker. */
+/** Language picker in the top bar: a compact globe + code; tapping opens the phone's own picker with full names. */
 function LanguagePicker() {
   const lang = useLang();
   return (
     <label className="lang">
-      <span className="sr-only">Language</span>
-      <select value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+      <Icon name="globe" size={16} />
+      <span aria-hidden="true">{lang}</span>
+      <select value={lang} onChange={(e) => setLang(e.target.value as Lang)} aria-label="Language / Lugha">
         {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
       </select>
     </label>

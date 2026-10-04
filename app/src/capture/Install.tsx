@@ -27,7 +27,7 @@ export default function Install() {
     <p className="install-hint">
       <Icon name="download" size={20} />
       <span>
-        <T sw={isIOS() ? "Share → Add to Home Screen" : "Menyu → Install app"}
+        <T sw={isIOS() ? "Shiriki → Ongeza kwenye Skrini ya Mwanzo" : "Menyu → Sakinisha programu"}
           en={isIOS() ? "Install: tap Share, then \"Add to Home Screen\"." : "Install: open the browser menu, then \"Install app\"."} />
       </span>
     </p>

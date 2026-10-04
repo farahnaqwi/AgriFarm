@@ -19,6 +19,7 @@ const PATHS = {
   trash: <path d="M5 7h14M9.5 7V4.5h5V7M7 7l1 13h8l1-13" />,
   retry: <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4.5V9h-4.5" />,
   pen: <path d="M14.5 5.5l4 4M4 20l1.2-4.8L15.8 4.6a1.4 1.4 0 0 1 2 0l1.6 1.6a1.4 1.4 0 0 1 0 2L8.8 18.8z" />,
+  globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3z" /></>,
 } as const;
 
 export type IconName = keyof typeof PATHS;

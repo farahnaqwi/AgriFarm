@@ -33,14 +33,14 @@ function Value({ claim }: { claim: Draft }) {
     }
     case "plot_area": {
       const u = UNITS[unit === "ha" ? "ha" : "acre"];
-      return <p className="value">{num}<small>{sw ? u.sw : u.en}</small><span className="en">{sw && `${num} ${u.en} `}= {(unit === "acre" ? num * HA_PER_ACRE : num).toFixed(2)} ha</span></p>;
+      return <p className="value">{num}<small>{sw ? u.sw : u.en}</small>{unit === "acre" && <span className="en">= {(num * HA_PER_ACRE).toFixed(2)} ha</span>}</p>;
     }
     case "cooperative_membership_years":
-      return <p className="value">{num}<small>{sw ? "miaka" : "years"}</small>{sw && <span className="en">years</span>}</p>;
+      return <p className="value">{num}<small>{sw ? "miaka" : "years"}</small></p>;
     case "bad_season":
-      return <p className="value">{yearFromSeason(String(value))}<span className="en">Harvest year · rain season {String(value)}</span></p>;
+      return <p className="value">{yearFromSeason(String(value))}<span className="en"><T sw={`Mwaka wa mavuno · msimu wa mvua ${String(value)}`} en={`Harvest year · rain season ${String(value)}`} /></span></p>;
     case "last_harvest_delivered":
-      return <p className="value">{num}<small>kg</small><span className="en">parchment coffee delivered</span></p>;
+      return <p className="value">{num}<small>kg</small><span className="en"><T sw="kahawa ya maganda iliyowasilishwa" en="parchment coffee delivered" /></span></p>;
     case "land_tenure": {
       const o = TENURE.find((x) => x.value === value);
       return <p className="value" style={{ fontSize: "1.7rem" }}><T sw={o?.sw ?? String(value)} en={o?.en ?? String(value)} /></p>;
@@ -138,7 +138,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
 
   return (
     <Screen title="Je, ni sahihi?" titleEn="Is this what you said?"
-      footer={<Next onClick={finish} disabled={!ready} en={ready ? "Continue" : `${left} left to confirm`} />}>
+      footer={<Next onClick={finish} disabled={!ready} sw={ready ? "Endelea" : `Zimebaki ${left} kuthibitisha`} en={ready ? "Continue" : `${left} left to confirm`} />}>
       <Say ids={["CAPTURE_CONFIRM"]} />
       <div className="entries">
         {claims.map((c) => (
@@ -153,7 +153,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
             <div className="entry-actions">
               {c.confirmed ? (
                 <>
-                  {sw ? <Stamp tone="green" en="Confirmed" tilt={-5}>Sahihi ✓</Stamp> : <Stamp tone="green" tilt={-5}>Confirmed ✓</Stamp>}
+                  <Stamp tone="green" tilt={-5}>{sw ? "Sahihi ✓" : "Confirmed ✓"}</Stamp>
                   <button className="link" onClick={() => setConfirmed(c.key, false)}><Icon name="pen" size={18} /><T sw="Badilisha" en="Change" /></button>
                 </>
               ) : (
@@ -164,7 +164,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
         ))}
       </div>
       <div className="add">
-        <span className="en">Something missing? Add it:</span>
+        <span className="en"><T sw="Kuna kinachokosekana? Ongeza:" en="Something missing? Add it:" /></span>
         {(Object.keys(BLANK) as ClaimField[]).map((f) => (
           <button key={f} className="chip" onClick={() => add(f)}>+ {sw ? FIELD[f].sw : FIELD[f].en}</button>
         ))}
