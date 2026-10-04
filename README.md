@@ -19,6 +19,8 @@ Contracts: [docs/schema.json](docs/schema.json) · [docs/mocks/](docs/mocks/) ·
 
 Secrets: copy `.env.example` → `.env`. Nothing secret goes in `app/` (anything `VITE_*` ships to the browser).
 
+Speech model: `cd app && npm install && npm run fetch-models` puts whisper-tiny (43.6 MB, hash-checked) in `app/public/models/` and the ONNX runtime in `app/public/ort/`. Both are git-ignored, and `npm run build` fetches them first, on Vercel too. After adding files there, restart `npm run dev` so it serves them.
+
 ## Words we don't use
 
 proof, proven, approved, eligible, creditworthy, owner (without attestation), guaranteed, "AI verified".
