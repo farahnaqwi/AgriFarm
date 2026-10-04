@@ -15,6 +15,8 @@ import Plot from "./Plot.tsx";
 import Photos from "./Photos.tsx";
 import Review from "./Review.tsx";
 import Share from "./Share.tsx";
+import OfflineSetup from "./OfflineSetup.tsx";
+import { acknowledgeOffline, offlineAcknowledged } from "../lib/offline.ts";
 import type { CandidateClaim, Capture, DemoFarm, Report } from "../types/index.ts";
 
 // Farmer flow: home -> consent -> speak -> confirm -> plot -> photos -> review -> share.
@@ -38,6 +40,9 @@ const FRESH: FlowState = { step: "home", farm: "A", capture: null, candidates: [
 export default function Flow() {
   const [st, setSt] = useState<FlowState | null>(null);
   const [demo, setDemoState] = useState(demoOn());
+  // First run: download for offline use and say clearly when wifi is no longer needed (OfflineSetup).
+  const [setupDone, setSetupDone] = useState(offlineAcknowledged());
+  const setup = !setupDone && st?.step === "home";
 
   useEffect(() => {
     load<FlowState>("flow").then((s) => setSt(s ?? FRESH));
@@ -71,7 +76,7 @@ export default function Flow() {
   }, [st?.step, st?.report, st?.capture]);
 
   // Screens alternate surfaces so the flow has rhythm: ink for permission and camera, green when sealed.
-  const theme = !st ? "paper"
+  const theme = !st || setup ? "paper"
     : st.step === "home" ? "home"
     : st.step === "consent" || st.step === "photos" ? "ink"
     : st.step === "share" && st.sealed ? "green"
@@ -91,7 +96,9 @@ export default function Flow() {
   }
 
   let view: ReactNode;
-  if (st.step !== "home" && !capture) {
+  if (setup) {
+    view = <OfflineSetup onDone={() => { acknowledgeOffline(); setSetupDone(true); }} />;
+  } else if (st.step !== "home" && !capture) {
     view = null; // capture is created on "Start"; any other step without one is unreachable
     home();
   } else if (st.step === "consent") {
