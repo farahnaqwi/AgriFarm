@@ -22,7 +22,7 @@ Vercel: Root Directory = `app`, project name `agrifarm-evidence`.
 | `src/lender/Verify.tsx` | Farah | **Placeholder** |
 | `src/ai/asr.ts`, `src/ai/extract.ts` | Sakeet | **Fake**: demo transcripts |
 | `src/data/cards.ts` | Sakeet | **Fake**: evidence cards from mocks (real: `public/cards/{plot_id}.json`) |
-| `src/data/reports.ts` | Sakeet | **Fake**: queues on the phone (real: Supabase) |
+| `src/data/reports.ts` | Nick | **Real**: Supabase upload/fetch/site-visit; queues offline and sends when back online. Needs `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (repo-root `.env`, and in Vercel env vars) |
 | `public/audio/{sw,en}/{PHRASE_ID}.mp3` | Farah | Missing, so the app shows text and a "🔇 text only" badge |
 
 ## Demo mode
