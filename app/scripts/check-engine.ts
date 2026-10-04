@@ -134,5 +134,26 @@ check("Real B: bare in the dry season → coffee contradicted", byField(rb, "cro
 check("Real B: 5 ha vs the real ~2 ha plot → contradicted", byField(rb, "plot_area").status === "contradicted");
 check("Real B: suggests a site visit", rb.narrative.some((s) => s.phrase_id === "SITE_VISIT"));
 
+// 9) English answers (a farmer speaking English with the app in English).
+const { extractClaimsEnglish } = await import("../src/ai/extract-en.ts");
+const en = async (text: string) => extractClaimsEnglish({ text, segments: [{ start: 0, end: 5, text, confidence: null }] });
+const got = async (text: string, field: string) => (await en(text)).filter((c) => c.field === field).map((c) => `${c.value}${c.unit ? ` ${c.unit}` : ""}`).join(", ");
+const cases: [string, string, string][] = [
+  ["I grow coffee.", "crop_type", "coffee"],
+  ["We grow coffee and bananas together.", "crop_type", "coffee_banana"],
+  ["My farm is five acres.", "plot_area", "5 acre"],
+  ["The farm is 2.5 hectares.", "plot_area", "2.5 ha"],
+  ["It is five and a half acres.", "plot_area", "5.5 acre"],
+  ["I have been a member of the cooperative for eleven years.", "cooperative_membership_years", "11 years"],
+  ["In 2022 the rains were very poor.", "bad_season", "2021/22"],
+  ["Twenty twenty-two was a bad season.", "bad_season", "2021/22"],
+  ["Last year the harvest dropped and I don't know why.", "bad_season", "2024/25"],
+  ["I delivered 680 kilos of parchment coffee.", "last_harvest_delivered", "680 kg_parchment"],
+  ["The land is inherited, I have no title.", "land_tenure", "customary_undocumented"],
+  ["I have a title deed for my farm.", "land_tenure", "titled"],
+];
+for (const [text, field, want] of cases) { const g = await got(text, field); check(`English: "${text}" -> ${field} ${want}`, g === want, `got "${g}"`); }
+check("English: a harvest sentence is not a crop claim", (await got("I delivered 680 kilos of parchment coffee.", "crop_type")) === "");
+
 console.log(failed ? `\n${failed} check(s) failed` : "\nAll engine checks passed");
 process.exit(failed ? 1 : 0);

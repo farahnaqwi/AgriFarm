@@ -3,7 +3,7 @@
 // so it works fully offline. Raw audio is discarded after transcribe().
 //
 // CONTRACT
-//   transcribe(audioBlob, { demoFarm }) -> Promise<Transcript>  (types/index.ts):
+//   transcribe(audioBlob, { demoFarm, language }) -> Promise<Transcript>  (types/index.ts); language defaults to "swahili":
 //     { text, segments: [{ start, end, text, confidence }] }
 //   prepareAsr(onProgress?: (fraction 0..1) => void) -> Promise<void>
 //     loads the model from the app's own offline cache (bundled at install, never downloaded on first use).
@@ -75,7 +75,7 @@ async function toFloat32(blob: Blob): Promise<Float32Array> {
 
 export async function transcribe(
   audioBlob: Blob | null,
-  { demoFarm = null }: { demoFarm?: DemoFarm | null } = {},
+  { demoFarm = null, language = "swahili" }: { demoFarm?: DemoFarm | null; language?: "swahili" | "english" } = {},
 ): Promise<Transcript> {
   // No audio: the hand-written transcript stands in only in demo mode. Otherwise silence, and the farmer taps.
   if (!audioBlob) {
@@ -86,7 +86,7 @@ export async function transcribe(
   if (!asr) throw new Error("Call prepareAsr() first");
 
   const out = await asr(await toFloat32(audioBlob), {
-    language: "swahili",
+    language,
     task: "transcribe",
     return_timestamps: true,
   });
