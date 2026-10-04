@@ -1,0 +1,6 @@
+# CLI deploys run from the repo root (Vercel builds app/). Never upload local secrets or build output.
+.env
+.env.*
+**/node_modules
+app/dist
+.DS_Store
