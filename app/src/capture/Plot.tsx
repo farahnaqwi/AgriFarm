@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Screen, Say, Next } from "./ui.tsx";
+import { Screen, Say, Next, T } from "./ui.tsx";
+import { getLang, useLang } from "../lib/lang.ts";
 import { Icon } from "./icons.tsx";
 import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type FixState } from "../lib/geo.ts";
 import { matchRegisteredPlot } from "../lib/registry.ts";
@@ -28,6 +29,7 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
   const [registry, setRegistry] = useState<RegisteredPlot[]>([]);
   const setMode = (m: Mode) => { modeRef.current = m; setModeState(m); };
   const goodFix = fix.status === "fix" && fix.accuracy <= GOOD_FIX_M;
+  const sw = useLang() === "sw";
 
   // GPS needs no internet, but without it the first satellite lock can take minutes.
   useEffect(() => watchFix(setFix), []);
@@ -47,7 +49,8 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
     if (navigator.onLine) {
       // Street map only as an optional online layer; its tile servers don't allow offline bundling.
       const streets = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" });
-      L.control.layers({ "🛰 Satelaiti": satellite, "🗺 Ramani (online)": streets }, undefined, { position: "topright" }).addTo(map);
+      const sw = getLang() === "sw";
+      L.control.layers({ [sw ? "🛰 Satelaiti" : "🛰 Satellite"]: satellite, [sw ? "🗺 Ramani (online)" : "🗺 Map (online)"]: streets }, undefined, { position: "topright" }).addTo(map);
     }
     layer.current = L.layerGroup().addTo(map);
     mapRef.current = map;
@@ -124,27 +127,27 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
       <p className={gpsClass}>
         <i className="dot" />
         <span>
-          {fix.status === "searching" && <>Inatafuta satelaiti…<span className="en">Searching for GPS satellites. Without internet the first lock can take a few minutes; stand in the open.</span></>}
-          {fix.status === "fix" && !goodFix && <>±{fix.accuracy} m · subiri kidogo<span className="en">Not accurate enough yet, wait a moment</span></>}
-          {goodFix && fix.status === "fix" && <>GPS tayari · ±{fix.accuracy} m<span className="en">GPS ready</span></>}
-          {fix.status === "denied" && <>{PROBLEM.gps_denied.sw}<span className="en">{PROBLEM.gps_denied.en}</span></>}
-          {fix.status === "unavailable" && <>{PROBLEM.gps_unavailable.sw}<span className="en">{PROBLEM.gps_unavailable.en}</span></>}
+          {fix.status === "searching" && <><T sw="Inatafuta satelaiti…" en="Searching for GPS satellites. Without internet the first lock can take a few minutes; stand in the open." /></>}
+          {fix.status === "fix" && !goodFix && <T sw={`±${fix.accuracy} m · subiri kidogo`} en={`±${fix.accuracy} m · not accurate enough yet, wait a moment`} />}
+          {goodFix && fix.status === "fix" && <T sw={`GPS tayari · ±${fix.accuracy} m`} en={`GPS ready · ±${fix.accuracy} m`} />}
+          {fix.status === "denied" && <><T sw={PROBLEM.gps_denied.sw} en={PROBLEM.gps_denied.en} /></>}
+          {fix.status === "unavailable" && <><T sw={PROBLEM.gps_unavailable.sw} en={PROBLEM.gps_unavailable.en} /></>}
         </span>
       </p>
       <div className="map" ref={mapEl} />
       <div className="seg three">
         {mode === "walk"
-          ? <button className="on" onClick={finishWalk}><Icon name="stop" size={20} />Maliza<span className="en">Done</span></button>
-          : <button disabled={!goodFix} onClick={walk}><Icon name="route" size={20} />Tembea<span className="en">Walk</span></button>}
-        <button className={mode === "draw" ? "on" : ""} onClick={draw}><Icon name="pencil" size={20} />Chora<span className="en">Draw</span></button>
+          ? <button className="on" onClick={finishWalk}><Icon name="stop" size={20} /><T sw="Maliza" en="Done" /></button>
+          : <button disabled={!goodFix} onClick={walk}><Icon name="route" size={20} /><T sw="Tembea" en="Walk" /></button>}
+        <button className={mode === "draw" ? "on" : ""} onClick={draw}><Icon name="pencil" size={20} /><T sw="Chora" en="Draw" /></button>
         <button disabled={!pts.length || mode === "walk"} onClick={() => setPts((p) => p.slice(0, -1))} aria-label="Undo last point"><Icon name="undo" size={20} /></button>
       </div>
       {ha > 0 && (
-        <p className="area"><b>{ha.toFixed(2)} ha</b><span>{(ha / HA_PER_ACRE).toFixed(1)} ekari</span></p>
+        <p className="area"><b>{ha.toFixed(2)} ha</b><span>{(ha / HA_PER_ACRE).toFixed(1)} {sw ? "ekari" : "acres"}</span></p>
       )}
       {ring && mode !== "walk" && (match
-        ? <p className="registry ok"><Icon name="check" /><span>Shamba limesajiliwa na chama<span className="en">Matches registered plot {match.plot_id}, so satellite and rain checks will run.</span></span></p>
-        : <p className="registry"><Icon name="warn" /><span>{PROBLEM.not_registered.sw}<span className="en">{PROBLEM.not_registered.en}</span></span></p>)}
+        ? <p className="registry ok"><Icon name="check" /><span><T sw="Shamba limesajiliwa na chama" en={`Matches registered plot ${match.plot_id}, so satellite and rain checks will run.`} /></span></p>
+        : <p className="registry"><Icon name="warn" /><span><T sw={PROBLEM.not_registered.sw} en={PROBLEM.not_registered.en} /></span></p>)}
     </Screen>
   );
 }

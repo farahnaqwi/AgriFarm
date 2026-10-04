@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say, Next, Stamp } from "./ui.tsx";
+import { Screen, Say, Next, Stamp, T } from "./ui.tsx";
+import { useLang } from "../lib/lang.ts";
 import { Icon } from "./icons.tsx";
 import { getPosition, getHeading, startCompass, demoOn, isLocationDenied } from "../lib/geo.ts";
 import { PROBLEM } from "./labels.ts";
@@ -157,6 +158,7 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
     setBusy(false);
   }
 
+  const sw = useLang() === "sw";
   const blocked = camera === "denied" || camera === "missing" || camera === "insecure";
   const blockedText = camera === "insecure" ? PROBLEM.insecure : camera === "missing" ? PROBLEM.camera_missing : PROBLEM.camera_denied;
 
@@ -170,23 +172,23 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
         {blocked && (
           <div className="cam-problem">
             <Icon name="warn" size={32} />
-            <span>{blockedText.sw}<span className="en">{blockedText.en}</span></span>
-            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>Jaribu tena · Try again</button>
+            <span><T sw={blockedText.sw} en={blockedText.en} /></span>
+            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>{sw ? "Jaribu tena · Try again" : "Try again"}</button>
           </div>
         )}
         {(canShoot || camera === "starting") && (
           <button className="shutter" disabled={busy || !canShoot} onClick={() => shoot()} aria-label="Take photo" />
         )}
       </div>
-      {problem && <p className="problem"><Icon name="warn" /><span>{problem.sw}<span className="en">{problem.en}</span></span></p>}
+      {problem && <p className="problem"><Icon name="warn" /><span><T sw={problem.sw} en={problem.en} /></span></p>}
       {photos.length > 0 && (
         <div className="thumbs">
           {photos.map((p) => (
             <figure key={p.photo_id}>
               {thumbs[p.photo_id] ? <img src={thumbs[p.photo_id]} alt="" /> : <div className="ph" />}
               {p.freshness
-                ? <Stamp tone={p.freshness.passed ? "green" : "red"} tilt={-8}>{p.freshness.passed ? "Imegeuka ✓" : "Haijageuka"}</Stamp>
-                : <Stamp tone="green" tilt={-8}>Ndani ✓</Stamp>}
+                ? <Stamp tone={p.freshness.passed ? "green" : "red"} tilt={-8}>{p.freshness.passed ? (sw ? "Imegeuka ✓" : "Turned ✓") : (sw ? "Haijageuka" : "Not turned")}</Stamp>
+                : <Stamp tone="green" tilt={-8}>{sw ? "Ndani ✓" : "Inside ✓"}</Stamp>}
             </figure>
           ))}
         </div>

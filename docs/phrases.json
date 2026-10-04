@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "status": "DRAFT: every Swahili line must be checked by a native Tanzanian Swahili speaker before any audio is generated. Record the reviewer's name and the date in docs/DATA_SOURCES.md.",
   "conventions": {
-    "slots": "Slots always come at the END of a Swahili phrase (Swahili puts the number after the noun), so audio = phrase clip + unit clip + number clip. English slot order may differ; English is on-screen text only.",
+    "slots": "Slots always come at the END of a Swahili phrase (Swahili puts the number after the noun), so audio = phrase clip + unit clip + number clip. English: phrase clip (words up to the first slot) + slot clips in English order + {id}__END for words after the last slot (app/src/lib/clips.ts).",
     "noun_class": "Swahili numbers agree with the noun class. hekta/ekari/asilimia (N-class) use numbers_n; miaka (MI-class) uses numbers_mi. A naive template engine gets this wrong; that's why the two lists are kept separate.",
     "rounding": "Area: nearest 0.5 (numbers_n + HALF). Percent: nearest 10 (tens). Years: harvest year of the season (2021/22 -> 2022).",
     "audio_file": "app/public/audio/{lang}/{id}.mp3"
@@ -84,8 +84,8 @@
     { "id": "N_13", "value": 13, "sw": "kumi na tatu" }, { "id": "N_14", "value": 14, "sw": "kumi na nne" }, { "id": "N_15", "value": 15, "sw": "kumi na tano" },
     { "id": "N_16", "value": 16, "sw": "kumi na sita" }, { "id": "N_17", "value": 17, "sw": "kumi na saba" }, { "id": "N_18", "value": 18, "sw": "kumi na nane" },
     { "id": "N_19", "value": 19, "sw": "kumi na tisa" }, { "id": "N_20", "value": 20, "sw": "ishirini" },
-    { "id": "N_HALF_ONLY", "value": 0.5, "sw": "nusu" },
-    { "id": "N_AND_HALF", "value": "+0.5", "sw": "na nusu", "note": "Appended after a whole number: mbili na nusu = 2.5" }
+    { "id": "N_HALF_ONLY", "value": 0.5, "sw": "nusu", "en": "half" },
+    { "id": "N_AND_HALF", "value": "+0.5", "sw": "na nusu", "en": "and a half", "note": "Appended after a whole number: mbili na nusu = 2.5" }
   ],
 
   "numbers_mi": [

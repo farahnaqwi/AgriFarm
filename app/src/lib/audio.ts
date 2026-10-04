@@ -1,4 +1,5 @@
 import { PHRASES, type Lang } from "./phrases.ts";
+import { getLang } from "./lang.ts";
 
 // Plays pre-generated phrase clips in order from /audio/{lang}/{id}.mp3.
 // Browsers (iPhones especially) only allow sound after a tap, so:
@@ -96,7 +97,7 @@ const fallbackMs = (id: string, lang: Lang): number =>
 /** Resolves true when all clips finished; false if stopped, superseded, or blocked until a tap. */
 export async function playClips(
   ids: string[],
-  { lang = "sw", onClip }: { lang?: Lang; onClip?: (id: string, index: number) => void } = {},
+  { lang = getLang(), onClip }: { lang?: Lang; onClip?: (id: string, index: number) => void } = {},
 ): Promise<boolean> {
   stopAudio();
   const mine = ++token;

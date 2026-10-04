@@ -8,7 +8,9 @@ import addFormats from "ajv-formats";
 import schema from "../../docs/schema.json" with { type: "json" };
 import mockA from "../../docs/mocks/report-farm-a-consistent.json" with { type: "json" };
 import mockB from "../../docs/mocks/report-farm-b-contradiction.json" with { type: "json" };
+import phrases from "../../docs/phrases.json" with { type: "json" };
 import { buildReport, seal, reportHash } from "../../backend/engine/index.ts";
+import { englishClips } from "../src/lib/clips.ts";
 import type { Capture, EvidenceCard, Report } from "../src/types/index.ts";
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
@@ -102,6 +104,14 @@ const { existsSync } = await import("node:fs");
 const clips = new Set([a, b, e, u].flatMap((r) => r.narrative.flatMap((x) => x.audio_clips)));
 const missing = [...clips].filter((id) => !existsSync(new URL(`../public/audio/sw/${id}.mp3`, import.meta.url)));
 check(`All ${clips.size} clips the engine used exist`, missing.length === 0, missing.join(", "));
+
+// 7) The same sentences in English: clips reordered to English word order ("5 acres"), all generated.
+const EN = new Map((phrases.phrases as { id: string; en?: string }[]).map((p) => [p.id, p.en ?? ""]));
+const enClips = new Set([a, b, e, u].flatMap((r) => r.narrative.flatMap((x) => englishClips(x.audio_clips, EN.get(x.phrase_id ?? "") ?? ""))));
+const enMissing = [...enClips].filter((id) => !existsSync(new URL(`../public/audio/en/${id}.mp3`, import.meta.url)));
+check(`All ${enClips.size} English clips exist`, enMissing.length === 0, enMissing.join(", "));
+const areaSaid = a.narrative.find((x) => x.phrase_id === "AREA_SAID")!;
+check("English word order: number before unit", englishClips(areaSaid.audio_clips, EN.get("AREA_SAID")!).join() === "AREA_SAID,N_5,U_ACRE");
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nAll engine checks passed");
 process.exit(failed ? 1 : 0);

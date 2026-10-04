@@ -670,5 +670,689 @@
     "text": "elfu mbili na ishirini na sita",
     "model": "eleven_v4",
     "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CONSENT_ASK": {
+    "sha": "dd9323c544205928",
+    "text": "Do you agree? Tap the green button for yes, or the red button for no.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CONSENT_PRIVACY": {
+    "sha": "f67e24f0d85e1b1b",
+    "text": "Nothing leaves this phone unless you agree. Your voice recording stays on this phone.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CONSENT_INTRO": {
+    "sha": "8080b156870eb326",
+    "text": "This app helps you make an evidence report about your farm. It records your voice, photos, and where your farm is.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CONSENT_DELETE": {
+    "sha": "375ea4e1938b10ab",
+    "text": "You can delete everything at any time.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CONSENT_DECLINED": {
+    "sha": "9d864eb51500b455",
+    "text": "Okay. Nothing was recorded.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_CONFIRM": {
+    "sha": "3706e3e0d218f83d",
+    "text": "Is this correct? Tap yes or no.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_WALK": {
+    "sha": "fb7b7fc3285b64c4",
+    "text": "Walk along the edge of your farm. The phone will draw the boundary.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_SPEAK": {
+    "sha": "d2b89f2d7bf8c593",
+    "text": "Tell us about your farm: what you grow, how big it is, how long you have been in the cooperative, and any bad seasons.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_DRAW": {
+    "sha": "596f06254aa19cec",
+    "text": "Or draw the boundary of your farm on the map with your finger.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_PHOTO": {
+    "sha": "788a01589625a1fc",
+    "text": "Stand inside your farm and take a photo of your crops.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_TURN": {
+    "sha": "12808fdac1c93d2b",
+    "text": "Now turn around and take one more photo.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_OUTSIDE": {
+    "sha": "e2f7a04d4163844c",
+    "text": "This photo is outside your farm boundary. Please go inside your farm and try again.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_DONE": {
+    "sha": "7a81290a60d40f1a",
+    "text": "Thank you. Your report is being prepared on this phone.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CAPTURE_NO_GPS": {
+    "sha": "66ecbf5c8bc5f853",
+    "text": "The phone cannot find its location. Move to an open place and wait a moment.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RESULT_MACHINE": {
+    "sha": "bf263523a9fc1b08",
+    "text": "Satellite or weather records agree with this.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RESULT_COOP": {
+    "sha": "045d103e51142185",
+    "text": "Your cooperative has confirmed this.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/REVIEW_INTRO": {
+    "sha": "b5e530aea144fe56",
+    "text": "This is your evidence report. Listen to it, then decide if you want to share it.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RESULT_OFFICER": {
+    "sha": "076ac89233d14f7b",
+    "text": "Your extension officer has confirmed this.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RESULT_CONTRADICTED": {
+    "sha": "c9e487c40be100d0",
+    "text": "The records do not agree with this. The loan officer may ask you about it.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAID_COFFEE": {
+    "sha": "d5afdd9fe58cd351",
+    "text": "You said you grow coffee.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RESULT_UNVERIFIABLE": {
+    "sha": "b6f86f11024d0d56",
+    "text": "This could not be checked. It stays as your own statement.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAID_MAIZE": {
+    "sha": "2a5b985fb201fce9",
+    "text": "You said you grow maize.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAID_COFFEE_BANANA": {
+    "sha": "526c9193c8629322",
+    "text": "You said you grow coffee with bananas.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAT_COFFEE": {
+    "sha": "2f3a80175b4a1285",
+    "text": "Satellite pictures of your farm look like coffee, which stays green all year.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAT_UNSURE": {
+    "sha": "33cc20f474889b08",
+    "text": "Satellite pictures are not clear enough to tell which crop is on your farm.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/CROP_SAT_SEASONAL": {
+    "sha": "bc1ba9b34bad961a",
+    "text": "Satellite pictures of your farm look like a seasonal crop such as maize, not coffee.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/PHOTO_COFFEE": {
+    "sha": "364f9361e8bf94d6",
+    "text": "Your photos appear to show coffee plants.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/PHOTO_INSIDE": {
+    "sha": "5caf68fc6dd3688a",
+    "text": "All your photos were taken inside your farm.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/PHOTO_NOT_COFFEE": {
+    "sha": "4a80074ec123b211",
+    "text": "Your photos do not appear to show coffee plants.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/AREA_SAID": {
+    "sha": "4eac0d4e28c089eb",
+    "text": "You said your farm is",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/PHOTO_DUPLICATE": {
+    "sha": "5cc2bcb809d0b5c5",
+    "text": "One photo looks the same as a photo in another report. A person will check this.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/AREA_MAP": {
+    "sha": "e351426f5347da1b",
+    "text": "The farm you drew on the map is about",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SEASON_SAID": {
+    "sha": "499fbff6cc3c5a0e",
+    "text": "You said the bad season was in",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RAIN_DRY": {
+    "sha": "3109d2dd1597cd51",
+    "text": "Rainfall records show that season had about",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RAIN_DRY__END": {
+    "sha": "d8dc04253dcde8c5",
+    "text": "percent less rain than normal.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/HEAT_HIGH": {
+    "sha": "32ad57962359c6e5",
+    "text": "That season was also hotter than normal.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/COOP_SAID": {
+    "sha": "45003c89874e709c",
+    "text": "You said you have been a cooperative member for",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/COOP_SAID__END": {
+    "sha": "8b30026417c21439",
+    "text": "years.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/COOP_SAID_ONE": {
+    "sha": "a4b847140ec0ff39",
+    "text": "You said you have been a cooperative member for one year.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/RAIN_NORMAL": {
+    "sha": "9936d76151c2a808",
+    "text": "Rainfall was normal that season, so the cause may be something else, like pests, disease, or soil. Your extension officer can help find out.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/HARVEST_SAID": {
+    "sha": "08affd46bdfd2efe",
+    "text": "You told us how much coffee you delivered last season.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/OWNERSHIP_NOT_SHOWN": {
+    "sha": "dcd2102fad0a6c71",
+    "text": "This report does not show who owns the land.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/OWNERSHIP_HOW": {
+    "sha": "1b89e776f1537227",
+    "text": "To show this, your cooperative can co-sign, or you can add a land document.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SOIL_ACIDIC": {
+    "sha": "2ac57456aba388c7",
+    "text": "Soil maps suggest your soil may be acidic. This is only an estimate. Ask your extension officer before buying anything.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/NOT_SURE": {
+    "sha": "e7a1ff3697336f66",
+    "text": "We are not sure about some parts of this report. Please talk to your extension officer or cooperative before sharing it.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SITE_VISIT": {
+    "sha": "b710e9232e49f7e7",
+    "text": "The loan officer may visit your farm to check.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/DISCLAIMER": {
+    "sha": "769aaec3e1cee2fc",
+    "text": "This report is evidence, not a guarantee. It does not approve or refuse a loan. A person will decide.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SHARE_DONE": {
+    "sha": "aa8b4278e84897e2",
+    "text": "The report is sealed. Show this code to the loan officer.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SHARE_DECLINED": {
+    "sha": "a799ab2dfd3266b5",
+    "text": "The report was not shared. It stays on this phone.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/SHARE_ASK": {
+    "sha": "070dd912061965a7",
+    "text": "Do you want to share this report with the loan officer? Tap the green button for yes, or the red button for no.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/U_HA": {
+    "sha": "8decd839ffee0ff3",
+    "text": "hectares",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/REPLAY": {
+    "sha": "5a374c0254278e03",
+    "text": "Tap here to listen again.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/DELETE_DONE": {
+    "sha": "b1484f7cb1b9cd0c",
+    "text": "Everything has been deleted from this phone.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/U_ACRE": {
+    "sha": "459195645c19ab64",
+    "text": "acres",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_1": {
+    "sha": "1dc40247b8698914",
+    "text": "1",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_2": {
+    "sha": "5a8a5ffd194c4ea5",
+    "text": "2",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_3": {
+    "sha": "25ef9ee4dc716709",
+    "text": "3",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_4": {
+    "sha": "591f4aab37b270d1",
+    "text": "4",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_5": {
+    "sha": "a1111f292bbd4d96",
+    "text": "5",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_6": {
+    "sha": "97bbcb7d0b503f33",
+    "text": "6",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_8": {
+    "sha": "4d00ba9b87483f2b",
+    "text": "8",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_7": {
+    "sha": "20951ecbb2d4087d",
+    "text": "7",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_9": {
+    "sha": "0a8a2f4a017d52e4",
+    "text": "9",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_10": {
+    "sha": "c4e951a5f78af674",
+    "text": "10",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_11": {
+    "sha": "235eb5b3b5ecae94",
+    "text": "11",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_12": {
+    "sha": "c1bf60073fc6dfb0",
+    "text": "12",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_13": {
+    "sha": "09fe706aaa4028dd",
+    "text": "13",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_14": {
+    "sha": "c2ed102c6d792ee4",
+    "text": "14",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_15": {
+    "sha": "a053a5d045716d41",
+    "text": "15",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_16": {
+    "sha": "7779b4e375605e5e",
+    "text": "16",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_17": {
+    "sha": "25dd1082c6a401f8",
+    "text": "17",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_18": {
+    "sha": "62237fd9ec705749",
+    "text": "18",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_19": {
+    "sha": "d4ec81965daee319",
+    "text": "19",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_20": {
+    "sha": "4f8e32a0ab6e8550",
+    "text": "20",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_HALF_ONLY": {
+    "sha": "dcacbf5d29ada497",
+    "text": "half",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_3": {
+    "sha": "25ef9ee4dc716709",
+    "text": "3",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_2": {
+    "sha": "5a8a5ffd194c4ea5",
+    "text": "2",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/N_AND_HALF": {
+    "sha": "f316fa9e36ff0aa5",
+    "text": "and a half",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_5": {
+    "sha": "a1111f292bbd4d96",
+    "text": "5",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_4": {
+    "sha": "591f4aab37b270d1",
+    "text": "4",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_6": {
+    "sha": "97bbcb7d0b503f33",
+    "text": "6",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_8": {
+    "sha": "4d00ba9b87483f2b",
+    "text": "8",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_7": {
+    "sha": "20951ecbb2d4087d",
+    "text": "7",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_9": {
+    "sha": "0a8a2f4a017d52e4",
+    "text": "9",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_10": {
+    "sha": "c4e951a5f78af674",
+    "text": "10",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_11": {
+    "sha": "235eb5b3b5ecae94",
+    "text": "11",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_12": {
+    "sha": "c1bf60073fc6dfb0",
+    "text": "12",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_13": {
+    "sha": "09fe706aaa4028dd",
+    "text": "13",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_14": {
+    "sha": "c2ed102c6d792ee4",
+    "text": "14",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_15": {
+    "sha": "a053a5d045716d41",
+    "text": "15",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_16": {
+    "sha": "7779b4e375605e5e",
+    "text": "16",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_17": {
+    "sha": "25dd1082c6a401f8",
+    "text": "17",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_19": {
+    "sha": "d4ec81965daee319",
+    "text": "19",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_20": {
+    "sha": "4f8e32a0ab6e8550",
+    "text": "20",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/MI_18": {
+    "sha": "62237fd9ec705749",
+    "text": "18",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_10": {
+    "sha": "c4e951a5f78af674",
+    "text": "10",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_20": {
+    "sha": "4f8e32a0ab6e8550",
+    "text": "20",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_30": {
+    "sha": "eaaf822275aa8175",
+    "text": "30",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_40": {
+    "sha": "5712f41a2ff48758",
+    "text": "40",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_50": {
+    "sha": "af971ea29bc3ffb8",
+    "text": "50",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_60": {
+    "sha": "b3ab83710ef4fa2b",
+    "text": "60",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_70": {
+    "sha": "01f6ab548bf40a52",
+    "text": "70",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_80": {
+    "sha": "a73ccbb99ceb673a",
+    "text": "80",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/T_90": {
+    "sha": "327e133c834be73f",
+    "text": "90",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2017": {
+    "sha": "1f0783f0a8c283e3",
+    "text": "2017",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2018": {
+    "sha": "e2f2191487981d0b",
+    "text": "2018",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2019": {
+    "sha": "cddda512f7d2736b",
+    "text": "2019",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2020": {
+    "sha": "d1865d65fe740fff",
+    "text": "2020",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2021": {
+    "sha": "8f780014b280682a",
+    "text": "2021",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2022": {
+    "sha": "d98371d6b3868794",
+    "text": "2022",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2023": {
+    "sha": "3990a2babbcc5303",
+    "text": "2023",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2024": {
+    "sha": "573d37daa0cd4c10",
+    "text": "2024",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2025": {
+    "sha": "6b8a98040e1d2659",
+    "text": "2025",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "en/Y_2026": {
+    "sha": "e04fe17dd9f50c06",
+    "text": "2026",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
   }
 }

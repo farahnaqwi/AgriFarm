@@ -4,7 +4,7 @@
 //   npm run audio -- --dry-run                     list clips + characters to spend, no API calls, no key needed
 //   npm run audio -- --only CONSENT_ASK,U_HA,N_5   audition a few clips (try a voice before spending credits)
 //   npm run audio                                  generate every missing or changed Swahili clip
-//   npm run audio -- --lang en                     English clips (phrases without number slots, units)
+//   npm run audio -- --lang en                     English clips (same ids; number sentences in English order, see src/lib/clips.ts)
 //   npm run audio -- --force                       regenerate even unchanged clips
 //
 // Needs ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID_SW (or _EN) in the repo-root .env.
@@ -16,9 +16,10 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { afterSlots } from "../src/lib/clips.ts";
 
 type Lang = "sw" | "en";
-interface Entry { id: string; sw?: string; en?: string; slots?: string[] }
+interface Entry { id: string; sw?: string; en?: string; value?: number | string; slots?: string[] }
 interface Clip { id: string; text: string }
 interface ManifestEntry { sha: string; text: string; model: string; voice: string }
 interface Model { model_id: string; can_do_text_to_speech?: boolean; languages?: { language_id: string; name: string }[] }
@@ -48,22 +49,23 @@ const phrases = JSON.parse(readFileSync(join(root, "docs", "phrases.json"), "utf
 if (lang === "sw" && String(phrases.status).startsWith("DRAFT")) {
   console.warn("⚠ docs/phrases.json is still DRAFT: Swahili not yet reviewed by a native speaker. Edited lines can be regenerated cheaply later.\n");
 }
-const groups: Entry[][] = lang === "sw"
-  ? [phrases.phrases, phrases.units, phrases.numbers_n, phrases.numbers_mi, phrases.tens, phrases.years]
-  : [phrases.phrases, phrases.units];
+const groups: Entry[][] = [phrases.phrases, phrases.units, phrases.numbers_n, phrases.numbers_mi, phrases.tens, phrases.years];
 
 /** Phrase text up to its slot. "…lina {unit} {number}." -> "…lina" (no period, so the voice doesn't fall before the number). */
 function clipText(e: Entry, l: Lang): string | null {
-  const text = e[l];
+  // English numbers and years have no text of their own: the voice reads the digits ("5", "2022").
+  const text = e[l] ?? (l === "en" && e.value !== undefined ? String(e.value) : undefined);
   if (!text) return null;
   if (!text.includes("{")) return text;
-  if (l === "en") return null; // English slots sit mid-sentence; English is on-screen text only
+  if (l === "en") return text.slice(0, text.indexOf("{")).trim(); // words before the first slot
   return text.replace(/\s*\{[a-z_]+\}/g, "").replace(/[.,]\s*$/, "").trim();
 }
 
 let clips: Clip[] = groups.flat().flatMap((e) => {
   const text = clipText(e, lang);
-  return text ? [{ id: e.id, text }] : [];
+  // English words after the last slot ("…member for {number} years.") get their own clip, {id}__END.
+  const end = lang === "en" && e.en ? afterSlots(e.en) : "";
+  return [...(text ? [{ id: e.id, text }] : []), ...(end ? [{ id: `${e.id}__END`, text: `${end}.` }] : [])];
 });
 if (only) clips = clips.filter((c) => only.includes(c.id));
 

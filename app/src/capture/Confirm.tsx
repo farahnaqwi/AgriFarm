@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Screen, Say, Stamp, Next } from "./ui.tsx";
+import { Screen, Say, Stamp, Next, T } from "./ui.tsx";
+import { useLang } from "../lib/lang.ts";
 import { Icon } from "./icons.tsx";
 import { FIELD, CROPS, TENURE, UNITS, seasonFromYear, yearFromSeason } from "./labels.ts";
 import { HA_PER_ACRE } from "../lib/geometry.ts";
@@ -23,25 +24,26 @@ const BLANK: Partial<Record<ClaimField, Editable>> = {
 /** The value, written large, the way it will appear in the report. */
 function Value({ claim }: { claim: Draft }) {
   const { field, value, unit } = claim;
+  const sw = useLang() === "sw";
   const num = Number(value);
   switch (field) {
     case "crop_type": {
       const c = CROPS.find((x) => x.value === value);
-      return <p className="value">{c?.sw ?? String(value)}<span className="en">{c?.en}</span></p>;
+      return <p className="value"><T sw={c?.sw ?? String(value)} en={c?.en ?? String(value)} /></p>;
     }
     case "plot_area": {
       const u = UNITS[unit === "ha" ? "ha" : "acre"];
-      return <p className="value">{num}<small>{u.sw}</small><span className="en">{num} {u.en} = {(unit === "acre" ? num * HA_PER_ACRE : num).toFixed(2)} ha</span></p>;
+      return <p className="value">{num}<small>{sw ? u.sw : u.en}</small><span className="en">{sw && `${num} ${u.en} `}= {(unit === "acre" ? num * HA_PER_ACRE : num).toFixed(2)} ha</span></p>;
     }
     case "cooperative_membership_years":
-      return <p className="value">{num}<small>miaka</small><span className="en">years</span></p>;
+      return <p className="value">{num}<small>{sw ? "miaka" : "years"}</small>{sw && <span className="en">years</span>}</p>;
     case "bad_season":
       return <p className="value">{yearFromSeason(String(value))}<span className="en">Harvest year · rain season {String(value)}</span></p>;
     case "last_harvest_delivered":
       return <p className="value">{num}<small>kg</small><span className="en">parchment coffee delivered</span></p>;
     case "land_tenure": {
       const o = TENURE.find((x) => x.value === value);
-      return <p className="value" style={{ fontSize: "1.7rem" }}>{o?.sw ?? String(value)}<span className="en">{o?.en}</span></p>;
+      return <p className="value" style={{ fontSize: "1.7rem" }}><T sw={o?.sw ?? String(value)} en={o?.en ?? String(value)} /></p>;
     }
     default:
       return <p className="value">{String(value)}</p>;
@@ -65,7 +67,7 @@ function Editor({ claim, set }: { claim: Draft; set: (patch: Partial<Editable>) 
       return (
         <div className="seg">
           {CROPS.map((c) => (
-            <button key={c.value} className={value === c.value ? "on" : ""} onClick={() => set({ value: c.value })}>{c.sw}<span className="en">{c.en}</span></button>
+            <button key={c.value} className={value === c.value ? "on" : ""} onClick={() => set({ value: c.value })}><T sw={c.sw} en={c.en} /></button>
           ))}
         </div>
       );
@@ -75,7 +77,7 @@ function Editor({ claim, set }: { claim: Draft; set: (patch: Partial<Editable>) 
           <Stepper value={num} step={0.5} onChange={(v) => set({ value: v })} />
           <div className="seg">
             {(Object.keys(UNITS) as (keyof typeof UNITS)[]).map((u) => (
-              <button key={u} className={unit === u ? "on" : ""} onClick={() => set({ unit: u })}>{UNITS[u].sw}<span className="en">{UNITS[u].en}</span></button>
+              <button key={u} className={unit === u ? "on" : ""} onClick={() => set({ unit: u })}><T sw={UNITS[u].sw} en={UNITS[u].en} /></button>
             ))}
           </div>
         </>
@@ -96,7 +98,7 @@ function Editor({ claim, set }: { claim: Draft; set: (patch: Partial<Editable>) 
       return (
         <div className="seg">
           {TENURE.map((o) => (
-            <button key={o.value} className={value === o.value ? "on" : ""} onClick={() => set({ value: o.value })}>{o.sw}<span className="en">{o.en}</span></button>
+            <button key={o.value} className={value === o.value ? "on" : ""} onClick={() => set({ value: o.value })}><T sw={o.sw} en={o.en} /></button>
           ))}
         </div>
       );
@@ -121,6 +123,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
       source: { type: "farmer_tap", ref: null, quote: null, asr_confidence: null, confirmed_by_farmer: false },
     }]);
 
+  const sw = useLang() === "sw";
   const left = claims.filter((c) => !c.confirmed).length;
   const ready = claims.length > 0 && left === 0;
 
@@ -141,8 +144,8 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
         {claims.map((c) => (
           <article key={c.key} className={c.confirmed ? "entry done" : "entry"}>
             <div className="entry-head">
-              <span className="entry-label">{FIELD[c.field].sw}<span className="en">{FIELD[c.field].en}</span></span>
-              {!c.confirmed && <button className="link danger" onClick={() => remove(c.key)}>Ondoa<span className="en">Remove</span></button>}
+              <span className="entry-label"><T sw={FIELD[c.field].sw} en={FIELD[c.field].en} /></span>
+              {!c.confirmed && <button className="link danger" onClick={() => remove(c.key)}><T sw="Ondoa" en="Remove" /></button>}
             </div>
             {c.source.quote && <p className="quote">“{c.source.quote}”</p>}
             <Value claim={c} />
@@ -150,11 +153,11 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
             <div className="entry-actions">
               {c.confirmed ? (
                 <>
-                  <Stamp tone="green" en="Confirmed" tilt={-5}>Sahihi ✓</Stamp>
-                  <button className="link" onClick={() => setConfirmed(c.key, false)}><Icon name="pen" size={18} />Badilisha<span className="en">Change</span></button>
+                  {sw ? <Stamp tone="green" en="Confirmed" tilt={-5}>Sahihi ✓</Stamp> : <Stamp tone="green" tilt={-5}>Confirmed ✓</Stamp>}
+                  <button className="link" onClick={() => setConfirmed(c.key, false)}><Icon name="pen" size={18} /><T sw="Badilisha" en="Change" /></button>
                 </>
               ) : (
-                <button className="confirm-btn" onClick={() => setConfirmed(c.key, true)}><Icon name="check" />Sahihi<span className="en">&nbsp;Correct</span></button>
+                <button className="confirm-btn" onClick={() => setConfirmed(c.key, true)}><Icon name="check" /><T sw="Sahihi" en="Correct" /></button>
               )}
             </div>
           </article>
@@ -163,7 +166,7 @@ export default function Confirm({ candidates, onDone }: { candidates: CandidateC
       <div className="add">
         <span className="en">Something missing? Add it:</span>
         {(Object.keys(BLANK) as ClaimField[]).map((f) => (
-          <button key={f} className="chip" onClick={() => add(f)}>+ {FIELD[f].sw}</button>
+          <button key={f} className="chip" onClick={() => add(f)}>+ {sw ? FIELD[f].sw : FIELD[f].en}</button>
         ))}
       </div>
     </Screen>

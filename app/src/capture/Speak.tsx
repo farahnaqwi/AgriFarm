@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Screen, Say, Next } from "./ui.tsx";
+import { Screen, Say, Next, T } from "./ui.tsx";
 import { Icon } from "./icons.tsx";
 import { stopAudio } from "../lib/audio.ts";
 import { prepareAsr, transcribe } from "../ai/asr.ts";
@@ -80,35 +80,35 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
     >
       <Say ids={["CAPTURE_SPEAK"]} />
       {phase === "idle" && asrFailed && (
-        <p className="problem"><Icon name="warn" /><span>{PROBLEM.asr_failed.sw}<span className="en">{PROBLEM.asr_failed.en}</span></span></p>
+        <p className="problem"><Icon name="warn" /><span><T sw={PROBLEM.asr_failed.sw} en={PROBLEM.asr_failed.en} /></span></p>
       )}
       {phase === "idle" && modelReady < 1 && !asrFailed && (
-        <p className="working">Inaandaa… {Math.round(modelReady * 100)}%<span className="en">Preparing speech recognition on this phone</span></p>
+        <p className="working"><T sw={`Inaandaa… ${Math.round(modelReady * 100)}%`} en={`Preparing speech recognition on this phone… ${Math.round(modelReady * 100)}%`} /></p>
       )}
       {phase === "idle" && modelReady >= 1 && !micBlocked && (
         <>
           <button className="mic" onClick={start} aria-label="Record"><Icon name="mic" size={56} /></button>
-          <p className="mic-caption">Gusa uongee<span className="en">Tap and speak for about two minutes</span></p>
+          <p className="mic-caption"><T sw="Gusa uongee" en="Tap and speak in Swahili for about two minutes" /></p>
         </>
       )}
       {phase === "recording" && (
         <>
           <button className="mic live" onClick={stop} aria-label="Stop"><Icon name="stop" size={48} /></button>
           <p className="timer">{mmss}</p>
-          <p className="mic-caption">Gusa kumaliza<span className="en">Tap when you are done</span></p>
+          <p className="mic-caption"><T sw="Gusa kumaliza" en="Tap when you are done" /></p>
         </>
       )}
-      {phase === "working" && <p className="working">Inasikiliza…<span className="en">Listening on this phone. Nothing is sent anywhere.</span></p>}
+      {phase === "working" && <p className="working"><T sw="Inasikiliza…" en="Listening on this phone. Nothing is sent anywhere." /></p>}
       {phase === "done" && result && (
         <div className="transcript">
-          <h3>Tumesikia<span className="en">What we heard</span></h3>
+          <h3><T sw="Tumesikia" en="What we heard" /></h3>
           <p>{result.transcript.text || "—"}</p>
           {result.claims.length === 0 && <p className="en">Nothing recognised. You can enter everything by tapping on the next screen.</p>}
         </div>
       )}
-      {micBlocked && <p className="problem"><Icon name="warn" /><span>{PROBLEM.mic_denied.sw}<span className="en">{PROBLEM.mic_denied.en}</span></span></p>}
+      {micBlocked && <p className="problem"><Icon name="warn" /><span><T sw={PROBLEM.mic_denied.sw} en={PROBLEM.mic_denied.en} /></span></p>}
       {(phase === "idle" || micBlocked) && (
-        <button className="link" onClick={() => onClaims([])}><Icon name="pen" size={20} />Jaza kwa kugusa<span className="en">Fill in by tapping instead</span></button>
+        <button className="link" onClick={() => onClaims([])}><Icon name="pen" size={20} /><T sw="Jaza kwa kugusa" en="Fill in by tapping instead" /></button>
       )}
     </Screen>
   );

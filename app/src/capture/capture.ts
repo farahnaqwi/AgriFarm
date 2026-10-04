@@ -5,12 +5,13 @@
 // tier/status/checks/confidence and everything else. Photo pixels stay in IndexedDB.
 
 import { deviceIdHash } from "../offline/store.ts";
+import { getLang } from "../lib/lang.ts";
 import type { Capture, Consent, DemoFarm } from "../types/index.ts";
 
 export async function newCapture(demoFarm: DemoFarm | null): Promise<Capture> {
   return {
     capture_id: crypto.randomUUID(),
-    farmer_language: "sw",
+    farmer_language: getLang(),
     device_id_hash: await deviceIdHash(),
     demo_farm: demoFarm,
     plot_id: null, // set on the plot screen by matching the drawn plot to the cooperative registry

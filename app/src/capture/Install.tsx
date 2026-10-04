@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { canPromptInstall, isIOS, isStandalone, onInstallChange, promptInstall } from "../lib/install.ts";
 import { Icon } from "./icons.tsx";
+import { T } from "./ui.tsx";
 
 /** "Install on this phone": hidden once the app runs from the home-screen icon. */
 export default function Install() {
@@ -17,7 +18,7 @@ export default function Install() {
   if (canPrompt) {
     return (
       <button className="link" onClick={() => promptInstall()}>
-        <Icon name="download" size={20} />Weka kwenye simu<span className="en">Install on this phone</span>
+        <Icon name="download" size={20} /><T sw="Weka kwenye simu" en="Install on this phone" />
       </button>
     );
   }
@@ -26,8 +27,8 @@ export default function Install() {
     <p className="install-hint">
       <Icon name="download" size={20} />
       <span>
-        {isIOS() ? <>Share → Add to Home Screen</> : <>Menyu → Install app</>}
-        <span className="en">{isIOS() ? "Install: tap Share, then \"Add to Home Screen\"." : "Install: open the browser menu, then \"Install app\"."}</span>
+        <T sw={isIOS() ? "Share → Add to Home Screen" : "Menyu → Install app"}
+          en={isIOS() ? "Install: tap Share, then \"Add to Home Screen\"." : "Install: open the browser menu, then \"Install app\"."} />
       </span>
     </p>
   );
