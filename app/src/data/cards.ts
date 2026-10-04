@@ -24,5 +24,5 @@ export async function getEvidenceCard(plotId: string | null): Promise<EvidenceCa
 }
 
 export async function listRegisteredPlots(): Promise<RegisteredPlot[]> {
-  return [mockA, mockB].map((m) => ({ plot_id: m.plot.plot_id, ring: m.plot.geometry.coordinates[0] }));
+  return [mockA, mockB].map((m) => ({ plot_id: m.plot.plot_id, ring: m.plot.geometry.coordinates[0], country: m.plot.country, admin_area: m.plot.admin_area }));
 }

@@ -83,7 +83,7 @@ async function pickModel(): Promise<string> {
   const models = (await res.json()) as Model[];
   const want = lang === "sw" ? /swahili/i : /english/i;
   const ok = models.filter((m) => m.can_do_text_to_speech !== false && m.languages?.some((l) => want.test(l.name) || l.language_id === lang));
-  const preferred = ["eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5", "eleven_flash_v2_5"];
+  const preferred = ["eleven_v4", "eleven_v3", "eleven_multilingual_v2", "eleven_turbo_v2_5", "eleven_flash_v2_5"];
   const pick = preferred.find((id) => ok.some((m) => m.model_id === id)) ?? ok[0]?.model_id;
   if (!pick) throw new Error(`No ElevenLabs model lists ${lang}. Available: ${models.map((m) => m.model_id).join(", ")}`);
   return pick;

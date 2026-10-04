@@ -44,8 +44,10 @@ export async function prepareAsr(onProgress?: (fraction: number) => void): Promi
   }
 }
 
-export async function transcribe(_audioBlob: Blob | null, { demoFarm = "A" }: { demoFarm?: DemoFarm } = {}): Promise<Transcript> {
+export async function transcribe(_audioBlob: Blob | null, { demoFarm = null }: { demoFarm?: DemoFarm | null } = {}): Promise<Transcript> {
   await sleep(900);
+  // Outside demo mode the fake has nothing honest to say: return silence, so the farmer enters values by tap.
+  if (!demoFarm) return { text: "", segments: [] };
   const { segments } = DEMO_TRANSCRIPTS[demoFarm];
   return { text: segments.map((s) => s.text).join(" "), segments };
 }

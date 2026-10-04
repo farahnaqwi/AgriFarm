@@ -33,8 +33,10 @@ export interface Capture {
   farmer_language: "sw" | "en";
   device_id_hash: string;
   demo_farm: DemoFarm | null;
-  /** Registered plot whose evidence card was side-loaded onto the phone. */
+  /** Registered plot whose evidence card was side-loaded onto the phone (null = not in the registry). */
   plot_id: string | null;
+  /** Where that registered plot is. Comes from the registry, never hardcoded. */
+  plot_meta?: PlotMeta | null;
   consent: Consent | null;
   claims: ConfirmedClaim[];
   plot: PlotCapture | null;
@@ -50,7 +52,12 @@ export interface Transcript {
 export type LonLat = [number, number];
 
 /** A plot in the cooperative's registry, with a precomputed evidence card bundled on the phone. */
-export interface RegisteredPlot {
+export interface PlotMeta {
+  country: string; // ISO 3166-1 alpha-2
+  admin_area: string;
+}
+
+export interface RegisteredPlot extends PlotMeta {
   plot_id: string;
   ring: number[][];
 }

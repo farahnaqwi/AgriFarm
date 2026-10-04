@@ -16,7 +16,7 @@ type Mode = "walk" | "draw" | "walked" | null;
 /** Written by `npm run basemap` (app/public/map/basemap.json); precached, so it works offline. */
 interface Basemap { file: string; bounds: L.LatLngBoundsLiteral; attribution: string }
 
-export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture, plotId: string | null) => void }) {
+export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: PlotCapture, match: RegisteredPlot | null) => void }) {
   const mapEl = useRef<HTMLDivElement>(null);
   const layer = useRef<L.LayerGroup | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -118,7 +118,7 @@ export default function Plot({ farm, onDone }: { farm: DemoFarm; onDone: (plot: 
             geometry: { type: "Polygon", coordinates: [ring as PlotCapture["geometry"]["coordinates"][0]] }, // ≥3 points + closing point = schema minItems 4
             geometry_source: mode === "draw" ? "drawn_on_map" : "gps_walk",
             captured_at: now(),
-          }, match?.plot_id ?? null)} />
+          }, match)} />
       }>
       <Say ids={["CAPTURE_WALK", "CAPTURE_DRAW"]} />
       <p className={gpsClass}>
