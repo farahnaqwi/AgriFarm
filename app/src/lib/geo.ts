@@ -8,8 +8,13 @@ import type { DemoFarm, LonLat } from "../types/index.ts";
 // the GPS-spoofing limit we disclose, so the video must say it.
 
 const KEY = "agrifarm-demo";
+/** Off unless turned on (Demo settings, or ?demo=1 in the URL; ?demo=0 turns it off). Real farmers get real GPS. */
 export function demoOn(): boolean {
-  try { return localStorage.getItem(KEY) !== "off"; } catch { return true; }
+  try {
+    const q = new URLSearchParams(window.location.search).get("demo");
+    if (q === "1" || q === "0") localStorage.setItem(KEY, q === "1" ? "on" : "off");
+    return localStorage.getItem(KEY) === "on";
+  } catch { return false; }
 }
 export function setDemo(on: boolean): void {
   try { localStorage.setItem(KEY, on ? "on" : "off"); } catch { /* private mode */ }

@@ -8,7 +8,7 @@ import { PROBLEM } from "./labels.ts";
 import { extractClaims } from "../ai/extract.ts";
 import type { CandidateClaim, DemoFarm, Transcript } from "../types/index.ts";
 
-export default function Speak({ farm, onClaims }: { farm: DemoFarm; onClaims: (claims: CandidateClaim[]) => void }) {
+export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onClaims: (claims: CandidateClaim[]) => void }) {
   const [phase, setPhase] = useState<"idle" | "recording" | "working" | "done">("idle");
   const [seconds, setSeconds] = useState(0);
   const [result, setResult] = useState<{ transcript: Transcript; claims: CandidateClaim[] } | null>(null);

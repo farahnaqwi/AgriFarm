@@ -97,11 +97,11 @@ export default function Flow() {
   } else if (st.step === "consent") {
     view = <Consent onAgree={(consent) => (setCapture({ consent }), go("speak"))} onDecline={() => go("home")} />;
   } else if (st.step === "speak") {
-    view = <Speak farm={st.farm} onClaims={(candidates) => go("confirm", { candidates })} />;
+    view = <Speak farm={capture?.demo_farm ?? null} onClaims={(candidates) => go("confirm", { candidates })} />;
   } else if (st.step === "confirm") {
     view = <Confirm candidates={st.candidates} onDone={(claims) => (setCapture({ claims }), go("plot"))} />;
   } else if (st.step === "plot") {
-    view = <Plot farm={st.farm} onDone={(plot, plot_id) => (setCapture({ plot, plot_id }), go("photos"))} />;
+    view = <Plot farm={st.farm} onDone={(plot, match) => (setCapture({ plot, plot_id: match?.plot_id ?? null, plot_meta: match ? { country: match.country, admin_area: match.admin_area } : null }), go("photos"))} />;
   } else if (st.step === "photos" && capture?.plot) {
     view = (
       <Photos
@@ -125,7 +125,7 @@ export default function Flow() {
         onDemo={(on) => (setDemo(on), setDemoState(on))}
         farm={st.farm}
         onFarm={(farm) => patch({ farm })}
-        onStart={async () => go("consent", { capture: await newCapture(st.farm), candidates: [], report: null, sealed: null })}
+        onStart={async () => go("consent", { capture: await newCapture(demo ? st.farm : null), candidates: [], report: null, sealed: null })}
         onWipe={wipe}
         pending={pending}
       />
