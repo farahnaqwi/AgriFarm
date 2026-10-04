@@ -48,6 +48,7 @@ export const PROBLEM = {
   camera_denied: { sw: "Kamera imezuiwa. Ruhusu kamera kwenye mipangilio ya kivinjari, kisha jaribu tena.", en: "The camera is blocked. Allow camera access in the browser settings, then try again." },
   camera_missing: { sw: "Simu hii haina kamera inayopatikana.", en: "No camera is available on this device." },
   insecure: { sw: "Fungua programu kupitia kiungo cha https.", en: "Open the app from its https link: camera, microphone and GPS only work over a secure connection." },
+  asr_failed: { sw: "Kusikiliza hakufanyi kazi kwenye simu hii. Jaza kwa kugusa.", en: "Speech recognition can't run on this phone. Fill in by tapping instead." },
   mic_denied: { sw: "Kipaza sauti kimezuiwa. Unaweza kuendelea kwa kugusa badala ya kuongea.", en: "The microphone is blocked. You can continue by tapping instead of speaking." },
   gps_denied: { sw: "Mahali (GPS) pamezuiwa. Ruhusu mahali kwenye mipangilio, kisha jaribu tena. Bado unaweza kuchora shamba.", en: "Location is blocked. Allow location in the settings, then try again. You can still draw your farm." },
   gps_unavailable: { sw: "Simu haipati mahali. Nenda mahali pa wazi na usubiri kidogo.", en: "The phone can't get a location. Move to an open place and wait a moment." },

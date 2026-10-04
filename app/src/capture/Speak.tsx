@@ -14,10 +14,11 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
   const [result, setResult] = useState<{ transcript: Transcript; claims: CandidateClaim[] } | null>(null);
   const rec = useRef<{ stop: () => void } | null>(null);
   const [modelReady, setModelReady] = useState(0); // 0..1 while the on-device speech model loads
+  const [asrFailed, setAsrFailed] = useState(false);
   const [micBlocked, setMicBlocked] = useState(false);
 
   useEffect(() => {
-    prepareAsr(setModelReady).then(() => setModelReady(1));
+    prepareAsr(setModelReady).then(() => setModelReady(1)).catch(() => setAsrFailed(true));
   }, []);
 
   useEffect(() => {
@@ -31,7 +32,8 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
 
   async function finish(blob: Blob | null) {
     setPhase("working");
-    const transcript = await transcribe(blob, { demoFarm: farm });
+    // If recognition fails on this phone, carry on with nothing heard: every value can still be tapped.
+    const transcript = await transcribe(blob, { demoFarm: farm }).catch((): Transcript => ({ text: "", segments: [] }));
     const claims = await extractClaims(transcript);
     // `blob` goes out of scope here: raw audio is never stored (consent: deleted_after_extraction).
     setResult({ transcript, claims });
@@ -77,7 +79,10 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
       footer={phase === "done" && result && <Next onClick={() => onClaims(result.claims)} />}
     >
       <Say ids={["CAPTURE_SPEAK"]} />
-      {phase === "idle" && modelReady < 1 && (
+      {phase === "idle" && asrFailed && (
+        <p className="problem"><Icon name="warn" /><span>{PROBLEM.asr_failed.sw}<span className="en">{PROBLEM.asr_failed.en}</span></span></p>
+      )}
+      {phase === "idle" && modelReady < 1 && !asrFailed && (
         <p className="working">Inaandaa… {Math.round(modelReady * 100)}%<span className="en">Preparing speech recognition on this phone</span></p>
       )}
       {phase === "idle" && modelReady >= 1 && !micBlocked && (
