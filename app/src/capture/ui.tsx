@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo, type ReactNode } from "react";
 import { t } from "../lib/phrases.ts";
-import { playClips, stopAudio, audioMissing, onAudioMissing } from "../lib/audio.ts";
+import { playClips, stopAudio, audioMissing, onAudioMissing, audioBlocked, onAudioBlocked } from "../lib/audio.ts";
 import { Icon } from "./icons.tsx";
 
 const BARS = 30;
@@ -15,17 +15,26 @@ function waveform(seed: string): number[] {
   });
 }
 
+/** True while the browser refuses sound until the farmer taps. */
+export function useAudioBlocked(): boolean {
+  const [blocked, setBlocked] = useState(audioBlocked());
+  useEffect(() => onAudioBlocked(setBlocked), []);
+  return blocked;
+}
+
 /** The voice-note bubble: play/pause and a waveform that fills as it plays. */
 export function VoiceNote({ seed, playing, progress, onToggle }: { seed: string; playing: boolean; progress: number; onToggle: () => void }) {
   const bars = useMemo(() => waveform(seed), [seed]);
+  const blocked = useAudioBlocked();
   return (
-    <div className="note">
+    <div className={blocked && !playing ? "note nudge" : "note"}>
       <button className="note-btn" onClick={onToggle} aria-label={playing ? "Pause" : "Play"}>
         <Icon name={playing ? "pause" : "play"} size={22} />
       </button>
       <div className="wave" aria-hidden="true">
         {bars.map((b, i) => <i key={i} style={{ height: `${b * 100}%` }} className={i / BARS < progress ? "on" : ""} />)}
       </div>
+      {blocked && !playing && <span className="nudge-label">Gusa ▶ usikilize<span className="en">Tap ▶ to listen</span></span>}
     </div>
   );
 }
