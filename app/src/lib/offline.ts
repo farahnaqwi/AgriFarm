@@ -23,6 +23,24 @@ export function acknowledgeOffline(): void {
   try { localStorage.setItem(ACK_KEY, "1"); } catch { /* private mode: the screen shows again next time */ }
 }
 
+/**
+ * Start over as if this phone had never opened the app: remove the offline copy (service worker + caches), saved
+ * answers and photos, and settings, then reload into the "Getting this phone ready" screen. For demo retakes:
+ * `?fresh=1` in a link, or Demo → Reset app (an installed iPhone app has no address bar and its own storage).
+ */
+export async function resetApp(): Promise<void> {
+  for (const reg of (await navigator.serviceWorker?.getRegistrations()) ?? []) await reg.unregister();
+  if ("caches" in window) for (const key of await caches.keys()) await caches.delete(key);
+  try { localStorage.clear(); } catch { /* storage blocked */ }
+  await new Promise<void>((done) => {
+    const req = indexedDB.deleteDatabase("agrifarm");
+    req.onsuccess = req.onerror = req.onblocked = () => done();
+  });
+  const url = new URL(window.location.href);
+  url.searchParams.delete("fresh");
+  window.location.replace(url.toString());
+}
+
 async function manifestSizes(): Promise<{ sizes: Map<string, number>; total: number } | null> {
   try {
     const res = await fetch("/offline-manifest.json", { cache: "no-store" });

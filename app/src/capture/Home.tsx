@@ -2,6 +2,7 @@ import { Icon } from "./icons.tsx";
 import { DEMO_FARMS } from "../lib/geo.ts";
 import Install from "./Install.tsx";
 import { T } from "./ui.tsx";
+import { resetApp } from "../lib/offline.ts";
 import type { DemoFarm } from "../types/index.ts";
 
 interface Props {
@@ -52,6 +53,9 @@ export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe, pend
               <button key={k} className={farm === k ? "chip on" : "chip"} onClick={() => onFarm(k)}>{f.label}</button>
             ))}
           </div>
+          <button className="link danger" onClick={() => {
+            if (window.confirm("Reset the app? Everything on this phone is deleted and downloaded again, like a first visit.")) resetApp();
+          }}><Icon name="retry" size={20} /><T sw="Anza upya (pakua tena)" en="Reset app (download again, for a new take)" /></button>
         </details>
         <button className="link danger" onClick={onWipe}><Icon name="trash" size={20} /><T sw="Futa kila kitu" en="Delete everything" /></button>
       </div>
