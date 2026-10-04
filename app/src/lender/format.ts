@@ -78,7 +78,7 @@ export function explainCheck(check: Check): { against: string; finding: string }
   const num = (k: string) => Number(o[k]);
   switch (check.rule_id) {
     case "R-CROP-01":
-      return { against: "Satellite crop classifier", finding: `Looks like ${CLASS_EN[String(o.predicted_class)] ?? String(o.predicted_class)} (p = ${fmt(num("p"))}).` };
+      return { against: "Satellite crop check", finding: `Looks like ${CLASS_EN[String(o.predicted_class)] ?? String(o.predicted_class)} (score ${fmt(num("p"))}).` };
     case "R-CROP-02":
       return { against: "Photo crop check", finding: `${num("coffee")} of ${num("photos")} photos look like coffee.` };
     case "R-AREA-01": {

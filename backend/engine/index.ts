@@ -203,6 +203,7 @@ export async function buildReport(capture: Capture, evidenceCard: EvidenceCard |
       notes: [
         "Built on the phone from the farmer's confirmed answers.",
         mockCard ? "Satellite and weather values are MOCK (invented) until real evidence cards replace them." : "",
+        card?.ndvi.classifier.model_id.includes("rule") ? "The crop check is a transparent rule (does the plot stay green through the dry season?), not a trained classifier." : "",
         !card ? "No evidence card: the plot is not in the cooperative registry, so nothing could be checked against satellite or weather data." : "",
       ].filter(Boolean).join(" "),
     },

@@ -1,0 +1,464 @@
+{
+  "generated_by": "app/scripts/fetch-evidence.ts",
+  "generated_at": "2026-10-04T08:58:51.227Z",
+  "plots": [
+    {
+      "key": "A",
+      "label": "Noor (A)",
+      "plot_id": "P-MBZ-A101",
+      "country": "TZ",
+      "admin_area": "Mbozi District, Songwe Region",
+      "pattern": "Tree-crop block: green through the dry season",
+      "ring": [
+        [
+          32.90678,
+          -9.09289
+        ],
+        [
+          32.90813,
+          -9.09286
+        ],
+        [
+          32.90817,
+          -9.09419
+        ],
+        [
+          32.90675,
+          -9.09416
+        ],
+        [
+          32.90678,
+          -9.09289
+        ]
+      ]
+    },
+    {
+      "key": "B",
+      "label": "Farm B",
+      "plot_id": "P-MBZ-B102",
+      "country": "TZ",
+      "admin_area": "Mbozi District, Songwe Region",
+      "pattern": "Seasonal field: bare in the dry season, green in the rains",
+      "ring": [
+        [
+          32.91515,
+          -9.08786
+        ],
+        [
+          32.91648,
+          -9.08789
+        ],
+        [
+          32.91646,
+          -9.08917
+        ],
+        [
+          32.91512,
+          -9.08914
+        ],
+        [
+          32.91515,
+          -9.08786
+        ]
+      ]
+    }
+  ],
+  "cards": {
+    "P-MBZ-A101": {
+      "evidence_card_id": "EC-P-MBZ-A101-20261004",
+      "computed_at": "2026-10-04T08:56:09.656Z",
+      "ndvi": {
+        "source": "Sentinel-2 L2A (Microsoft Planetary Computer), B04/B08, SCL cloud mask, monthly mean of up to 2 clear scenes",
+        "period_start": "2024-10-01",
+        "period_end": "2026-09-30",
+        "months_total": 24,
+        "months_cloud_free": 24,
+        "pixels_in_plot": 255,
+        "monthly": [
+          {
+            "month": "2024-10",
+            "ndvi": 0.57
+          },
+          {
+            "month": "2024-11",
+            "ndvi": 0.55
+          },
+          {
+            "month": "2024-12",
+            "ndvi": 0.69
+          },
+          {
+            "month": "2025-01",
+            "ndvi": 0.67
+          },
+          {
+            "month": "2025-02",
+            "ndvi": 0.79
+          },
+          {
+            "month": "2025-03",
+            "ndvi": 0.85
+          },
+          {
+            "month": "2025-04",
+            "ndvi": 0.86
+          },
+          {
+            "month": "2025-05",
+            "ndvi": 0.86
+          },
+          {
+            "month": "2025-06",
+            "ndvi": 0.78
+          },
+          {
+            "month": "2025-07",
+            "ndvi": 0.71
+          },
+          {
+            "month": "2025-08",
+            "ndvi": 0.58
+          },
+          {
+            "month": "2025-09",
+            "ndvi": 0.51
+          },
+          {
+            "month": "2025-10",
+            "ndvi": 0.53
+          },
+          {
+            "month": "2025-11",
+            "ndvi": 0.59
+          },
+          {
+            "month": "2025-12",
+            "ndvi": 0.67
+          },
+          {
+            "month": "2026-01",
+            "ndvi": 0.8
+          },
+          {
+            "month": "2026-02",
+            "ndvi": 0.9
+          },
+          {
+            "month": "2026-03",
+            "ndvi": 0.89
+          },
+          {
+            "month": "2026-04",
+            "ndvi": 0.88
+          },
+          {
+            "month": "2026-05",
+            "ndvi": 0.88
+          },
+          {
+            "month": "2026-06",
+            "ndvi": 0.83
+          },
+          {
+            "month": "2026-07",
+            "ndvi": 0.66
+          },
+          {
+            "month": "2026-08",
+            "ndvi": 0.63
+          },
+          {
+            "month": "2026-09",
+            "ndvi": 0.63
+          }
+        ],
+        "dry_season_mean": 0.64,
+        "wet_season_peak": 0.9,
+        "classifier": {
+          "model_id": "ndvi-dry-season-rule-v1",
+          "predicted_class": "coffee",
+          "probabilities": {
+            "coffee": 1,
+            "seasonal_crop": 0,
+            "other": 0
+          },
+          "heldout_accuracy": null,
+          "heldout_n_fields": null
+        }
+      },
+      "rainfall": {
+        "source": "CHIRPS v2.0 daily, 0.05 deg (via NASA/USAID SERVIR ClimateSERV)",
+        "season_window": "Nov-Apr",
+        "baseline_period": "1990/91-2019/20",
+        "seasons": [
+          {
+            "season": "2021/22",
+            "total_mm": 1392,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 22.8,
+            "percentile": 97
+          },
+          {
+            "season": "2022/23",
+            "total_mm": 1258,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 11,
+            "percentile": 80
+          },
+          {
+            "season": "2023/24",
+            "total_mm": 1362,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 20.1,
+            "percentile": 93
+          },
+          {
+            "season": "2024/25",
+            "total_mm": 1058,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": -6.6,
+            "percentile": 33
+          },
+          {
+            "season": "2025/26",
+            "total_mm": 1212,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 7,
+            "percentile": 77
+          }
+        ]
+      },
+      "temperature": {
+        "source": "NASA POWER daily T2M_MAX (MERRA-2, 0.5 x 0.625 deg), Nov-Apr mean vs 1990/91-2019/20",
+        "seasons": [
+          {
+            "season": "2021/22",
+            "mean_tmax_anomaly_c": -0.2
+          },
+          {
+            "season": "2022/23",
+            "mean_tmax_anomaly_c": -1
+          },
+          {
+            "season": "2023/24",
+            "mean_tmax_anomaly_c": -0.1
+          },
+          {
+            "season": "2024/25",
+            "mean_tmax_anomaly_c": 0.5
+          },
+          {
+            "season": "2025/26",
+            "mean_tmax_anomaly_c": -0.4
+          }
+        ]
+      },
+      "soil": {
+        "source": "ISRIC SoilGrids 2.0 (250 m), depth-weighted mean",
+        "depth_cm": "0-30",
+        "ph": 5.5,
+        "organic_carbon_g_kg": 13.4,
+        "nitrogen_total_g_kg": 1,
+        "is_model_estimate": true
+      }
+    },
+    "P-MBZ-B102": {
+      "evidence_card_id": "EC-P-MBZ-B102-20261004",
+      "computed_at": "2026-10-04T08:58:51.223Z",
+      "ndvi": {
+        "source": "Sentinel-2 L2A (Microsoft Planetary Computer), B04/B08, SCL cloud mask, monthly mean of up to 2 clear scenes",
+        "period_start": "2024-10-01",
+        "period_end": "2026-09-30",
+        "months_total": 24,
+        "months_cloud_free": 22,
+        "pixels_in_plot": 247,
+        "monthly": [
+          {
+            "month": "2024-10",
+            "ndvi": 0.12
+          },
+          {
+            "month": "2024-11",
+            "ndvi": null
+          },
+          {
+            "month": "2024-12",
+            "ndvi": 0.2
+          },
+          {
+            "month": "2025-01",
+            "ndvi": 0.67
+          },
+          {
+            "month": "2025-02",
+            "ndvi": 0.76
+          },
+          {
+            "month": "2025-03",
+            "ndvi": 0.78
+          },
+          {
+            "month": "2025-04",
+            "ndvi": 0.56
+          },
+          {
+            "month": "2025-05",
+            "ndvi": 0.5
+          },
+          {
+            "month": "2025-06",
+            "ndvi": 0.24
+          },
+          {
+            "month": "2025-07",
+            "ndvi": 0.22
+          },
+          {
+            "month": "2025-08",
+            "ndvi": 0.23
+          },
+          {
+            "month": "2025-09",
+            "ndvi": 0.17
+          },
+          {
+            "month": "2025-10",
+            "ndvi": 0.15
+          },
+          {
+            "month": "2025-11",
+            "ndvi": 0.15
+          },
+          {
+            "month": "2025-12",
+            "ndvi": 0.17
+          },
+          {
+            "month": "2026-01",
+            "ndvi": 0.53
+          },
+          {
+            "month": "2026-02",
+            "ndvi": 0.76
+          },
+          {
+            "month": "2026-03",
+            "ndvi": null
+          },
+          {
+            "month": "2026-04",
+            "ndvi": 0.57
+          },
+          {
+            "month": "2026-05",
+            "ndvi": 0.53
+          },
+          {
+            "month": "2026-06",
+            "ndvi": 0.21
+          },
+          {
+            "month": "2026-07",
+            "ndvi": 0.19
+          },
+          {
+            "month": "2026-08",
+            "ndvi": 0.19
+          },
+          {
+            "month": "2026-09",
+            "ndvi": 0.17
+          }
+        ],
+        "dry_season_mean": 0.19,
+        "wet_season_peak": 0.78,
+        "classifier": {
+          "model_id": "ndvi-dry-season-rule-v1",
+          "predicted_class": "seasonal_crop",
+          "probabilities": {
+            "coffee": 0,
+            "seasonal_crop": 1,
+            "other": 0
+          },
+          "heldout_accuracy": null,
+          "heldout_n_fields": null
+        }
+      },
+      "rainfall": {
+        "source": "CHIRPS v2.0 daily, 0.05 deg (via NASA/USAID SERVIR ClimateSERV)",
+        "season_window": "Nov-Apr",
+        "baseline_period": "1990/91-2019/20",
+        "seasons": [
+          {
+            "season": "2021/22",
+            "total_mm": 1392,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 22.8,
+            "percentile": 97
+          },
+          {
+            "season": "2022/23",
+            "total_mm": 1258,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 11,
+            "percentile": 80
+          },
+          {
+            "season": "2023/24",
+            "total_mm": 1362,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 20.1,
+            "percentile": 93
+          },
+          {
+            "season": "2024/25",
+            "total_mm": 1058,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": -6.6,
+            "percentile": 33
+          },
+          {
+            "season": "2025/26",
+            "total_mm": 1212,
+            "baseline_mean_mm": 1133,
+            "anomaly_pct": 7,
+            "percentile": 77
+          }
+        ]
+      },
+      "temperature": {
+        "source": "NASA POWER daily T2M_MAX (MERRA-2, 0.5 x 0.625 deg), Nov-Apr mean vs 1990/91-2019/20",
+        "seasons": [
+          {
+            "season": "2021/22",
+            "mean_tmax_anomaly_c": -0.2
+          },
+          {
+            "season": "2022/23",
+            "mean_tmax_anomaly_c": -1
+          },
+          {
+            "season": "2023/24",
+            "mean_tmax_anomaly_c": -0.1
+          },
+          {
+            "season": "2024/25",
+            "mean_tmax_anomaly_c": 0.5
+          },
+          {
+            "season": "2025/26",
+            "mean_tmax_anomaly_c": -0.4
+          }
+        ]
+      },
+      "soil": {
+        "source": "ISRIC SoilGrids 2.0 (250 m), depth-weighted mean",
+        "depth_cm": "0-30",
+        "ph": 5.5,
+        "organic_carbon_g_kg": 12.1,
+        "nitrogen_total_g_kg": 0.9,
+        "is_model_estimate": true
+      }
+    }
+  }
+}

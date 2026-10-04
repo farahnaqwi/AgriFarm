@@ -1,5 +1,4 @@
-import mockA from "@docs/mocks/report-farm-a-consistent.json";
-import mockB from "@docs/mocks/report-farm-b-contradiction.json";
+import { DEMO_PLOTS } from "../data/evidence.ts";
 import { centroid } from "./geometry.ts";
 import type { DemoFarm, LonLat } from "../types/index.ts";
 
@@ -20,10 +19,8 @@ export function setDemo(on: boolean): void {
   try { localStorage.setItem(KEY, on ? "on" : "off"); } catch { /* private mode */ }
 }
 
-export const DEMO_FARMS: Record<DemoFarm, { label: string; plot_id: string; ring: number[][] }> = {
-  A: { label: "Noor (A)", plot_id: mockA.plot.plot_id, ring: mockA.plot.geometry.coordinates[0] },
-  B: { label: "Farm B", plot_id: mockB.plot.plot_id, ring: mockB.plot.geometry.coordinates[0] },
-};
+/** The two demo plots: real fields near Vwawa with real evidence cards (data/evidence.ts). */
+export const DEMO_FARMS = Object.fromEntries(DEMO_PLOTS.map((p) => [p.key, { label: p.label, plot_id: p.plot_id, ring: p.ring }])) as Record<DemoFarm, { label: string; plot_id: string; ring: number[][] }>;
 
 export interface Position { lat: number; lon: number; accuracy: number; demo: boolean }
 

@@ -6,7 +6,7 @@ import { getLang, useLang } from "../lib/lang.ts";
 import { Icon } from "./icons.tsx";
 import { DEMO_FARMS, GOOD_FIX_M, watchFix, watchWalk, type FixState } from "../lib/geo.ts";
 import { matchRegisteredPlot } from "../lib/registry.ts";
-import { listRegisteredPlots } from "../data/cards.ts";
+import { listRegisteredPlots } from "../data/evidence.ts";
 import { PROBLEM } from "./labels.ts";
 import type { DemoFarm, LonLat, PlotCapture, RegisteredPlot } from "../types/index.ts";
 import { areaHa, centroid, closeRing, HA_PER_ACRE } from "../lib/geometry.ts";
