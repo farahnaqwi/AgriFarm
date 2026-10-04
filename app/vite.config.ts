@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 const fromRoot = (p: string): string => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
+  // One .env at the repo root (shared with scripts/). Only VITE_* values reach the browser.
+  envDir: fromRoot(".."),
   resolve: {
     alias: {
       // Shared contracts live outside app/ (docs/), Farah's engine in backend/engine.
