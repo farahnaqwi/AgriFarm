@@ -48,8 +48,8 @@ export default function Review({ report, onNext }: { report: Report; onNext: () 
 
   return (
     <Screen title="Ripoti yako" titleEn="Your evidence report"
-      footer={<Next onClick={() => { stopAudio(); onNext(); }} en={heard ? "Continue" : "Skip to sharing"} />}>
-      {report.provenance.mode !== "live" && <p className="banner">{report.provenance.mode} data · not a real farmer</p>}
+      footer={<Next onClick={() => { stopAudio(); onNext(); }} sw={heard ? "Endelea" : "Ruka hadi kushiriki"} en={heard ? "Continue" : "Skip to sharing"} />}>
+      {report.provenance.mode !== "live" && <p className="banner"><T sw="Data za maonyesho · si mkulima halisi" en={`${report.provenance.mode} data · not a real farmer`} /></p>}
       {report.not_sure.flag && (
         <p className="banner warn"><Icon name="warn" /><span><T sw="Hatuna uhakika kuhusu baadhi ya sehemu." en={t("NOT_SURE", "en")} /></span></p>
       )}
@@ -70,12 +70,11 @@ export default function Review({ report, onNext }: { report: Report; onNext: () 
           return (
             <li key={s.sentence_id} className={[claim?.status ?? "", i === active ? "now" : ""].join(" ").trim()} onClick={() => playFrom(i)}>
               {firstOfClaim && (
-                <Stamp tone={TONE[claim.status]} en={TIER[claim.tier].en} tilt={i % 2 ? 3 : -4}>
+                <Stamp tone={TONE[claim.status]} en={TIER[claim.tier][lang]} tilt={i % 2 ? 3 : -4}>
                   {STATUS[claim.status][lang]}
                 </Stamp>
               )}
               <span className="sw">{sw ? s.text.sw : s.text.en}</span>
-              {sw && <span className="en">{s.text.en}</span>}
             </li>
           );
         })}

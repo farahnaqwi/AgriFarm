@@ -164,16 +164,16 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
 
   return (
     <Screen title="Picha mbili" titleEn="Two photos, from inside your farm"
-      footer={<Next onClick={onDone} disabled={photos.length < 2} en={photos.length < 2 ? `${2 - photos.length} more photo${photos.length === 1 ? "" : "s"}` : "Continue"} />}>
+      footer={<Next onClick={onDone} disabled={photos.length < 2} sw={photos.length < 2 ? `Picha ${2 - photos.length} zaidi` : "Endelea"} en={photos.length < 2 ? `${2 - photos.length} more photo${photos.length === 1 ? "" : "s"}` : "Continue"} />}>
       <Say key={say.join()} ids={say} />
       <div className="camera">
         <video ref={video} autoPlay playsInline muted hidden={camera !== "live"} />
-        {camera === "demo" && <div className="cam-demo">DEMO CAMERA<span className="en">Demo mode without a camera: frames are generated.</span></div>}
+        {camera === "demo" && <div className="cam-demo"><T sw="KAMERA YA MAONYESHO" en="DEMO CAMERA" /><span className="en"><T sw="Maonyesho bila kamera: picha zinatengenezwa." en="Demo mode without a camera: frames are generated." /></span></div>}
         {blocked && (
           <div className="cam-problem">
             <Icon name="warn" size={32} />
             <span><T sw={blockedText.sw} en={blockedText.en} /></span>
-            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>{sw ? "Jaribu tena · Try again" : "Try again"}</button>
+            <button className="chip" onClick={() => setAttempt((a) => a + 1)}>{sw ? "Jaribu tena" : "Try again"}</button>
           </div>
         )}
         {(canShoot || camera === "starting") && (
@@ -195,7 +195,7 @@ export default function Photos({ farm, ring, photos, onAdd, onDone }: Props) {
       )}
       {demoOn() && (
         <button className="link" onClick={() => shoot({ outside: true })} disabled={busy}>
-          <Icon name="pin" size={20} />Demo: photo from 150 m outside the plot
+          <Icon name="pin" size={20} /><T sw="Maonyesho: picha kutoka mita 150 nje ya shamba" en="Demo: photo from 150 m outside the plot" />
         </button>
       )}
     </Screen>

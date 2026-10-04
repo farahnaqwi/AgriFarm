@@ -103,7 +103,7 @@ export default function Speak({ farm, onClaims }: { farm: DemoFarm | null; onCla
         <div className="transcript">
           <h3><T sw="Tumesikia" en="What we heard" /></h3>
           <p>{result.transcript.text || "—"}</p>
-          {result.claims.length === 0 && <p className="en">Nothing recognised. You can enter everything by tapping on the next screen.</p>}
+          {result.claims.length === 0 && <p className="en"><T sw="Hakuna kilichotambuliwa. Unaweza kujaza kila kitu kwa kugusa kwenye skrini inayofuata." en="Nothing recognised. You can enter everything by tapping on the next screen." /></p>}
         </div>
       )}
       {micBlocked && <p className="problem"><Icon name="warn" /><span><T sw={PROBLEM.mic_denied.sw} en={PROBLEM.mic_denied.en} /></span></p>}

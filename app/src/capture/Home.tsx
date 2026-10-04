@@ -41,10 +41,11 @@ export default function Home({ demo, onDemo, farm, onFarm, onStart, onWipe, pend
       <div className="quiet">
         <Install />
         <details className="demo-panel">
-          <summary>Demo</summary>
+          <summary><T sw="Maonyesho" en="Demo" /></summary>
           <label className="row">
             <input type="checkbox" checked={demo} onChange={(e) => onDemo(e.target.checked)} />
-            Simulated GPS inside the demo plot (we are not in Mbozi). Badged on every screen.
+            <T sw="GPS ya kuigiza ndani ya shamba la maonyesho (hatuko Mbozi). Inaonyeshwa kwenye kila skrini."
+              en="Simulated GPS inside the demo plot (we are not in Mbozi). Badged on every screen." />
           </label>
           <div className="row">
             {(Object.entries(DEMO_FARMS) as [DemoFarm, (typeof DEMO_FARMS)[DemoFarm]][]).map(([k, f]) => (
