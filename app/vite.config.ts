@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "node:url";
+import { mkdirSync, writeFileSync } from "node:fs";
 
 const fromRoot = (p: string): string => fileURLToPath(new URL(p, import.meta.url));
 
@@ -52,6 +53,13 @@ export default defineConfig({
         // The build also emits its own copy of the ONNX runtime; asr.ts loads the one in /ort/, so don't download this twice.
         globIgnores: ["**/assets/ort-wasm-*"],
         maximumFileSizeToCacheInBytes: 60 * 1024 * 1024,
+        // The size of every precached file, so the first-run screen shows real download progress (lib/offline.ts).
+        manifestTransforms: [async (entries) => {
+          const files = entries.map((e) => ({ url: e.url, bytes: e.size }));
+          mkdirSync(fromRoot("dist"), { recursive: true });
+          writeFileSync(fromRoot("dist/offline-manifest.json"), JSON.stringify({ files, bytes: files.reduce((a, f) => a + f.bytes, 0) }));
+          return { manifest: entries, warnings: [] };
+        }],
         navigateFallbackDenylist: [/^\/api\//],
       },
     }),

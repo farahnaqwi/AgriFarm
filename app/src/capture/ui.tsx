@@ -138,7 +138,7 @@ export function TopBar({ step, total, demo, onHome }: { step: number | null; tot
           <span className="page">{step}<span>/{total}</span></span>
           <span className="ticks">{Array.from({ length: total }, (_, i) => <i key={i} className={i < step ? "on" : ""} />)}</span>
         </div>
-      ) : <span className="wordmark">AgriFarm</span>}
+      ) : <span className="wordmark"><img className="mark" src="/mark.webp" alt="" />AgriFarm</span>}
       <div className="tags">
         {!online && <span className="tag solid"><T sw="Bila mtandao" en="Offline" /></span>}
         {demo && <span className="tag"><T sw="Maonyesho" en="Demo GPS" /></span>}

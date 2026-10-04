@@ -116,7 +116,8 @@ p { margin: 0; }
 .ticks { display: flex; gap: 3px; }
 .ticks i { width: 9px; height: 3px; background: var(--rule); }
 .ticks i.on { background: var(--wave-on); }
-.wordmark { font-weight: 800; letter-spacing: -0.01em; }
+.wordmark { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; letter-spacing: -0.01em; }
+.wordmark .mark { width: 30px; height: 30px; object-fit: contain; padding: 3px; background: var(--white); border-radius: 8px; }
 .tags { display: flex; align-items: center; gap: 6px; }
 .tag { font-family: var(--mono); font-size: 0.62rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 5px; border: 1.5px solid currentColor; white-space: nowrap; }
 .tag.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
@@ -339,3 +340,19 @@ p { margin: 0; }
 .nudge-label { flex-basis: 100%; padding: 2px 4px 2px 6px; font-weight: 700; font-size: 0.95rem; }
 @keyframes nudge { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--note-btn) 60%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
 @media (prefers-reduced-motion: reduce) { .note.nudge .note-btn { animation: none; } }
+
+/* ---------- First run: download everything for offline use ---------- */
+.setup .body { gap: 20px; }
+.setup-logo { width: min(220px, 58vw); align-self: center; }
+.setup-lead { font-size: 1.1rem; color: var(--fg-2); }
+.setup-bar { height: 16px; border: 2px solid var(--ink); border-radius: 999px; background: var(--white); overflow: hidden; }
+.setup-bar i { display: block; height: 100%; width: 0; background: var(--green); transition: width 500ms ease; }
+.setup-bar.busy i { width: 30%; animation: setup-busy 1.2s ease-in-out infinite alternate; }
+@keyframes setup-busy { from { transform: translateX(-10%); } to { transform: translateX(240%); } }
+.setup-numbers { font-family: var(--mono); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.setup-keep { display: flex; gap: 10px; align-items: center; font-weight: 700; padding: 12px 14px; border: 2px dashed var(--ink); }
+.setup-done { display: flex; gap: 14px; align-items: flex-start; padding: 18px 16px; background: var(--green); color: var(--white); border-radius: var(--radius); }
+.setup-done p { display: flex; flex-direction: column; gap: 6px; }
+.setup-done b { font-size: 1.45rem; line-height: 1.15; }
+.setup-done span { color: #d7ebdf; }
+@media (prefers-reduced-motion: reduce) { .setup-bar.busy i { animation: none; } }

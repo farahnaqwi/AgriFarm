@@ -64,7 +64,7 @@ export default function Verify() {
 function Hero({ state, hash, onRetry }: { state: State; hash: string; onRetry: () => void }) {
   const top = (
     <div className="l-top">
-      <span className="wordmark">AgriFarm</span>
+      <span className="wordmark"><img className="mark" src="/mark.webp" alt="" />AgriFarm</span>
       <span className="tag">Farm evidence report</span>
     </div>
   );
