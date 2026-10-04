@@ -1,0 +1,674 @@
+{
+  "sw/U_HA": {
+    "sha": "6214aa25d7aeeb08",
+    "text": "hekta",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_5": {
+    "sha": "80bd5917c09591b3",
+    "text": "tano",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/AREA_SAID": {
+    "sha": "eeb79834141d8c37",
+    "text": "Ulisema shamba lako lina",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CONSENT_ASK": {
+    "sha": "4fcb9a3fdd5eb1d8",
+    "text": "Je, unakubali? Gusa kitufe cha kijani kusema ndiyo, au kitufe chekundu kusema hapana.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CONSENT_DELETE": {
+    "sha": "f3b1defa73031da7",
+    "text": "Unaweza kufuta kila kitu wakati wowote.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CONSENT_DECLINED": {
+    "sha": "a27273de65fa7746",
+    "text": "Sawa. Hakuna kilichorekodiwa.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CONSENT_PRIVACY": {
+    "sha": "bf08d71e26caff74",
+    "text": "Hakuna kitakachotoka kwenye simu hii bila idhini yako. Rekodi ya sauti yako inabaki kwenye simu hii.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CONSENT_INTRO": {
+    "sha": "ed3e113a3c6e165f",
+    "text": "Programu hii inakusaidia kuandaa ripoti ya ushahidi kuhusu shamba lako. Inarekodi sauti yako, picha, na mahali shamba lako lilipo.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_CONFIRM": {
+    "sha": "7dd0f801de64a70b",
+    "text": "Je, hii ni sahihi? Gusa ndiyo au hapana.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_WALK": {
+    "sha": "11fc4b208cf26891",
+    "text": "Tembea kando ya mpaka wa shamba lako. Simu itachora mpaka huo.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_DRAW": {
+    "sha": "0dd339989bfab640",
+    "text": "Au chora mpaka wa shamba lako kwenye ramani kwa kidole chako.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_SPEAK": {
+    "sha": "6698ecf1ec4f4d0f",
+    "text": "Tueleze kuhusu shamba lako: unalima nini, lina ukubwa gani, umekuwa mwanachama wa chama cha ushirika kwa muda gani, na misimu yoyote mibaya.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_PHOTO": {
+    "sha": "ab04ed3ae58eca35",
+    "text": "Simama ndani ya shamba lako na upige picha ya mazao yako.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_TURN": {
+    "sha": "9396a4b5a6512c21",
+    "text": "Sasa geuka nyuma upige picha moja zaidi.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_OUTSIDE": {
+    "sha": "d7f49e8ca5cc88b1",
+    "text": "Picha hii iko nje ya mpaka wa shamba lako. Tafadhali ingia ndani ya shamba ujaribu tena.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_DONE": {
+    "sha": "b2307bb65e18dc18",
+    "text": "Asante. Ripoti yako inaandaliwa kwenye simu hii.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CAPTURE_NO_GPS": {
+    "sha": "f7a152f4e5d7e78e",
+    "text": "Simu haiwezi kupata mahali ilipo. Nenda mahali pa wazi na usubiri kidogo.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RESULT_COOP": {
+    "sha": "0442c65b24f11b6c",
+    "text": "Chama chako cha ushirika kimethibitisha hili.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RESULT_MACHINE": {
+    "sha": "ab5aeae08733f1ed",
+    "text": "Kumbukumbu za satelaiti au hali ya hewa zinakubaliana na hili.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/REVIEW_INTRO": {
+    "sha": "038fbb9329568823",
+    "text": "Hii ni ripoti yako ya ushahidi. Isikilize, kisha uamue kama unataka kuishiriki.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RESULT_OFFICER": {
+    "sha": "6ddd1c338c66433f",
+    "text": "Afisa ugani wako amethibitisha hili.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAID_COFFEE": {
+    "sha": "ce5d4f3c02193687",
+    "text": "Ulisema unalima kahawa.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RESULT_CONTRADICTED": {
+    "sha": "a802616f1c891d73",
+    "text": "Kumbukumbu hazikubaliani na hili. Afisa mikopo anaweza kukuuliza kuhusu hili.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RESULT_UNVERIFIABLE": {
+    "sha": "d2d6b88ad7a8e6e8",
+    "text": "Hili halikuweza kukaguliwa. Linabaki kuwa maelezo yako mwenyewe.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAID_MAIZE": {
+    "sha": "6de1a2b3fe80919b",
+    "text": "Ulisema unalima mahindi.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAID_COFFEE_BANANA": {
+    "sha": "85703f8f15c2367e",
+    "text": "Ulisema unalima kahawa pamoja na migomba.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAT_COFFEE": {
+    "sha": "3b0e3e52a7d29998",
+    "text": "Picha za satelaiti za shamba lako zinaonekana kama kahawa, ambayo hubaki kijani mwaka mzima.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAT_SEASONAL": {
+    "sha": "0fd46088cd72933b",
+    "text": "Picha za satelaiti za shamba lako zinaonekana kama zao la msimu kama mahindi, si kahawa.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/CROP_SAT_UNSURE": {
+    "sha": "8d412373164504df",
+    "text": "Picha za satelaiti hazionyeshi wazi zao lililopo shambani kwako.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/PHOTO_COFFEE": {
+    "sha": "900dfa04b0c5ba12",
+    "text": "Picha zako zinaonekana kuonyesha mimea ya kahawa.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/PHOTO_NOT_COFFEE": {
+    "sha": "f63685381d1f2d43",
+    "text": "Picha zako hazionekani kuonyesha mimea ya kahawa.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/PHOTO_INSIDE": {
+    "sha": "f4c0be36a45fe5e0",
+    "text": "Picha zako zote zilipigwa ndani ya shamba lako.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/AREA_MAP": {
+    "sha": "ac5949701f63cb94",
+    "text": "Shamba ulilochora kwenye ramani lina takriban",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/PHOTO_DUPLICATE": {
+    "sha": "aea7c21db9d60ffa",
+    "text": "Picha moja inafanana na picha iliyo kwenye ripoti nyingine. Mtu atakagua hili.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SEASON_SAID": {
+    "sha": "58a75ccd88410db7",
+    "text": "Ulisema msimu mbaya ulikuwa mwaka",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/HEAT_HIGH": {
+    "sha": "25983d5ef046dafb",
+    "text": "Msimu huo pia ulikuwa na joto kuliko kawaida.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RAIN_DRY": {
+    "sha": "fcd85710c907ffff",
+    "text": "Kumbukumbu za mvua zinaonyesha msimu huo ulikuwa na mvua chache kuliko kawaida, kwa takriban asilimia",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/COOP_SAID": {
+    "sha": "177f3cb6298b6754",
+    "text": "Ulisema umekuwa mwanachama wa chama cha ushirika kwa miaka",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/COOP_SAID_ONE": {
+    "sha": "503139a11bc0c9b6",
+    "text": "Ulisema umekuwa mwanachama wa chama cha ushirika kwa mwaka mmoja.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/RAIN_NORMAL": {
+    "sha": "75351610995b1f57",
+    "text": "Mvua zilikuwa za kawaida msimu huo, kwa hiyo sababu inaweza kuwa nyingine, kama wadudu, magonjwa au udongo. Afisa ugani anaweza kukusaidia kujua sababu.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/HARVEST_SAID": {
+    "sha": "d45f8d7c965a627d",
+    "text": "Ulituambia kiasi cha kahawa ulichowasilisha msimu uliopita.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/OWNERSHIP_NOT_SHOWN": {
+    "sha": "fdc7b1b1a8a420f0",
+    "text": "Ripoti hii haionyeshi nani anamiliki ardhi hii.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/OWNERSHIP_HOW": {
+    "sha": "051b08cddc9d833c",
+    "text": "Ili kuonyesha hili, chama chako kinaweza kusaini, au unaweza kuongeza hati ya ardhi.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SOIL_ACIDIC": {
+    "sha": "b4612cfdede95fda",
+    "text": "Ramani za udongo zinaonyesha kwamba udongo wako unaweza kuwa na tindikali. Haya ni makadirio tu. Muulize afisa ugani kabla ya kununua chochote.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/NOT_SURE": {
+    "sha": "758080c5aefd1e47",
+    "text": "Hatuna uhakika kuhusu baadhi ya sehemu za ripoti hii. Tafadhali zungumza na afisa ugani au chama chako kabla ya kuishiriki.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/DISCLAIMER": {
+    "sha": "2bee2913406b52b5",
+    "text": "Ripoti hii ni ushahidi, si hakikisho. Haikubali wala haikatai mkopo. Mtu ndiye atakayeamua.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SITE_VISIT": {
+    "sha": "b6b9fba2644b8896",
+    "text": "Afisa mikopo anaweza kutembelea shamba lako ili kukagua.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SHARE_DONE": {
+    "sha": "7c74f1179d45d22e",
+    "text": "Ripoti imefungwa. Mwonyeshe afisa mikopo msimbo huu.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SHARE_DECLINED": {
+    "sha": "8226588670730295",
+    "text": "Ripoti haijashirikiwa. Inabaki kwenye simu hii.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/SHARE_ASK": {
+    "sha": "5d811d5d44fdf42a",
+    "text": "Je, unataka kushiriki ripoti hii na afisa mikopo? Gusa kitufe cha kijani kusema ndiyo, au kitufe chekundu kusema hapana.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/REPLAY": {
+    "sha": "58eec0ef6b85793a",
+    "text": "Gusa hapa kusikiliza tena.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/DELETE_DONE": {
+    "sha": "1afed44974cc4a0e",
+    "text": "Kila kitu kimefutwa kwenye simu hii.",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/U_ACRE": {
+    "sha": "ab2607f3007ed3ed",
+    "text": "ekari",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_1": {
+    "sha": "6b03869937d00266",
+    "text": "moja",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_3": {
+    "sha": "d23c3507370651f5",
+    "text": "tatu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_2": {
+    "sha": "c4d4a17952735774",
+    "text": "mbili",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_4": {
+    "sha": "323b1ebdfde61c70",
+    "text": "nne",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_7": {
+    "sha": "8dad4992c4b7d0bc",
+    "text": "saba",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_6": {
+    "sha": "4893dd85d32d1bd6",
+    "text": "sita",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_10": {
+    "sha": "6166b5bb771cec21",
+    "text": "kumi",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_9": {
+    "sha": "40ed9371009f6da4",
+    "text": "tisa",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_8": {
+    "sha": "e4e310b2234a87a7",
+    "text": "nane",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_12": {
+    "sha": "6443c27a094dff68",
+    "text": "kumi na mbili",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_11": {
+    "sha": "8b9bc3f2d05daaf4",
+    "text": "kumi na moja",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_13": {
+    "sha": "4f25ad59f7694b12",
+    "text": "kumi na tatu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_15": {
+    "sha": "65df2c542374546d",
+    "text": "kumi na tano",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_16": {
+    "sha": "ee80318c4392fdd7",
+    "text": "kumi na sita",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_14": {
+    "sha": "48975a7850b3c4e8",
+    "text": "kumi na nne",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_17": {
+    "sha": "8bb253dc79c0ebe4",
+    "text": "kumi na saba",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_19": {
+    "sha": "82c88b972602af7a",
+    "text": "kumi na tisa",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_18": {
+    "sha": "b93eb8ab6d903f4f",
+    "text": "kumi na nane",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_HALF_ONLY": {
+    "sha": "d6bf5a407afda36d",
+    "text": "nusu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_20": {
+    "sha": "c79ed441dd82d697",
+    "text": "ishirini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/N_AND_HALF": {
+    "sha": "aeb88d45f1fd1f73",
+    "text": "na nusu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_2": {
+    "sha": "8f9feca55c4369e2",
+    "text": "miwili",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_3": {
+    "sha": "5fd49eaf53134ffb",
+    "text": "mitatu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_4": {
+    "sha": "b0c4ea1eb9bd39aa",
+    "text": "minne",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_6": {
+    "sha": "4893dd85d32d1bd6",
+    "text": "sita",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_7": {
+    "sha": "8dad4992c4b7d0bc",
+    "text": "saba",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_5": {
+    "sha": "39f5743ef4528ff8",
+    "text": "mitano",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_8": {
+    "sha": "2f41fc3450bc5404",
+    "text": "minane",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_9": {
+    "sha": "40ed9371009f6da4",
+    "text": "tisa",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_10": {
+    "sha": "6166b5bb771cec21",
+    "text": "kumi",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_11": {
+    "sha": "8b9bc3f2d05daaf4",
+    "text": "kumi na moja",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_12": {
+    "sha": "0dde13fcea3c56f8",
+    "text": "kumi na miwili",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_13": {
+    "sha": "9f308fb63efc0d05",
+    "text": "kumi na mitatu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_15": {
+    "sha": "ecd20c50d104322b",
+    "text": "kumi na mitano",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_14": {
+    "sha": "021d95cb4b9d409e",
+    "text": "kumi na minne",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_16": {
+    "sha": "ee80318c4392fdd7",
+    "text": "kumi na sita",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_18": {
+    "sha": "7aaaf479587157aa",
+    "text": "kumi na minane",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_17": {
+    "sha": "8bb253dc79c0ebe4",
+    "text": "kumi na saba",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_19": {
+    "sha": "82c88b972602af7a",
+    "text": "kumi na tisa",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/MI_20": {
+    "sha": "c79ed441dd82d697",
+    "text": "ishirini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_10": {
+    "sha": "6166b5bb771cec21",
+    "text": "kumi",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_20": {
+    "sha": "c79ed441dd82d697",
+    "text": "ishirini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_40": {
+    "sha": "f40a8538a4baee4f",
+    "text": "arobaini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_30": {
+    "sha": "a228d06513e1aac1",
+    "text": "thelathini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_50": {
+    "sha": "6454eb916129b698",
+    "text": "hamsini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_70": {
+    "sha": "2dbb1e80a05cefed",
+    "text": "sabini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_60": {
+    "sha": "9a671c02a1239ebd",
+    "text": "sitini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_80": {
+    "sha": "58feaeac6ec24c81",
+    "text": "themanini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/T_90": {
+    "sha": "be9ee37bad026bd6",
+    "text": "tisini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2017": {
+    "sha": "b0438c56cd17c802",
+    "text": "elfu mbili na kumi na saba",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2018": {
+    "sha": "f7d9851f8d1913ea",
+    "text": "elfu mbili na kumi na nane",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2019": {
+    "sha": "e587682bdc6351cb",
+    "text": "elfu mbili na kumi na tisa",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2020": {
+    "sha": "af72e4f084ed9e1a",
+    "text": "elfu mbili na ishirini",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2021": {
+    "sha": "4edd4e28630ad738",
+    "text": "elfu mbili na ishirini na moja",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2023": {
+    "sha": "e89a1951ab1cfed5",
+    "text": "elfu mbili na ishirini na tatu",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2022": {
+    "sha": "f250dfe311fb6353",
+    "text": "elfu mbili na ishirini na mbili",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2024": {
+    "sha": "2f1ac57ea0aca141",
+    "text": "elfu mbili na ishirini na nne",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2025": {
+    "sha": "570e4a346c76a071",
+    "text": "elfu mbili na ishirini na tano",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  },
+  "sw/Y_2026": {
+    "sha": "2753130c11579a30",
+    "text": "elfu mbili na ishirini na sita",
+    "model": "eleven_v4",
+    "voice": "i5oE89JoUCpIgvSOemWx"
+  }
+}
