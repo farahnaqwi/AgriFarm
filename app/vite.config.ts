@@ -49,6 +49,8 @@ export default defineConfig({
       workbox: {
         // ADDED onnx, wasm, mjs, txt so the speech model is cached for airplane mode.
         globPatterns: ["**/*.{js,css,html,png,jpg,jpeg,svg,json,mp3,webp,woff2,onnx,wasm,mjs,txt}"],
+        // The build also emits its own copy of the ONNX runtime; asr.ts loads the one in /ort/, so don't download this twice.
+        globIgnores: ["**/assets/ort-wasm-*"],
         maximumFileSizeToCacheInBytes: 60 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/api\//],
       },

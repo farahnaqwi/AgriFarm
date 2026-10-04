@@ -54,3 +54,7 @@ video/
 .DS_Store
 .vscode/
 .idea/
+
+# --- Speech model + runtime: fetched by app/scripts/fetch-models.ts (npm prebuild), not committed ---
+app/public/models/
+app/public/ort/
