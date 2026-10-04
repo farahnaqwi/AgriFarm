@@ -40,7 +40,10 @@ const FUZZY_TARGETS = [
 
 // Common words that are one letter away from a target and must never be "corrected"
 // (sasa~saba, nani~nane, hata~hati, kila~kilo, mwaka~miaka).
-const NEVER_FUZZ = new Set(["sasa", "nani", "hata", "kila", "tena", "sana", "mwaka", "miaka", "kama", "hapa", "bado"]);
+// "mwaka jana" = last year. Fixed for the demo: calendar year 2025 -> season 2024/25 (Nov 2024 - Apr 2025).
+const LAST_YEAR = 2025;
+
+const NEVER_FUZZ = new Set(["sasa", "nani", "hata", "kila", "tena", "sana", "mwaka", "miaka", "kama", "hapa", "bado", "jana"]);
 
 // Unit words the speech model sometimes glues to the following number ("ekaritanu").
 const GLUED_PREFIXES = ["ekari", "hekta", "miaka", "kilo"];
@@ -212,16 +215,24 @@ export async function extractClaims({ segments }: Transcript): Promise<Candidate
       }
     }
 
-    // Bad season: a year ending the season (2022 -> "2021/22")
-    if (has("mvua", "ukame", "mbaya", "chache", "msimu")) {
+    // Bad season: a year ending the season (2022 -> "2021/22"), or "mwaka jana" (last year)
+    if (has("mvua", "ukame", "mbaya", "chache", "msimu", "yalishuka", "yameshuka")) {
+      let found = false;
       for (let i = 0; i < t.length; i++) {
         if (!isNumWord(t[i])) continue;
         const n = parseNumber(t, i);
         if (n && n.value >= 1990 && n.value <= 2100) {
           push("bad_season", `${n.value - 1}/${String(n.value).slice(2)}`, null, t.slice(i, n.next).join(" "));
+          found = true;
           break;
         }
         if (n) i = n.next - 1;
+      }
+      if (!found) {
+        const j = t.findIndex((w, k) => w === "jana" && t[k - 1] === "mwaka");
+        if (j > 0) {
+          push("bad_season", `${LAST_YEAR - 1}/${String(LAST_YEAR).slice(2)}`, null, "mwaka jana");
+        }
       }
     }
 
