@@ -1,4 +1,6 @@
-// OWNER: Sakeet. FAKE until the on-device speech model (whisper-tiny via transformers.js) lands.
+// OWNER: Sakeet. On-device speech recognition: whisper-tiny (q8) via transformers.js.
+// Model files live in app/public/models/whisper-tiny, runtime in app/public/ort,
+// so it works fully offline. Raw audio is discarded after transcribe().
 //
 // CONTRACT
 //   transcribe(audioBlob, { demoFarm }) -> Promise<Transcript>  (types/index.ts):
@@ -6,11 +8,8 @@
 //   prepareAsr(onProgress?: (fraction 0..1) => void) -> Promise<void>
 //     loads the model from the app's own offline cache (bundled at install, never downloaded on first use).
 //     The Speak screen shows progress and keeps the mic button disabled until it resolves.
-// Runs fully offline. The raw audio is discarded after this call (consent: deleted_after_extraction).
 
 import type { DemoFarm, Transcript } from "../types/index.ts";
-
-const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
 export const DEMO_TRANSCRIPTS: Record<DemoFarm, Transcript> = {
   A: {
@@ -37,15 +36,65 @@ export const DEMO_TRANSCRIPTS: Record<DemoFarm, Transcript> = {
   },
 };
 
+let asr: any = null;
+
 export async function prepareAsr(onProgress?: (fraction: number) => void): Promise<void> {
-  for (let i = 1; i <= 5; i++) {
-    await sleep(120);
-    onProgress?.(i / 5);
+  if (asr) { onProgress?.(1); return; }
+  const { pipeline, env } = await import("@huggingface/transformers");
+
+  env.allowRemoteModels = false;        // never download in the field
+  env.allowLocalModels = true;
+  env.localModelPath = "/models/";      // app/public/models/whisper-tiny/...
+  env.useBrowserCache = false;          // files come from the app's own cache
+  const wasm = env.backends.onnx.wasm as any;
+  wasm.wasmPaths = {
+    mjs: "/ort/ort-wasm-simd-threaded.asyncify.mjs",
+    wasm: "/ort/ort-wasm-simd-threaded.asyncify.wasm",
+  };
+  wasm.numThreads = 1;                // avoids needing cross-origin isolation
+
+  asr = await pipeline("automatic-speech-recognition", "whisper-tiny", {
+    dtype: "q8",                        // uses the *_quantized.onnx files
+    device: "wasm",
+    progress_callback: (p: any) => {
+      if (p?.status === "progress" && typeof p.progress === "number") onProgress?.(p.progress / 100);
+    },
+  });
+  onProgress?.(1);
+}
+
+async function toFloat32(blob: Blob): Promise<Float32Array> {
+  const ctx = new AudioContext({ sampleRate: 16000 });
+  try {
+    const buf = await ctx.decodeAudioData(await blob.arrayBuffer());
+    return buf.getChannelData(0);
+  } finally {
+    await ctx.close();
   }
 }
 
-export async function transcribe(_audioBlob: Blob | null, { demoFarm = "A" }: { demoFarm?: DemoFarm } = {}): Promise<Transcript> {
-  await sleep(900);
-  const { segments } = DEMO_TRANSCRIPTS[demoFarm];
-  return { text: segments.map((s) => s.text).join(" "), segments };
+export async function transcribe(
+  audioBlob: Blob | null,
+  { demoFarm = "A" }: { demoFarm?: DemoFarm } = {},
+): Promise<Transcript> {
+  // No audio (scripted demo path): return the hand-written transcript.
+  if (!audioBlob) {
+    const { segments } = DEMO_TRANSCRIPTS[demoFarm];
+    return { text: segments.map((s) => s.text).join(" "), segments };
+  }
+  if (!asr) throw new Error("Call prepareAsr() first");
+
+  const out = await asr(await toFloat32(audioBlob), {
+    language: "swahili",
+    task: "transcribe",
+    return_timestamps: true,
+  });
+
+  const segments = (out.chunks ?? []).map((c: any) => ({
+    start: c.timestamp?.[0] ?? 0,
+    end: c.timestamp?.[1] ?? c.timestamp?.[0] ?? 0,
+    text: String(c.text).trim(),
+    confidence: null, // Whisper gives no trustworthy per-segment score
+  }));
+  return { text: String(out.text).trim(), segments };
 }
