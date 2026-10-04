@@ -3,7 +3,7 @@ import { load, save, wipeAll } from "../offline/store.ts";
 import { demoOn, setDemo } from "../lib/geo.ts";
 import { playClips } from "../lib/audio.ts";
 import { buildReport } from "../engine.ts";
-import { getEvidenceCard } from "../data/cards.ts";
+import { getEvidenceCard } from "../data/evidence.ts";
 import { flushOutbox } from "../data/reports.ts";
 import { newCapture } from "./capture.ts";
 import { Screen, Say, TopBar } from "./ui.tsx";

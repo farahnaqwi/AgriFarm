@@ -178,10 +178,10 @@ function Body({ report, hash, intact }: { report: Report; hash: string; intact: 
       <section>
         <h2>Satellite greenness</h2>
         <p className="l-sub">
-          Classifier: <b>{cls.predicted_class.replace("_", " ")}</b>
-          {cls.predicted_class !== "uncertain" && <> (p = {Number((cls.probabilities as Record<string, unknown>)[cls.predicted_class] ?? 0).toFixed(2)})</>}
+          {cls.model_id.includes("rule") ? "Crop pattern (rule: does it stay green in the dry season?)" : "Classifier"}: <b>{cls.predicted_class.replace("_", " ")}</b>
+          {cls.predicted_class !== "uncertain" && <> (score {Number((cls.probabilities as Record<string, unknown>)[cls.predicted_class] ?? 0).toFixed(2)})</>}
           {" · "}{ev.ndvi.months_cloud_free} of {ev.ndvi.months_total} months cloud-free
-          {cls.heldout_accuracy != null ? ` · held-out accuracy ${Math.round(cls.heldout_accuracy * 100)}%` : " · accuracy not yet measured"}
+          {cls.heldout_accuracy != null ? ` · held-out accuracy ${Math.round(cls.heldout_accuracy * 100)}%` : cls.model_id.includes("rule") ? " · a fixed rule, not a trained model" : " · accuracy not yet measured"}
         </p>
         <NdviChart ndvi={ev.ndvi} />
       </section>

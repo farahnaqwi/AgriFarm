@@ -11,6 +11,7 @@ import mockB from "../../docs/mocks/report-farm-b-contradiction.json" with { typ
 import phrases from "../../docs/phrases.json" with { type: "json" };
 import { buildReport, seal, reportHash } from "../../backend/engine/index.ts";
 import { englishClips } from "../src/lib/clips.ts";
+import evidence from "../src/data/evidence/demo-plots.json" with { type: "json" };
 import type { Capture, EvidenceCard, Report } from "../src/types/index.ts";
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
@@ -112,6 +113,26 @@ const enMissing = [...enClips].filter((id) => !existsSync(new URL(`../public/aud
 check(`All ${enClips.size} English clips exist`, enMissing.length === 0, enMissing.join(", "));
 const areaSaid = a.narrative.find((x) => x.phrase_id === "AREA_SAID")!;
 check("English word order: number before unit", englishClips(areaSaid.audio_clips, EN.get("AREA_SAID")!).join() === "AREA_SAID,N_5,U_ACRE");
+
+// 8) The demo plots with REAL evidence (Sentinel-2, CHIRPS, NASA POWER, SoilGrids; scripts/fetch-evidence.ts).
+const realPlot = (key: "A" | "B") => evidence.plots.find((p) => p.key === key)!;
+const realCapture = (m: Mock, key: "A" | "B"): Capture => {
+  const p = realPlot(key);
+  return captureFrom(m, { demo_farm: key, plot_id: p.plot_id, plot_meta: { country: p.country, admin_area: p.admin_area },
+    plot: { geometry: { type: "Polygon", coordinates: [p.ring] }, geometry_source: "gps_walk", captured_at: m.plot.captured_at } as unknown as Capture["plot"] });
+};
+const realCard = (key: "A" | "B") => (evidence.cards as unknown as Record<string, EvidenceCard>)[realPlot(key).plot_id];
+const ra = await buildReport(realCapture(mockA as Mock, "A"), realCard("A"));
+valid("Real A", ra);
+check("Real A: real data → provenance says demo, not mock", ra.provenance.mode === "demo");
+check("Real A: stays green in the dry season → coffee consistent", byField(ra, "crop_type").status === "consistent");
+check("Real A: 5 ekari vs the real plot → consistent", byField(ra, "plot_area").status === "consistent");
+check("Real A: a bad season the rain record doesn't show → unverifiable, never contradicted", byField(ra, "bad_season", "2021/22").status !== "contradicted");
+const rb = await buildReport(realCapture(mockB as unknown as Mock, "B"), realCard("B"));
+valid("Real B", rb);
+check("Real B: bare in the dry season → coffee contradicted", byField(rb, "crop_type").status === "contradicted");
+check("Real B: 5 ha vs the real ~2 ha plot → contradicted", byField(rb, "plot_area").status === "contradicted");
+check("Real B: suggests a site visit", rb.narrative.some((s) => s.phrase_id === "SITE_VISIT"));
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nAll engine checks passed");
 process.exit(failed ? 1 : 0);
