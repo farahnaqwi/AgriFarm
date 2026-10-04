@@ -3,7 +3,24 @@
 Two stores:
 
 - **Supabase (live):** `reports` and `site_visit_requests`, the verified farm evidence reports and lender requests. Defined in [`../schema.sql`](../schema.sql).
-- **Platform API (in memory, dummy data):** everything else, seeded by [`../backend/agrifarm_api/seed.py`](../backend/agrifarm_api/seed.py). The diagram shows the shape these tables would take if they moved to Supabase/PostGIS. Some links are lists in memory today (for example `farmers.programmes`), and the diagram draws them as proper join tables.
+- **Platform tables:** everything else. Defined in [`../schema_platform.sql`](../schema_platform.sql); the API still serves them from memory with dummy data seeded by [`../backend/agrifarm_api/seed.py`](../backend/agrifarm_api/seed.py), and that seed loads into these tables unchanged. Lists in memory (for example `farmers.programmes`) are proper join tables here.
+
+`schema_platform.sql` is additive: it never drops or alters `reports`, `site_visit_requests` or `get_report()`, and every statement is idempotent, so it can be run on the live Supabase project (and run again) without touching existing data. `schema.sql` stays as it is on `main`.
+
+Vocabularies are shared with the evidence report contract ([`schema.json`](schema.json)), so a platform farmer or plot and a report about it agree:
+
+| Field | Platform tables | `schema.json` |
+|---|---|---|
+| Farmer ID | `farmers.farmer_id` checked against `^F-[A-Z0-9]{4,12}$` | `farmer.farmer_id`, same pattern |
+| Language | `sw` \| `en` | `farmer_language` |
+| Crop | `coffee`, `maize`, `coffee_banana`, `beans`, `other` | `crop_type` values (`beans` is platform-only) |
+| Plot shape | `plots.geometry`: GeoJSON Polygon, `[lon, lat]`, as `jsonb` (no PostGIS needed) | `plot.geometry` |
+| How the boundary was captured | `plots.geometry_source`: `gps_walk` \| `drawn_on_map` \| `gps_walk_and_drawn` (the API's `walked` = `gps_walk`) | `plot.geometry_source` |
+| Season / month | `YYYY/YY` / `YYYY-MM` | rainfall seasons / NDVI months |
+
+`report_index` is a read-only view over `reports` (report ID, farmer ID, plot ID, mode, not-sure flag) for joining reports to `farmers`. It uses `security_invoker`, so the reports RLS still applies and the anon key can't list reports through it.
+
+Access: RLS is on for every platform table, with no anon or authenticated policies. Only the platform API, using the service-role key, can read or write them.
 
 ## Entity-relationship diagram
 
@@ -14,13 +31,14 @@ erDiagram
     WARD ||--o{ DEALER : "hosts"
     FARMER ||--o{ PLOT : "owns"
     PLOT ||--o{ NDVI_MONTH : "seen by satellite"
-    FARMER ||--|| WALLET : "paid into"
+    FARMER ||--o| WALLET : "paid into"
     FARMER ||--o{ ENROLMENT : "joins"
     PROGRAMME ||--o{ ENROLMENT : "enrols"
     PROGRAMME ||--o{ VOUCHER : "funds"
     FARMER ||--o{ VOUCHER : "receives"
     DEALER |o--o{ VOUCHER : "redeems"
-    DEALER ||--|| WALLET : "reimbursed into"
+    DEALER ||--o| WALLET : "reimbursed into"
+    PROGRAMME ||--o| WALLET : "funds from"
     VOUCHER ||--o| PAYOUT : "reimbursed by"
     FARMER ||--o{ POLICY : "insured by"
     POLICY ||--o{ PAYOUT : "triggers"
@@ -30,7 +48,8 @@ erDiagram
     WALLET ||--o{ LEDGER_TX : "from / to"
     FARMER |o--o{ ESCALATION : "asks"
     REPORT ||--o{ SITE_VISIT_REQUEST : "prompts"
-    FARMER |o..o{ REPORT : "subject of (farmer_id inside JSON)"
+    FARMER |o..o{ REPORT : "subject of (report_index view)"
+    POLICY }o--|| WARD : "indexed on"
 
     WARD {
         text name PK "Vwawa, Mlowo, Iyula, Isansa, Igamba"
@@ -44,19 +63,20 @@ erDiagram
         text language "sw | en"
         text ward FK
         text cooperative
-        text wallet_id FK
-        bool consent_registry "required"
+        bool consent_registry "required unless withdrawn"
         bool consent_share_with_programmes "gates institution views"
         timestamptz registered_at
         bool withdrawn
+        timestamptz withdrawn_at
     }
     PLOT {
         text plot_id PK
         text farmer_id FK
-        text crop "coffee | maize | beans | other"
-        geometry boundary "GeoJSON polygon, walked"
-        float area_ha "measured from polygon"
-        float claimed_area_ha "farmer said"
+        text crop "coffee | maize | coffee_banana | beans | other"
+        jsonb geometry "GeoJSON polygon"
+        text geometry_source "gps_walk | drawn_on_map | gps_walk_and_drawn"
+        numeric area_ha "measured from polygon"
+        numeric claimed_area_ha "farmer said"
     }
     NDVI_MONTH {
         text plot_id PK,FK
@@ -79,6 +99,7 @@ erDiagram
     ENROLMENT {
         text farmer_id PK,FK
         text programme_id PK,FK
+        timestamptz enrolled_at
     }
     DEALER {
         text dealer_id PK
@@ -100,6 +121,7 @@ erDiagram
         timestamptz redeemed_at
     }
     VOUCHER_FLAG {
+        bigint id PK
         text code
         text dealer_id
         text reason "unverified dealer, reused code..."
@@ -129,13 +151,19 @@ erDiagram
         int amount_tzs
         text ref UK "idempotency key"
         jsonb evidence "index, event, voucher"
+        text voucher_id FK "dealer_reimbursement"
+        text policy_id FK "insurance"
+        text event_id FK "disaster_relief"
         text status "pending_approval | paid | rejected"
         text decided_by "a person, always"
-        text tx_id FK
+        text decision_note
+        text tx_id FK,UK
     }
     WALLET {
         text wallet_id PK
-        text owner "farmer, dealer or programme"
+        text owner_farmer_id FK,UK "exactly one owner"
+        text owner_dealer_id FK,UK
+        text owner_programme_id FK,UK
         text provider "M-Pesa (mock)"
         int balance_tzs
     }
@@ -159,6 +187,7 @@ erDiagram
         text question "advisor was not sure"
         text language
         text status "open | answered"
+        timestamptz asked_at
         text answer "from extension officer"
         text answered_by
     }
@@ -181,12 +210,13 @@ erDiagram
 
 | Rule | Where |
 |---|---|
-| A farmer can't register without consent | `FARMER.consent_registry` must be true |
+| A farmer can't register without consent | check: `consent_registry` must be true unless withdrawn |
 | Institutions see only opted-in farmers, never names | `FARMER.consent_share_with_programmes` filters every `/institution` view |
-| No vouchers for ghosts | a `VOUCHER` needs the farmer to have at least one `PLOT` |
-| Vouchers are redeemed only at verified dealers, and only once | `DEALER.verified`, `VOUCHER.code` unique, `status` |
-| Money moves only after a person approves | `PAYOUT.status` starts at `pending_approval`; a `LEDGER_TX` exists only after approval, recorded in `decided_by` |
+| No vouchers for ghosts | trigger `vouchers_rules`: a new `VOUCHER` needs the farmer to have at least one `PLOT` and not be withdrawn |
+| Vouchers are redeemed only at verified dealers, and only once | trigger `vouchers_rules` checks `DEALER.verified` and freezes a redeemed voucher; `VOUCHER.code` unique |
+| Money moves only after a person approves | check: `pending_approval` has no `decided_by` or `tx_id`; `paid` needs both; `rejected` needs `decided_by` |
 | Re-running insurance doesn't pay twice | `PAYOUT.ref` unique, e.g. `ins:POL-009:2024/25` |
 | A cloudy image gives "not sure", not a guess | `NDVI_MONTH.cloudy` |
 | Evidence reports are tamper-evident | `REPORT.hash` is computed on the phone; the lender page re-hashes |
-| Withdrawal erases personal data | `FARMER.display_name` set to null, the farmer's `PLOT` rows deleted, `withdrawn` set; payment history kept for audit |
+| Withdrawal erases personal data | check: a withdrawn farmer has no name, cooperative or consent; trigger `farmers_withdrawal` deletes their `PLOT` rows (and NDVI series); payment history kept for audit |
+| A wallet has one owner | check: exactly one of `owner_farmer_id`, `owner_dealer_id`, `owner_programme_id` |
